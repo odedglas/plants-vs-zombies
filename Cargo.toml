@@ -1,0 +1,45 @@
+[package]
+name = "plants-vs-zombies"
+version = "0.1.0"
+authors = ["odead"]
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+futures = "0.3.17"
+js-sys = "0.3.55"
+serde = { version = "1.0.130", features = ["derive"] }
+serde_derive = "1.0.130"
+wasm-bindgen = { version = "0.2.78", features = ["serde-serialize"] }
+wasm-bindgen-futures = "0.4.28"
+console_error_panic_hook = "0.1.7"
+[dependencies.web-sys]
+version = "0.3.60"
+features = [
+    'CanvasRenderingContext2d',
+    'console',
+    'Document',
+    'Element',
+    'EventTarget',
+    'HtmlCanvasElement',
+    'HtmlElement',
+    'HtmlImageElement',
+    'ImageData',
+    'MouseEvent',
+    'Node',
+    'Request',
+    'RequestInit',
+    'RequestMode',
+    'Response',
+    'Performance',
+    'PerformanceTiming',
+    'TextMetrics',
+    'Window',
+]
+
+[profile.release]
+opt-level = 'z'
+lto = true
+panic = 'abort'
