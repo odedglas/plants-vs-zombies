@@ -39,7 +39,12 @@ impl Engine {
 
         log!("Engine launched {}", engine.handled_events.len());
 
+        engine.register_events();
         engine.start_game_loop();
+    }
+
+    fn register_events() {
+
     }
 
     fn start_game_loop(&self) {
