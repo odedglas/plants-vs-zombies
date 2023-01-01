@@ -3,11 +3,11 @@ use std::rc::Rc;
 
 use crate::game::Game;
 use crate::log;
-use crate::model::{GameEvent};
+use crate::model::GameEvent;
 
 pub struct Engine {
     game: Rc<RefCell<Game>>,
-    handled_events: Vec<GameEvent>
+    handled_events: Vec<GameEvent>,
 }
 
 impl Engine {
@@ -19,6 +19,5 @@ impl Engine {
         // Attach listeners
 
         log!("Engine launched");
-
     }
 }

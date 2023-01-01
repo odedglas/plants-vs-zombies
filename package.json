@@ -1,7 +1,8 @@
 {
   "scripts": {
     "build": "webpack",
-    "dev": "rm -rf pkg && webpack serve"
+    "dev": "rm -rf pkg && webpack serve",
+    "lint": "cargo fmt"
   },
   "devDependencies": {
     "@types/webpack": "^5.28.0",

@@ -5,3 +5,6 @@ imports_granularity = "Module"
 reorder_impl_items = true
 group_imports = "StdExternalCrate"
 max_width = 102
+ignore = [
+  "pkg"
+]

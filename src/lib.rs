@@ -1,10 +1,9 @@
-use wasm_bindgen::prelude::*;
-
 use engine::Engine;
+use wasm_bindgen::prelude::*;
 use web_utils::bind_panic_logger;
 
-mod game;
 mod engine;
+mod game;
 mod model;
 mod web_utils;
 
