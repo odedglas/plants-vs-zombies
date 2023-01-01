@@ -1,22 +1,17 @@
+use engine::Engine;
 use wasm_bindgen::prelude::*;
+use web_utils::bind_panic_logger;
 
-#[macro_export]
-macro_rules! log {
-    ($($t:tt)*) => {
-        web_sys::console::log_1(&format!($($t)*).into())
-    }
-}
-
-#[wasm_bindgen]
-pub fn init() {
-    console_error_panic_hook::set_once();
-}
+mod engine;
+mod game;
+mod model;
+mod web_utils;
 
 #[wasm_bindgen(start)]
 pub fn run() -> Result<(), JsValue> {
-    init();
+    bind_panic_logger();
 
-    log!("Shit is on web!");
+    Engine::launch();
 
     Ok(())
 }
