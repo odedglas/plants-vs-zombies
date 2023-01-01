@@ -45,14 +45,14 @@ impl Engine {
     fn start_game_loop(&self) {
         // This reference will point to the closure that will recursively called in each animation frame trigger.
         // Thus this is a persistence RC which is used in all future iterations.
-        let main_loop = Rc::new(RefCell::new(None));
+        let main_loop_ref = Rc::new(RefCell::new(None));
 
         //This reference will hit the initial animation frame and be dropped by the end of this scope.
-        let initial_trigger = Rc::clone(&main_loop);
+        let initial_trigger_ref = Rc::clone(&main_loop_ref);
 
         let game = Rc::clone(&self.game);
         let mut iter = 0;
-        *initial_trigger.borrow_mut() = Some(Closure::wrap(Box::new(move || {
+        *initial_trigger_ref.borrow_mut() = Some(Closure::wrap(Box::new(move || {
             let mut game = game.borrow_mut();
             iter += 1;
 
@@ -60,13 +60,13 @@ impl Engine {
 
             if iter > 150 {
                 log!("Game done");
-                let _ = main_loop.borrow_mut().take();
+                let _ = main_loop_ref.borrow_mut().take();
                 return;
             }
 
-            request_animation_frame(main_loop.borrow().as_ref().unwrap());
+            request_animation_frame(main_loop_ref.borrow().as_ref().unwrap());
         }) as Box<dyn FnMut()>));
 
-        request_animation_frame(initial_trigger.borrow().as_ref().unwrap());
+        request_animation_frame(initial_trigger_ref.borrow().as_ref().unwrap());
     }
 }
