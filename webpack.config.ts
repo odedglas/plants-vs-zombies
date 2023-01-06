@@ -9,7 +9,7 @@ const config: webpack.Configuration = {
   entry: './wasm-entry.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'index.js',
+    filename: 'index.js'
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -27,7 +27,7 @@ const config: webpack.Configuration = {
   devServer: {
     compress: true,
     static: {
-      directory: path.join(__dirname),
+      directory: path.join(__dirname)
     },
     port: 5000,
   },

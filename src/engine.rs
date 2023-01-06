@@ -2,10 +2,14 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use wasm_bindgen::prelude::Closure;
+use wasm_bindgen::{JsCast, JsValue};
+use wasm_bindgen_futures::spawn_local;
+use web_sys::MouseEvent;
 
 use crate::game::Game;
 use crate::log;
 use crate::model::GameEvent;
+use crate::resource_loader::ResourceLoader;
 use crate::web_utils::request_animation_frame;
 
 pub struct Engine {
@@ -28,23 +32,87 @@ impl Default for Engine {
     }
 }
 
+#[derive(Debug)]
+pub enum EngineError {
+    IO(std::io::Error),
+    Js(JsValue),
+    SerdeParsing(serde_wasm_bindgen::Error),
+}
+
+impl From<JsValue> for EngineError {
+    fn from(e: JsValue) -> Self {
+        EngineError::Js(e)
+    }
+}
+
+impl From<serde_wasm_bindgen::Error> for EngineError {
+    fn from(e: serde_wasm_bindgen::Error) -> Self {
+        EngineError::SerdeParsing(e)
+    }
+}
+
+impl From<EngineError> for JsValue {
+    fn from(e: EngineError) -> Self {
+        match e {
+            EngineError::Js(e) => e,
+            EngineError::SerdeParsing(e) => JsValue::from_str(&e.to_string()),
+            EngineError::IO(e) => JsValue::from_str(&e.to_string()),
+        }
+    }
+}
+
 impl Engine {
     pub fn launch() {
-        // Load assets
+        spawn_local(async move {
+            let engine = Engine::default();
 
-        // Create game
+            // Load assets
+            let game_resources = ResourceLoader::load(&ResourceLoader).await;
 
-        // Attach listeners
-        let engine = Engine::default();
+            log!("Loaded Resources");
+            for (key, value) in &game_resources.cells {
+                log!("{}: {:?}", key, value);
+            }
 
-        log!("Engine launched {}", engine.handled_events.len());
+            log!("Loaded level data {:?}", game_resources.level_data);
 
-        engine.register_events();
-        engine.start_game_loop();
+            log!("Loaded Images");
+            for (key, _image) in &game_resources.images {
+                log!("{}", key);
+            }
+
+            // Create game
+
+            // Attach listeners
+            log!("Engine launched {}", engine.handled_events.len());
+            engine.register_events();
+            engine.start_game_loop();
+        })
     }
 
-    fn register_events() {
+    fn register_events(&self) {
+        self.handled_events
+            .iter()
+            .for_each(|event| self.listen_event(*event));
+    }
 
+    fn listen_event(&self, name: GameEvent) {
+        let game_closure_ref = Rc::clone(&self.game);
+
+        let closure = Closure::wrap(Box::new(move |event: MouseEvent| {
+            game_closure_ref.borrow_mut().handle_event(name, event);
+        }) as Box<dyn FnMut(_)>);
+
+        self.game
+            .borrow()
+            .canvas
+            .add_event_listener_with_callback(
+                &name.to_string().to_lowercase(),
+                closure.as_ref().unchecked_ref(),
+            )
+            .unwrap();
+
+        closure.forget();
     }
 
     fn start_game_loop(&self) {
