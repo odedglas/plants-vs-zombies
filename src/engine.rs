@@ -66,8 +66,11 @@ impl Engine {
         spawn_local(async move {
             let engine = Engine::default();
 
-            // Load assets
-            engine.game.borrow_mut().resources = ResourceLoader::load(&ResourceLoader).await;
+            // Load resources
+            let game_resources = ResourceLoader::load(&ResourceLoader).await;
+
+            // Init game
+            engine.game.borrow_mut().init(game_resources);
 
             // Attach game listeners
             engine.register_events();

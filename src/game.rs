@@ -18,6 +18,10 @@ impl Game {
         }
     }
 
+    pub fn init(&mut self, resources: Resources) {
+        self.resources = resources;
+    }
+
     pub fn run(&mut self) {
         log!("Game Run iteration");
     }
