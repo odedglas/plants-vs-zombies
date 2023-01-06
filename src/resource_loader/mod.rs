@@ -28,7 +28,7 @@ pub struct Resources {
 impl ResourceLoader {
     pub async fn load(&self) -> Resources {
         let cells = self
-            .load_resources_kinds::<Vec<SpriteCell>>(
+            .load_json_resources::<Vec<SpriteCell>>(
                 vec![
                     ResourceKind::Card,
                     ResourceKind::Plant,
@@ -40,11 +40,11 @@ impl ResourceLoader {
             .await;
 
         let level_data = self
-            .load_resources_kinds::<LevelData>(vec![ResourceKind::Level], ResourceDataType::DATA)
+            .load_json_resources::<LevelData>(vec![ResourceKind::Level], ResourceDataType::DATA)
             .await;
 
         let images = self
-            .load_images(vec![
+            .load_image_resources(vec![
                 ResourceKind::Card,
                 ResourceKind::Plant,
                 ResourceKind::Zombie,
@@ -59,7 +59,7 @@ impl ResourceLoader {
         }
     }
 
-    async fn load_resources_kinds<T>(
+    async fn load_json_resources<T>(
         &self,
         resource_kinds: Vec<ResourceKind>,
         data_type: ResourceDataType,
@@ -114,7 +114,7 @@ impl ResourceLoader {
         Ok(items)
     }
 
-    async fn load_images(&self, kinds: Vec<ResourceKind>) -> HashMap<String, Rc<HtmlImageElement>> {
+    async fn load_image_resources(&self, kinds: Vec<ResourceKind>) -> HashMap<String, Rc<HtmlImageElement>> {
         let image_futures: Vec<ImageFuture> = kinds
             .iter()
             .map(|kind| ImageFuture::new(&format!("assets/image/{}.png", kind.value())))
