@@ -1,5 +1,6 @@
 use crate::log;
 
+#[derive(Debug)]
 pub struct Game;
 
 impl Game {

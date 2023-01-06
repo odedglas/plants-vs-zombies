@@ -5,6 +5,7 @@ use web_utils::bind_panic_logger;
 mod engine;
 mod game;
 mod model;
+mod resource_loader;
 mod web_utils;
 
 #[wasm_bindgen(start)]

@@ -2,11 +2,14 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use wasm_bindgen::prelude::Closure;
+use wasm_bindgen::JsValue;
+use wasm_bindgen_futures::spawn_local;
 
 use crate::game::Game;
-use crate::log;
 use crate::model::GameEvent;
+use crate::resource_loader::ResourceLoader;
 use crate::web_utils::request_animation_frame;
+use crate::{log, resource_loader};
 
 pub struct Engine {
     game: Rc<RefCell<Game>>,
@@ -28,24 +31,59 @@ impl Default for Engine {
     }
 }
 
+#[derive(Debug)]
+pub enum EngineError {
+    IO(std::io::Error),
+    Js(JsValue),
+    SerdeParsing(serde_wasm_bindgen::Error),
+}
+
+impl From<JsValue> for EngineError {
+    fn from(e: JsValue) -> Self {
+        EngineError::Js(e)
+    }
+}
+
+impl From<serde_wasm_bindgen::Error> for EngineError {
+    fn from(e: serde_wasm_bindgen::Error) -> Self {
+        EngineError::SerdeParsing(e)
+    }
+}
+
+impl From<EngineError> for JsValue {
+    fn from(e: EngineError) -> Self {
+        match e {
+            EngineError::Js(e) => e,
+            EngineError::SerdeParsing(e) => JsValue::from_str(&e.to_string()),
+            EngineError::IO(e) => JsValue::from_str(&e.to_string()),
+        }
+    }
+}
+
 impl Engine {
     pub fn launch() {
-        // Load assets
+        spawn_local(async move {
+            // Load assets
+            let game_resources = ResourceLoader::load(&ResourceLoader).await;
 
-        // Create game
+            log!("Loaded Resources");
+            for (key, value) in &game_resources.cells {
+                log!("{}: {:?}", key, value);
+            }
 
-        // Attach listeners
-        let engine = Engine::default();
+            // Create game
 
-        log!("Engine launched {}", engine.handled_events.len());
+            // Attach listeners
+            let engine = Engine::default();
 
-        engine.register_events();
-        engine.start_game_loop();
+            log!("Engine launched {}", engine.handled_events.len());
+
+            engine.register_events();
+            engine.start_game_loop();
+        })
     }
 
-    fn register_events() {
-
-    }
+    fn register_events(&self) {}
 
     fn start_game_loop(&self) {
         // This reference will point to the closure that will recursively called in each animation frame trigger.
