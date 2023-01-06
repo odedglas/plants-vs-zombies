@@ -17,3 +17,12 @@ pub struct SpriteCell {
     pub width: f64,
     pub height: f64,
 }
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct LevelData {
+    pub name: String,
+    pub scenes: Vec<String>,
+    pub flag_num: usize,
+    pub plant_cards: Vec<String>,
+    pub zombie_cards: Vec<String>,
+}

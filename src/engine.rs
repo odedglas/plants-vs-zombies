@@ -6,10 +6,10 @@ use wasm_bindgen::JsValue;
 use wasm_bindgen_futures::spawn_local;
 
 use crate::game::Game;
+use crate::log;
 use crate::model::GameEvent;
 use crate::resource_loader::ResourceLoader;
 use crate::web_utils::request_animation_frame;
-use crate::{log, resource_loader};
 
 pub struct Engine {
     game: Rc<RefCell<Game>>,
@@ -70,6 +70,8 @@ impl Engine {
             for (key, value) in &game_resources.cells {
                 log!("{}: {:?}", key, value);
             }
+
+            log!("Loaded level data {:?}", game_resources.level_data);
 
             // Create game
 

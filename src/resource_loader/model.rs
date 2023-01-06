@@ -18,3 +18,17 @@ impl ResourceKind {
         }
     }
 }
+
+pub enum ResourceDataType {
+    CELL,
+    DATA,
+}
+
+impl ResourceDataType {
+    pub fn value(&self) -> &str {
+        match *self {
+            ResourceDataType::CELL => "cell",
+            ResourceDataType::DATA => "data",
+        }
+    }
+}

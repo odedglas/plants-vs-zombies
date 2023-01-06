@@ -2,45 +2,51 @@ mod image;
 mod model;
 
 use std::collections::HashMap;
+use std::rc::Rc;
 
 use serde::Deserialize;
 use wasm_bindgen::{JsCast, JsValue};
 use wasm_bindgen_futures::JsFuture;
-use web_sys::{Request, RequestInit, RequestMode, Response};
+use web_sys::{HtmlImageElement, Request, RequestInit, RequestMode, Response};
 
 use crate::engine::EngineError;
-use crate::model::SpriteCell;
-use crate::resource_loader::model::ResourceKind;
+use crate::model::{LevelData, SpriteCell};
+use crate::resource_loader::model::{ResourceDataType, ResourceKind};
 use crate::web_utils::window;
 
 pub struct ResourceLoader;
 
 pub struct Resources {
     pub cells: HashMap<String, Vec<SpriteCell>>,
+    pub level_data: HashMap<String, LevelData>,
 }
 
 impl ResourceLoader {
     pub async fn load(&self) -> Resources {
         let cells = self
-            .load_jsons::<SpriteCell>(
+            .load_resources_kinds::<Vec<SpriteCell>>(
                 vec![
                     ResourceKind::Card,
                     ResourceKind::Plant,
                     ResourceKind::Zombie,
                     ResourceKind::Interface,
                 ],
-                "cell",
+                ResourceDataType::CELL,
             )
             .await;
 
-        Resources { cells }
+        let level_data = self
+            .load_resources_kinds::<LevelData>(vec![ResourceKind::Level], ResourceDataType::DATA)
+            .await;
+
+        Resources { cells, level_data }
     }
 
-    async fn load_jsons<T>(
+    async fn load_resources_kinds<T>(
         &self,
         resource_kinds: Vec<ResourceKind>,
-        data_type: &str,
-    ) -> HashMap<String, Vec<T>>
+        data_type: ResourceDataType,
+    ) -> HashMap<String, T>
     where
         for<'a> T: Deserialize<'a>,
     {
@@ -48,10 +54,10 @@ impl ResourceLoader {
 
         for kind in resource_kinds.iter() {
             // Loads given asset kind associated with a data type.
-            let result = &self.load_json(kind.value(), data_type).await;
+            let result = &self.load_json(kind.value(), data_type.value()).await;
 
             if let Ok(value) = result {
-                let json_items: HashMap<String, Vec<T>> = self.convert_json::<T>(value).unwrap();
+                let json_items = self.convert_json_hashmap::<T>(value).unwrap();
 
                 for (key, value) in json_items {
                     jsons_map.insert(format!("{}/{}", kind.value(), key), value);
@@ -82,7 +88,7 @@ impl ResourceLoader {
         Ok(json)
     }
 
-    fn convert_json<T>(&self, json: &JsValue) -> Result<HashMap<String, Vec<T>>, EngineError>
+    fn convert_json_hashmap<T>(&self, json: &JsValue) -> Result<HashMap<String, T>, EngineError>
     where
         for<'a> T: Deserialize<'a>,
     {
