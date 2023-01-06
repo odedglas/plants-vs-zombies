@@ -67,25 +67,12 @@ impl Engine {
             let engine = Engine::default();
 
             // Load assets
-            let game_resources = ResourceLoader::load(&ResourceLoader).await;
+            engine.game.borrow_mut().resources = ResourceLoader::load(&ResourceLoader).await;
 
-            log!("Loaded Resources");
-            for (key, value) in &game_resources.cells {
-                log!("{}: {:?}", key, value);
-            }
-
-            log!("Loaded level data {:?}", game_resources.level_data);
-
-            log!("Loaded Images");
-            for (key, _image) in &game_resources.images {
-                log!("{}", key);
-            }
-
-            // Create game
-
-            // Attach listeners
-            log!("Engine launched {}", engine.handled_events.len());
+            // Attach game listeners
             engine.register_events();
+
+            // Starts main loop
             engine.start_game_loop();
         })
     }

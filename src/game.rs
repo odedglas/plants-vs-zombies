@@ -2,10 +2,11 @@ use web_sys::{HtmlCanvasElement, MouseEvent};
 
 use crate::log;
 use crate::model::GameEvent;
+use crate::resource_loader::Resources;
 use crate::web_utils::create_canvas;
 
-#[derive(Debug)]
 pub struct Game {
+    pub resources: Resources,
     pub canvas: HtmlCanvasElement,
 }
 
@@ -13,6 +14,7 @@ impl Game {
     pub fn new() -> Game {
         Game {
             canvas: create_canvas(600, 400),
+            resources: Resources::new(),
         }
     }
 

@@ -24,6 +24,16 @@ pub struct Resources {
     pub images: HashMap<String, Rc<HtmlImageElement>>,
 }
 
+impl Resources {
+    pub fn new() -> Self {
+        Resources {
+            cells: HashMap::new(),
+            level_data: HashMap::new(),
+            images: HashMap::new(),
+        }
+    }
+}
+
 impl ResourceLoader {
     pub async fn load(&self) -> Resources {
         let cells = self
