@@ -2,8 +2,10 @@ mod image;
 mod model;
 
 use std::collections::HashMap;
+use std::fmt::format;
 use std::rc::Rc;
 
+use futures::future::join_all;
 use serde::Deserialize;
 use wasm_bindgen::{JsCast, JsValue};
 use wasm_bindgen_futures::JsFuture;
@@ -11,6 +13,7 @@ use web_sys::{HtmlImageElement, Request, RequestInit, RequestMode, Response};
 
 use crate::engine::EngineError;
 use crate::model::{LevelData, SpriteCell};
+use crate::resource_loader::image::ImageFuture;
 use crate::resource_loader::model::{ResourceDataType, ResourceKind};
 use crate::web_utils::window;
 
@@ -19,6 +22,7 @@ pub struct ResourceLoader;
 pub struct Resources {
     pub cells: HashMap<String, Vec<SpriteCell>>,
     pub level_data: HashMap<String, LevelData>,
+    pub images: HashMap<String, Rc<HtmlImageElement>>,
 }
 
 impl ResourceLoader {
@@ -39,7 +43,20 @@ impl ResourceLoader {
             .load_resources_kinds::<LevelData>(vec![ResourceKind::Level], ResourceDataType::DATA)
             .await;
 
-        Resources { cells, level_data }
+        let images = self
+            .load_images(vec![
+                ResourceKind::Card,
+                ResourceKind::Plant,
+                ResourceKind::Zombie,
+                ResourceKind::Interface,
+            ])
+            .await;
+
+        Resources {
+            cells,
+            level_data,
+            images,
+        }
     }
 
     async fn load_resources_kinds<T>(
@@ -95,5 +112,25 @@ impl ResourceLoader {
         let items = serde_wasm_bindgen::from_value(json.clone())?;
 
         Ok(items)
+    }
+
+    async fn load_images(&self, kinds: Vec<ResourceKind>) -> HashMap<String, Rc<HtmlImageElement>> {
+        let image_futures: Vec<ImageFuture> = kinds
+            .iter()
+            .map(|kind| ImageFuture::new(&format!("assets/image/{}.png", kind.value())))
+            .collect();
+
+        let promise_all = join_all(image_futures).await;
+
+        let images: HashMap<String, Rc<HtmlImageElement>> = kinds
+            .iter()
+            .zip(promise_all.into_iter())
+            .filter(|(_key, value)| (*value).is_ok())
+            .map(|(key, value)|
+                (key.value().to_string(), Rc::new(value.unwrap()))
+            )
+            .collect();
+
+        images
     }
 }

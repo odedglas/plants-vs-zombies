@@ -73,6 +73,11 @@ impl Engine {
 
             log!("Loaded level data {:?}", game_resources.level_data);
 
+            log!("Loaded Images");
+            for (key, _image) in &game_resources.images {
+                log!("{}", key);
+            }
+
             // Create game
 
             // Attach listeners
