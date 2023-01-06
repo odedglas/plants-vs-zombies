@@ -2,7 +2,6 @@ mod image;
 mod model;
 
 use std::collections::HashMap;
-use std::fmt::format;
 use std::rc::Rc;
 
 use futures::future::join_all;
@@ -114,7 +113,10 @@ impl ResourceLoader {
         Ok(items)
     }
 
-    async fn load_image_resources(&self, kinds: Vec<ResourceKind>) -> HashMap<String, Rc<HtmlImageElement>> {
+    async fn load_image_resources(
+        &self,
+        kinds: Vec<ResourceKind>,
+    ) -> HashMap<String, Rc<HtmlImageElement>> {
         let image_futures: Vec<ImageFuture> = kinds
             .iter()
             .map(|kind| ImageFuture::new(&format!("assets/image/{}.png", kind.value())))
@@ -126,9 +128,7 @@ impl ResourceLoader {
             .iter()
             .zip(promise_all.into_iter())
             .filter(|(_key, value)| (*value).is_ok())
-            .map(|(key, value)|
-                (key.value().to_string(), Rc::new(value.unwrap()))
-            )
+            .map(|(key, value)| (key.value().to_string(), Rc::new(value.unwrap())))
             .collect();
 
         images

@@ -2,8 +2,9 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use wasm_bindgen::prelude::Closure;
-use wasm_bindgen::JsValue;
+use wasm_bindgen::{JsCast, JsValue};
 use wasm_bindgen_futures::spawn_local;
+use web_sys::MouseEvent;
 
 use crate::game::Game;
 use crate::log;
@@ -63,6 +64,8 @@ impl From<EngineError> for JsValue {
 impl Engine {
     pub fn launch() {
         spawn_local(async move {
+            let engine = Engine::default();
+
             // Load assets
             let game_resources = ResourceLoader::load(&ResourceLoader).await;
 
@@ -81,16 +84,36 @@ impl Engine {
             // Create game
 
             // Attach listeners
-            let engine = Engine::default();
-
             log!("Engine launched {}", engine.handled_events.len());
-
             engine.register_events();
             engine.start_game_loop();
         })
     }
 
-    fn register_events(&self) {}
+    fn register_events(&self) {
+        self.handled_events
+            .iter()
+            .for_each(|event| self.listen_event(*event));
+    }
+
+    fn listen_event(&self, name: GameEvent) {
+        let game_closure_ref = Rc::clone(&self.game);
+
+        let closure = Closure::wrap(Box::new(move |event: MouseEvent| {
+            game_closure_ref.borrow_mut().handle_event(name, event);
+        }) as Box<dyn FnMut(_)>);
+
+        self.game
+            .borrow()
+            .canvas
+            .add_event_listener_with_callback(
+                &name.to_string().to_lowercase(),
+                closure.as_ref().unchecked_ref(),
+            )
+            .unwrap();
+
+        closure.forget();
+    }
 
     fn start_game_loop(&self) {
         // This reference will point to the closure that will recursively called in each animation frame trigger.

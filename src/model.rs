@@ -1,3 +1,5 @@
+use std::fmt;
+
 use serde_derive::Deserialize;
 
 /// The events being listened by our game.
@@ -8,6 +10,12 @@ pub enum GameEvent {
     Mouseup,
     Mouseleave,
     Mouseenter,
+}
+
+impl fmt::Display for GameEvent {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        fmt::Debug::fmt(self, f)
+    }
 }
 
 #[derive(Debug, Default, Clone, Deserialize)]
