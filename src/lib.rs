@@ -3,9 +3,11 @@ use wasm_bindgen::prelude::*;
 use web_utils::bind_panic_logger;
 
 mod engine;
+mod fps;
 mod game;
 mod model;
 mod resource_loader;
+mod timers;
 mod web_utils;
 
 #[wasm_bindgen(start)]

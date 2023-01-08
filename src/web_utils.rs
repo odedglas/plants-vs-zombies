@@ -39,6 +39,15 @@ pub fn create_canvas(width: u32, height: u32) -> HtmlCanvasElement {
     document().body().unwrap().append_child(&canvas).unwrap();
 
     canvas
+
+}
+
+pub fn window_time() -> f64 {
+    let performance = window()
+        .performance()
+        .expect("performance should be available");
+
+    performance.now()
 }
 
 /// Binds Rust's `panic` into web console logger.
