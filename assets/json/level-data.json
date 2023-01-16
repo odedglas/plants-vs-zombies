@@ -10,7 +10,7 @@
       "LawnCleaner",
       "PrepareGrowPlants"
     ],
-    "plant_cards": [
+    "plants_options": [
       "SunFlower",
       "Peashooter",
       "SnowPea",
@@ -19,7 +19,7 @@
       "PumpkinHead",
       "TallNut"
     ],
-    "zombie_cards": [
+    "zombies": [
       "Buckethead",
       "Conehead",
       "ScreenDoor",

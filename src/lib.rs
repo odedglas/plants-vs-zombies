@@ -9,6 +9,7 @@ mod model;
 mod resource_loader;
 mod timers;
 mod web_utils;
+mod location;
 
 #[wasm_bindgen(start)]
 pub fn run() -> Result<(), JsValue> {

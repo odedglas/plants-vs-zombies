@@ -1,7 +1,7 @@
 {
   "Conehead": {
     "constructor": "Zombie",
-    "pos": [{ "left": 0, "top": 0 }],
+    "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
       { "name": "Cycle", "duration": 120 },
       {
@@ -25,7 +25,7 @@
   },
   "Buckethead": {
     "constructor": "Zombie",
-    "pos": [{ "left": 0, "top": 0 }],
+    "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
       { "name": "Cycle", "duration": 120 },
       {
@@ -49,7 +49,7 @@
   },
   "Flag": {
     "constructor": "Zombie",
-    "pos": [{ "left": 0, "top": 0 }],
+    "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
       { "name": "Cycle", "duration": 120 },
       {
@@ -72,7 +72,7 @@
   },
   "ScreenDoor": {
     "constructor": "Zombie",
-    "pos": [{ "left": 0, "top": 0 }],
+    "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
       { "name": "Cycle", "duration": 120 },
       {
@@ -95,7 +95,7 @@
   },
   "Zombie1": {
     "constructor": "Zombie",
-    "pos": [{ "left": 0, "top": 0 }],
+    "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
       { "name": "Cycle", "duration": 120 },
       {
@@ -117,7 +117,7 @@
   },
   "ZombieHead": {
     "constructor": "Zombie",
-    "pos": [{ "left": 0, "top": 0 }],
+    "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
       { "name": "Frequency", "duration": 100 },
       {
@@ -131,7 +131,7 @@
   },
   "ZombieDie": {
     "constructor": "Zombie",
-    "pos": [{ "left": 0, "top": 0 }],
+    "position": [{ "left": 0, "top": 0 }],
     "behaviors": [{ "name": "Cycle", "duration": 120 }],
     "life": 0.0,
     "collision_margin": { "left": 0, "top": 0, "right": 0, "bottom": 0 }

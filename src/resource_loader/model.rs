@@ -22,6 +22,7 @@ impl ResourceKind {
 pub enum ResourceDataType {
     CELL,
     DATA,
+    IMAGE
 }
 
 impl ResourceDataType {
@@ -29,6 +30,7 @@ impl ResourceDataType {
         match *self {
             ResourceDataType::CELL => "cell",
             ResourceDataType::DATA => "data",
+            ResourceDataType::IMAGE => "image",
         }
     }
 }
