@@ -45,7 +45,7 @@ impl Resources {
     // TODO - Consider cases which don't have the full data?
     pub fn get_resource(&self, name: &str, kind: ResourceKind) -> Resource{
         let resource_key = format!("{}/{}", kind.value(), name);
-        log!("Resource KEy, {}", resource_key);
+
         let cell = self.cells.get(&resource_key)
             .unwrap();
 

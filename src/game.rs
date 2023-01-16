@@ -4,6 +4,8 @@ use crate::fps::Fps;
 use crate::log;
 use crate::model::{GameEvent, GameState};
 use crate::resource_loader::{ResourceKind, Resources};
+use crate::scene::HomeScene;
+use crate::sprite::Sprite;
 use crate::timers::GameTime;
 use crate::web_utils::{create_canvas, get_canvas_context};
 
@@ -12,6 +14,7 @@ pub struct Game {
     pub canvas: HtmlCanvasElement,
     pub context: CanvasRenderingContext2d,
 
+    sprites: Vec<Sprite>,
     state: GameState,
     game_time: GameTime,
     fps: Fps,
@@ -29,6 +32,7 @@ impl Game {
             game_time: GameTime::new(),
             state: GameState::new(),
             fps: Fps::new(),
+            sprites: vec![]
         }
     }
 
@@ -51,21 +55,28 @@ impl Game {
         self.fps.set(current_time);
     }
 
-    // Events
+    // Events //
+
     pub fn handle_event(&self, name: GameEvent, _event: MouseEvent) {
         log!("Game handling event for: {}", name.to_string())
     }
 
-    // Game Actions
+    // Game Actions //
+
     fn start_home_scene(&mut self) {
-        let resource = self.resources.get_resource(
-            "SelectorAdventureShadow",
-            ResourceKind::Interface
-        );
+        self.reset_state();
+        HomeScene::start(self);
+    }
 
-        log!("Resource Cell, {:?}", resource.cell);
-        log!("Resource data, {:?}", resource.data);
 
+    // Game State mutations //
+
+    pub fn reset_state(&mut self) {
+        self.state = GameState::new();
         // TODO - Clear all sprites once available
+    }
+
+    pub fn add_sprites(&mut self, sprites: &mut Vec<Sprite>) {
+        self.sprites.append(sprites);
     }
 }

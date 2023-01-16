@@ -42,6 +42,7 @@ pub struct SpriteCell {
     pub height: f64,
 }
 
+/// Sprite data represents the meta data of a given Sprite
 #[derive(Debug, Default, Clone, Deserialize)]
 pub struct SpriteData {
     position: Vec<Position>

@@ -10,6 +10,8 @@ mod resource_loader;
 mod timers;
 mod web_utils;
 mod location;
+mod scene;
+mod sprite;
 
 #[wasm_bindgen(start)]
 pub fn run() -> Result<(), JsValue> {
