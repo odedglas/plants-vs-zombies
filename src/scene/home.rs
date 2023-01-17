@@ -12,17 +12,13 @@ impl HomeScene {
             "SelectorBackground",
             "SelectorAdventureShadow",
             "SelectorSurvivalShadow",
-            "SelectorChallengeShadow",
-            "SelectorWoodSign1",
-            "SelectorWoodSign2",
-            "SelectorWoodSign3",
         ];
 
         // Convert each scene sprites into a actual Sprite using it's corresponding Game.Resource
         let mut sprites = Sprite::create_sprites(
             scene_sprites_name,
             &ResourceKind::Interface,
-            &game.resources
+            &game.resources,
         );
 
         // Adding scene sprites into game.

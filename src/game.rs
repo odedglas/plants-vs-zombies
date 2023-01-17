@@ -1,9 +1,11 @@
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, MouseEvent};
 
+use crate::constants::{CANVAS_HEIGHT, CANVAS_HEIGHT_F64, CANVAS_WIDTH, CANVAS_WIDTH_F64};
 use crate::fps::Fps;
 use crate::log;
 use crate::model::{GameEvent, GameState};
-use crate::resource_loader::{ResourceKind, Resources};
+use crate::painter::Painter;
+use crate::resource_loader::Resources;
 use crate::scene::HomeScene;
 use crate::sprite::Sprite;
 use crate::timers::GameTime;
@@ -11,8 +13,7 @@ use crate::web_utils::{create_canvas, get_canvas_context};
 
 pub struct Game {
     pub resources: Resources,
-    pub canvas: HtmlCanvasElement,
-    pub context: CanvasRenderingContext2d,
+    pub painter: Painter,
 
     sprites: Vec<Sprite>,
     state: GameState,
@@ -22,12 +23,11 @@ pub struct Game {
 
 impl Game {
     pub fn new() -> Game {
-        let canvas = create_canvas(600, 400);
+        let canvas = create_canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
         let context = get_canvas_context(&canvas);
 
         Game {
-            canvas,
-            context,
+            painter: Painter::new(),
             resources: Resources::new(),
             game_time: GameTime::new(),
             state: GameState::new(),
@@ -50,9 +50,20 @@ impl Game {
         let current_time = self.game_time.current_time();
         self.fps.calc(current_time);
 
-        // Game paint iteration goes here
+        self.draw();
 
+        // TODO - Handle Game internal sprites garbage collection Game::gc()
+
+        // TODO - SunGenerator::tick()
+
+        log!("Running game tick with {} Sprites", self.sprites.len());
         self.fps.set(current_time);
+    }
+
+    fn draw(&mut self) {
+        self.painter.clear();
+
+        self.sprites.iter().for_each(Painter::draw_sprite);
     }
 
     // Events //
@@ -76,9 +87,14 @@ impl Game {
     }
 
     pub fn add_sprites(&mut self, sprites: &mut Vec<Sprite>) {
-        sprites
-            .iter()
-            .for_each(|s| log!("Adding game Srpite {:?}", s));
         self.sprites.append(sprites);
+
+        self.sprites.sort_by(|a, b| a.order.cmp(&b.order));
+    }
+
+    // Getters //
+
+    pub fn canvas(&self) -> &HtmlCanvasElement {
+        &self.painter.canvas
     }
 }

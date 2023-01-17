@@ -95,7 +95,7 @@ impl Engine {
 
         self.game
             .borrow()
-            .canvas
+            .canvas()
             .add_event_listener_with_callback(
                 &name.to_string().to_lowercase(),
                 closure.as_ref().unchecked_ref(),

@@ -5,9 +5,9 @@ use crate::resource_loader::{ResourceKind, Resources};
 
 #[derive(Debug)]
 pub struct Sprite {
-    id: String,
-    name: String,
-    order: usize,
+    pub id: String,
+    pub name: String,
+    pub order: usize,
     position: Vec<Position>,
 }
 
@@ -21,7 +21,11 @@ impl Sprite {
         }
     }
 
-    pub fn create_sprites(sprite_names: Vec<&str>, kind: &ResourceKind, resources: &Resources) -> Vec<Sprite> {
+    pub fn create_sprites(
+        sprite_names: Vec<&str>,
+        kind: &ResourceKind,
+        resources: &Resources,
+    ) -> Vec<Sprite> {
         return sprite_names
             .iter()
             .map(|sprite_name| Sprite::create_sprite(sprite_name, kind, resources))

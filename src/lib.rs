@@ -2,10 +2,12 @@ use engine::Engine;
 use wasm_bindgen::prelude::*;
 use web_utils::bind_panic_logger;
 
+mod constants;
 mod engine;
 mod fps;
 mod game;
 mod model;
+mod painter;
 mod resource_loader;
 mod scene;
 mod sprite;
