@@ -1,4 +1,4 @@
-use crate::web_utils::{window_time};
+use crate::web_utils::window_time;
 
 #[derive(Debug, Default)]
 pub struct Timer {

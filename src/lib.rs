@@ -7,11 +7,10 @@ mod fps;
 mod game;
 mod model;
 mod resource_loader;
-mod timers;
-mod web_utils;
-mod location;
 mod scene;
 mod sprite;
+mod timers;
+mod web_utils;
 
 #[wasm_bindgen(start)]
 pub fn run() -> Result<(), JsValue> {

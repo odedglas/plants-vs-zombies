@@ -19,9 +19,9 @@ use crate::web_utils::window;
 
 pub struct ResourceLoader;
 
-pub struct Resource<'a> {
-    pub cell: &'a Vec<SpriteCell>,
-    pub data: &'a SpriteData,
+pub struct Resource {
+    pub cell: Vec<SpriteCell>,
+    pub data: SpriteData,
     pub image: Weak<HtmlImageElement>,
 }
 
@@ -42,23 +42,20 @@ impl Resources {
         }
     }
 
-    // TODO - Consider cases which don't have the full data?
-    pub fn get_resource(&self, name: &str, kind: ResourceKind) -> Resource{
+    // TODO - Consider cases which don't have the full data - Move to unwrap_or_else?
+    pub fn get_resource(&self, name: &str, kind: &ResourceKind) -> Resource {
         let resource_key = format!("{}/{}", kind.value(), name);
 
-        let cell = self.cells.get(&resource_key)
-            .unwrap();
+        let cell = self.cells.get(&resource_key).unwrap();
 
-        let data = self.data.get(&resource_key)
-            .unwrap();
+        let data = self.data.get(&resource_key).unwrap();
 
-        let image = self.images.get(kind.value())
-            .unwrap();
+        let image = self.images.get(kind.value()).unwrap();
 
         Resource {
-           cell,
-            data,
-            image: Rc::downgrade(image)
+            cell: cell.clone(),
+            data: data.clone(),
+            image: Rc::downgrade(image),
         }
     }
 }

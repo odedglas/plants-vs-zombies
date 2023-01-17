@@ -5,14 +5,14 @@ use serde_derive::Deserialize;
 #[derive(Debug, Default)]
 pub struct GameState {
     pub sun: usize,
-    pub current_level: Option<LevelData>
+    pub current_level: Option<LevelData>,
 }
 
 impl GameState {
     pub fn new() -> GameState {
         GameState {
             sun: 600,
-            current_level: None
+            current_level: None,
         }
     }
 }
@@ -43,9 +43,20 @@ pub struct SpriteCell {
 }
 
 /// Sprite data represents the meta data of a given Sprite
-#[derive(Debug, Default, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
+#[serde(default)]
 pub struct SpriteData {
-    position: Vec<Position>
+    pub position: Vec<Position>,
+    pub order: usize,
+}
+
+impl Default for SpriteData {
+    fn default() -> Self {
+        Self {
+            position: vec![Position::default()],
+            order: 1,
+        }
+    }
 }
 
 #[derive(Debug, Default, PartialEq, Clone, Copy, Deserialize)]

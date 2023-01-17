@@ -32,7 +32,7 @@ impl Game {
             game_time: GameTime::new(),
             state: GameState::new(),
             fps: Fps::new(),
-            sprites: vec![]
+            sprites: vec![],
         }
     }
 
@@ -68,7 +68,6 @@ impl Game {
         HomeScene::start(self);
     }
 
-
     // Game State mutations //
 
     pub fn reset_state(&mut self) {
@@ -77,6 +76,9 @@ impl Game {
     }
 
     pub fn add_sprites(&mut self, sprites: &mut Vec<Sprite>) {
+        sprites
+            .iter()
+            .for_each(|s| log!("Adding game Srpite {:?}", s));
         self.sprites.append(sprites);
     }
 }

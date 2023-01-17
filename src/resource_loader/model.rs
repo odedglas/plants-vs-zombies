@@ -22,7 +22,7 @@ impl ResourceKind {
 pub enum ResourceDataType {
     CELL,
     DATA,
-    IMAGE
+    IMAGE,
 }
 
 impl ResourceDataType {

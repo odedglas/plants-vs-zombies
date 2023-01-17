@@ -42,7 +42,8 @@ pub fn create_canvas(width: u32, height: u32) -> HtmlCanvasElement {
 }
 
 pub fn get_canvas_context(canvas: &HtmlCanvasElement) -> CanvasRenderingContext2d {
-    canvas.get_context("2d")
+    canvas
+        .get_context("2d")
         .unwrap()
         .unwrap()
         .dyn_into()
