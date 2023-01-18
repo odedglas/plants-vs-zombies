@@ -1,4 +1,3 @@
-use std::borrow::Borrow;
 use std::rc::Rc;
 
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, HtmlImageElement};

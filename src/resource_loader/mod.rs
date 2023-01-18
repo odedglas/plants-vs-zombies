@@ -11,7 +11,6 @@ use wasm_bindgen_futures::JsFuture;
 use web_sys::{HtmlImageElement, Request, RequestInit, RequestMode, Response};
 
 use crate::engine::EngineError;
-use crate::log;
 use crate::model::{LevelData, SpriteCell, SpriteData};
 use crate::resource_loader::image::ImageFuture;
 pub use crate::resource_loader::model::{ResourceDataType, ResourceKind};

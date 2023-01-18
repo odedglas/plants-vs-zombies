@@ -1,6 +1,4 @@
-use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, MouseEvent};
-
-use crate::constants::{CANVAS_HEIGHT, CANVAS_HEIGHT_F64, CANVAS_WIDTH, CANVAS_WIDTH_F64};
+use web_sys::{HtmlCanvasElement, MouseEvent};
 use crate::fps::Fps;
 use crate::log;
 use crate::model::{GameEvent, GameState};
@@ -9,7 +7,6 @@ use crate::resource_loader::Resources;
 use crate::scene::HomeScene;
 use crate::sprite::Sprite;
 use crate::timers::GameTime;
-use crate::web_utils::{create_canvas, get_canvas_context};
 
 pub struct Game {
     pub resources: Resources,
