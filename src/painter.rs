@@ -39,7 +39,7 @@ impl Painter {
                 image_ref,
                 sprite.position.first().unwrap(), // TODO - Proper
                 sprite.cells.first().unwrap(),    // TODO - Proper
-                1.0,
+                1.0, // TODO - Extract form sprite
             );
         }
     }

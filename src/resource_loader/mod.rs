@@ -48,10 +48,7 @@ impl Resources {
         let resource_key = format!("{}/{}", kind.value(), name);
 
         let cell = self.cells.get(&resource_key).unwrap();
-
         let data = self.data.get(&resource_key).unwrap();
-
-        // TODO - Conditional.
         let image = self.images.get(kind.value());
 
         Resource {
