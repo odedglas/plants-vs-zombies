@@ -10,6 +10,13 @@ impl HomeScene {
             "SelectorBackground",
             "SelectorAdventureShadow",
             "SelectorSurvivalShadow",
+            "SelectorChallengeShadow",
+            "SelectorWoodSign1",
+            "SelectorWoodSign2",
+            "SelectorWoodSign3",
+            "SelectorAdventureButton",
+            "SelectorSurvivalButton",
+            "SelectorChallengeButton",
         ];
 
         // Convert each scene sprites into a actual Sprite using it's corresponding Game.Resource

@@ -31,16 +31,16 @@ impl Painter {
         log!("Drawing {}", sprite.name);
         let (cell, position) = DrawingState::get(sprite);
 
-        if let (Some(cell), Some(position)) = (cell, position) {
-            // Draw Sprite according to it's type.
-            if let Some(image) = &sprite.image {
-                let image_ref = image
-                    .upgrade()
-                    .expect("[Painter] - Cannot draw Image is not available");
+        // Draw Sprite according to it's type.
+        if let Some(image) = &sprite.image {
+            let image_ref = image
+                .upgrade()
+                .expect("[Painter] - Cannot draw Image is not available");
 
-                self.draw_image(image_ref, position, cell, sprite.scale);
-            }
+            self.draw_image(image_ref, position, cell, sprite.scale);
         }
+
+        // TODO TextSprite case
     }
 
     pub fn draw_image(
