@@ -6,6 +6,22 @@ use web_sys::HtmlImageElement;
 use crate::model::{Position, SpriteCell, SpriteData};
 use crate::resource_loader::{ResourceKind, Resources};
 
+#[derive(Debug, Default)]
+pub struct DrawingState {
+    pub active_cell: usize,
+    pub active_position: usize,
+}
+
+impl DrawingState {
+    pub fn get(sprite: &Sprite) -> (Option<&SpriteCell>, Option<&Position>) {
+        let cell = sprite.cells.get(sprite.drawing_state.active_cell);
+
+        let position = sprite.position.get(sprite.drawing_state.active_position);
+
+        return (cell, position);
+    }
+}
+
 #[derive(Debug)]
 pub struct Sprite {
     pub id: String,
@@ -14,6 +30,8 @@ pub struct Sprite {
     pub position: Vec<Position>,
     pub cells: Vec<SpriteCell>,
     pub image: Option<Weak<HtmlImageElement>>,
+    pub scale: f64,
+    pub drawing_state: DrawingState,
 }
 
 impl Sprite {
@@ -23,6 +41,7 @@ impl Sprite {
         position: Vec<Position>,
         cells: Vec<SpriteCell>,
         image: Option<Weak<HtmlImageElement>>,
+        scale: f64,
     ) -> Sprite {
         Sprite {
             id: uid(name),
@@ -31,6 +50,8 @@ impl Sprite {
             position,
             cells,
             image,
+            scale,
+            drawing_state: DrawingState::default(),
         }
     }
 
@@ -50,10 +71,20 @@ impl Sprite {
         let resource = resources.get_resource(sprite_name, kind);
 
         let SpriteData {
-            position, order, ..
+            position,
+            order,
+            scale,
+            ..
         } = resource.data;
 
-        Sprite::new(sprite_name, order, position, resource.cell, resource.image)
+        Sprite::new(
+            sprite_name,
+            order,
+            position,
+            resource.cell,
+            resource.image,
+            scale,
+        )
     }
 }
 

@@ -48,6 +48,7 @@ pub struct SpriteCell {
 pub struct SpriteData {
     pub position: Vec<Position>,
     pub order: usize,
+    pub scale: f64,
 }
 
 impl Default for SpriteData {
@@ -55,6 +56,7 @@ impl Default for SpriteData {
         Self {
             position: vec![Position::default()],
             order: 1,
+            scale: 1.0,
         }
     }
 }

@@ -6,7 +6,7 @@ use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, HtmlImageElement};
 use crate::constants::{CANVAS_HEIGHT, CANVAS_HEIGHT_F64, CANVAS_WIDTH, CANVAS_WIDTH_F64};
 use crate::log;
 use crate::model::{Position, SpriteCell};
-use crate::sprite::Sprite;
+use crate::sprite::{DrawingState, Sprite};
 use crate::web_utils::{create_canvas, get_canvas_context};
 
 pub struct Painter {
@@ -29,18 +29,17 @@ impl Painter {
 
     pub fn draw_sprite(&self, sprite: &Sprite) {
         log!("Drawing {}", sprite.name);
+        let (cell, position) = DrawingState::get(sprite);
 
-        if let Some(image) = &sprite.image {
-            let image_ref = image
-                .upgrade()
-                .expect("[Painter] - Cannot draw Image is not available");
+        if let (Some(cell), Some(position)) = (cell, position) {
+            // Draw Sprite according to it's type.
+            if let Some(image) = &sprite.image {
+                let image_ref = image
+                    .upgrade()
+                    .expect("[Painter] - Cannot draw Image is not available");
 
-            self.draw_image(
-                image_ref,
-                sprite.position.first().unwrap(), // TODO - Proper
-                sprite.cells.first().unwrap(),    // TODO - Proper
-                1.0, // TODO - Extract form sprite
-            );
+                self.draw_image(image_ref, position, cell, sprite.scale);
+            }
         }
     }
 
