@@ -14,11 +14,21 @@ pub struct DrawingState {
 
 impl DrawingState {
     pub fn get(sprite: &Sprite) -> (&SpriteCell, &Position) {
-        let cell = sprite.cells.get(sprite.drawing_state.active_cell)
-            .expect(&format!("[Sprite] Cannot get drawing state cell of {}", sprite.name));
+        let cell = sprite
+            .cells
+            .get(sprite.drawing_state.active_cell)
+            .expect(&format!(
+                "[Sprite] Cannot get drawing state cell of {}",
+                sprite.name
+            ));
 
-        let position = sprite.position.get(sprite.drawing_state.active_position)
-            .expect(&format!("[Sprite] Cannot get drawing state position of {}", sprite.name));;
+        let position = sprite
+            .position
+            .get(sprite.drawing_state.active_position)
+            .expect(&format!(
+                "[Sprite] Cannot get drawing state position of {}",
+                sprite.name
+            ));
 
         return (cell, position);
     }
