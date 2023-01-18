@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use web_sys::HtmlCanvasElement;
+use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
 
 #[macro_export]
 macro_rules! log {
@@ -39,7 +39,15 @@ pub fn create_canvas(width: u32, height: u32) -> HtmlCanvasElement {
     document().body().unwrap().append_child(&canvas).unwrap();
 
     canvas
+}
 
+pub fn get_canvas_context(canvas: &HtmlCanvasElement) -> CanvasRenderingContext2d {
+    canvas
+        .get_context("2d")
+        .unwrap()
+        .unwrap()
+        .dyn_into()
+        .unwrap()
 }
 
 pub fn window_time() -> f64 {

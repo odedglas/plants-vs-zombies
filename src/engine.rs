@@ -95,7 +95,7 @@ impl Engine {
 
         self.game
             .borrow()
-            .canvas
+            .canvas()
             .add_event_listener_with_callback(
                 &name.to_string().to_lowercase(),
                 closure.as_ref().unchecked_ref(),
@@ -123,6 +123,7 @@ impl Engine {
 
             if iter > 1000 {
                 log!("Game done");
+                game.game_over();
                 let _ = main_loop_ref.borrow_mut().take();
                 return;
             }

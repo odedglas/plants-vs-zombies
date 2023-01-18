@@ -2,7 +2,7 @@ mod image;
 mod model;
 
 use std::collections::HashMap;
-use std::rc::Rc;
+use std::rc::{Rc, Weak};
 
 use futures::future::join_all;
 use serde::Deserialize;
@@ -11,15 +11,23 @@ use wasm_bindgen_futures::JsFuture;
 use web_sys::{HtmlImageElement, Request, RequestInit, RequestMode, Response};
 
 use crate::engine::EngineError;
-use crate::model::{LevelData, SpriteCell};
+use crate::model::{LevelData, SpriteCell, SpriteData};
 use crate::resource_loader::image::ImageFuture;
-use crate::resource_loader::model::{ResourceDataType, ResourceKind};
+pub use crate::resource_loader::model::{ResourceDataType, ResourceKind};
 use crate::web_utils::window;
 
 pub struct ResourceLoader;
 
+pub struct Resource {
+    pub key: String,
+    pub cell: Vec<SpriteCell>,
+    pub data: SpriteData,
+    pub image: Option<Weak<HtmlImageElement>>,
+}
+
 pub struct Resources {
     pub cells: HashMap<String, Vec<SpriteCell>>,
+    pub data: HashMap<String, SpriteData>,
     pub level_data: HashMap<String, LevelData>,
     pub images: HashMap<String, Rc<HtmlImageElement>>,
 }
@@ -28,8 +36,28 @@ impl Resources {
     pub fn new() -> Self {
         Resources {
             cells: HashMap::new(),
+            data: HashMap::new(),
             level_data: HashMap::new(),
             images: HashMap::new(),
+        }
+    }
+
+    // TODO - Consider cases which don't have the full data - Move to unwrap_or_else?
+    pub fn get_resource(&self, name: &str, kind: &ResourceKind) -> Resource {
+        let resource_key = format!("{}/{}", kind.value(), name);
+
+        let cell = self.cells.get(&resource_key).unwrap();
+        let data = self.data.get(&resource_key).unwrap();
+        let image = self.images.get(kind.value());
+
+        Resource {
+            key: resource_key,
+            cell: cell.clone(),
+            data: data.clone(),
+            image: match image {
+                Some(image) => Some(Rc::downgrade(image)),
+                None => None,
+            },
         }
     }
 }
@@ -48,6 +76,18 @@ impl ResourceLoader {
             )
             .await;
 
+        let data = self
+            .load_json_resources::<SpriteData>(
+                vec![
+                    ResourceKind::Card,
+                    ResourceKind::Plant,
+                    ResourceKind::Zombie,
+                    ResourceKind::Interface,
+                ],
+                ResourceDataType::DATA,
+            )
+            .await;
+
         let level_data = self
             .load_json_resources::<LevelData>(vec![ResourceKind::Level], ResourceDataType::DATA)
             .await;
@@ -63,6 +103,7 @@ impl ResourceLoader {
 
         Resources {
             cells,
+            data,
             level_data,
             images,
         }
