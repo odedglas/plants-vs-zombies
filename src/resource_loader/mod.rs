@@ -20,9 +20,10 @@ use crate::web_utils::window;
 pub struct ResourceLoader;
 
 pub struct Resource {
+    pub key: String,
     pub cell: Vec<SpriteCell>,
     pub data: SpriteData,
-    pub image: Weak<HtmlImageElement>,
+    pub image: Option<Weak<HtmlImageElement>>,
 }
 
 pub struct Resources {
@@ -50,12 +51,17 @@ impl Resources {
 
         let data = self.data.get(&resource_key).unwrap();
 
-        let image = self.images.get(kind.value()).unwrap();
+        // TODO - Conditional.
+        let image = self.images.get(kind.value());
 
         Resource {
+            key: resource_key,
             cell: cell.clone(),
             data: data.clone(),
-            image: Rc::downgrade(image),
+            image: match image {
+                Some(image) => Some(Rc::downgrade(image)),
+                None => None,
+            },
         }
     }
 }

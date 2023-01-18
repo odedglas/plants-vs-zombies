@@ -123,6 +123,7 @@ impl Engine {
 
             if iter > 1000 {
                 log!("Game done");
+                game.game_over();
                 let _ = main_loop_ref.borrow_mut().take();
                 return;
             }

@@ -1,6 +1,9 @@
-use js_sys::Math;
+use std::rc::Weak;
 
-use crate::model::{Position, SpriteData};
+use js_sys::Math;
+use web_sys::HtmlImageElement;
+
+use crate::model::{Position, SpriteCell, SpriteData};
 use crate::resource_loader::{ResourceKind, Resources};
 
 #[derive(Debug)]
@@ -8,16 +11,26 @@ pub struct Sprite {
     pub id: String,
     pub name: String,
     pub order: usize,
-    position: Vec<Position>,
+    pub position: Vec<Position>,
+    pub cells: Vec<SpriteCell>,
+    pub image: Option<Weak<HtmlImageElement>>,
 }
 
 impl Sprite {
-    pub fn new(name: &str, order: usize, position: Vec<Position>) -> Sprite {
+    pub fn new(
+        name: &str,
+        order: usize,
+        position: Vec<Position>,
+        cells: Vec<SpriteCell>,
+        image: Option<Weak<HtmlImageElement>>,
+    ) -> Sprite {
         Sprite {
             id: uid(name),
             name: String::from(name),
             order,
             position,
+            cells,
+            image,
         }
     }
 
@@ -40,7 +53,7 @@ impl Sprite {
             position, order, ..
         } = resource.data;
 
-        Sprite::new(sprite_name, order, position)
+        Sprite::new(sprite_name, order, position, resource.cell, resource.image)
     }
 }
 

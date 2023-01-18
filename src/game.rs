@@ -23,9 +23,6 @@ pub struct Game {
 
 impl Game {
     pub fn new() -> Game {
-        let canvas = create_canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
-        let context = get_canvas_context(&canvas);
-
         Game {
             painter: Painter::new(),
             resources: Resources::new(),
@@ -63,7 +60,9 @@ impl Game {
     fn draw(&mut self) {
         self.painter.clear();
 
-        self.sprites.iter().for_each(Painter::draw_sprite);
+        self.sprites
+            .iter()
+            .for_each(|sprite| self.painter.draw_sprite(sprite));
     }
 
     // Events //
@@ -73,6 +72,9 @@ impl Game {
     }
 
     // Game Actions //
+    pub fn game_over(&mut self) {
+        self.painter.clear();
+    }
 
     fn start_home_scene(&mut self) {
         self.reset_state();

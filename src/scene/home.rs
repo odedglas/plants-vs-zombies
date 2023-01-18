@@ -1,6 +1,4 @@
 use crate::game::Game;
-use crate::log;
-use crate::model::SpriteData;
 use crate::resource_loader::ResourceKind;
 use crate::sprite::Sprite;
 
