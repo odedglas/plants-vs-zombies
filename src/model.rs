@@ -67,6 +67,27 @@ pub struct Position {
     pub top: f64,
 }
 
+impl Position {
+    pub fn new(top: f64, left: f64) -> Self {
+        Self { top, left }
+    }
+}
+
+#[derive(Debug, Default)]
+pub struct Size {
+    pub width: f64,
+    pub height: f64,
+}
+
+impl From<&SpriteCell> for Size {
+    fn from(cell: &SpriteCell) -> Size {
+        Size {
+            width: cell.width,
+            height: cell.height,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct LevelData {
     pub name: String,

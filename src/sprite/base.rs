@@ -10,9 +10,17 @@ use crate::resource_loader::{ResourceKind, Resources};
 pub struct DrawingState {
     pub active_cell: usize,
     pub active_position: usize,
+    pub scale: f64,
 }
 
 impl DrawingState {
+    pub fn new(scale: f64) -> Self {
+        Self {
+            scale,
+            ..DrawingState::default()
+        }
+    }
+
     pub fn get(sprite: &Sprite) -> (&SpriteCell, &Position) {
         let cell = sprite
             .cells
@@ -42,7 +50,6 @@ pub struct Sprite {
     pub position: Vec<Position>,
     pub cells: Vec<SpriteCell>,
     pub image: Option<Weak<HtmlImageElement>>,
-    pub scale: f64,
     pub drawing_state: DrawingState,
 }
 
@@ -62,8 +69,7 @@ impl Sprite {
             position,
             cells,
             image,
-            scale,
-            drawing_state: DrawingState::default(),
+            drawing_state: DrawingState::new(scale),
         }
     }
 

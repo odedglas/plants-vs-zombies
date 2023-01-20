@@ -26,7 +26,7 @@ pub fn request_animation_frame(f: &Closure<dyn FnMut()>) {
         .expect("`requestAnimationFrame` is expected to be found upon `window` API.");
 }
 
-pub fn create_canvas(width: u32, height: u32) -> HtmlCanvasElement {
+pub fn create_canvas(width: u32, height: u32, attach_to_body: bool) -> HtmlCanvasElement {
     let canvas = document()
         .create_element("canvas")
         .unwrap()
@@ -36,7 +36,9 @@ pub fn create_canvas(width: u32, height: u32) -> HtmlCanvasElement {
     canvas.set_width(width);
     canvas.set_height(height);
 
-    document().body().unwrap().append_child(&canvas).unwrap();
+    if attach_to_body {
+        document().body().unwrap().append_child(&canvas).unwrap();
+    }
 
     canvas
 }

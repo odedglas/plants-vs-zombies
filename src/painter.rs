@@ -4,7 +4,7 @@ use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, HtmlImageElement};
 
 use crate::constants::{CANVAS_HEIGHT, CANVAS_HEIGHT_F64, CANVAS_WIDTH, CANVAS_WIDTH_F64};
 use crate::log;
-use crate::model::{Position, SpriteCell};
+use crate::model::{Position, Size, SpriteCell};
 use crate::sprite::{DrawingState, Sprite};
 use crate::web_utils::{create_canvas, get_canvas_context};
 
@@ -15,7 +15,7 @@ pub struct Painter {
 
 impl Painter {
     pub fn new() -> Self {
-        let canvas = create_canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        let canvas = create_canvas(CANVAS_WIDTH, CANVAS_HEIGHT, true);
         let context = get_canvas_context(&canvas);
 
         Self { canvas, context }
@@ -27,7 +27,6 @@ impl Painter {
     }
 
     pub fn draw_sprite(&self, sprite: &Sprite) {
-        log!("Drawing {}", sprite.name);
         let (cell, position) = DrawingState::get(sprite);
 
         // Draw Sprite according to it's type.
@@ -36,7 +35,7 @@ impl Painter {
                 .upgrade()
                 .expect("[Painter] - Cannot draw Image is not available");
 
-            self.draw_image(image_ref, position, cell, sprite.scale);
+            self.draw_image(&image_ref, position, cell, sprite.drawing_state.scale);
         }
 
         // TODO TextSprite case
@@ -44,14 +43,14 @@ impl Painter {
 
     pub fn draw_image(
         &self,
-        image: Rc<HtmlImageElement>,
+        image: &Rc<HtmlImageElement>,
         pos: &Position,
         cell: &SpriteCell,
         scale: f64,
     ) {
         self.context
             .draw_image_with_html_image_element_and_sw_and_sh_and_dx_and_dy_and_dw_and_dh(
-                image.as_ref(),
+                image,
                 cell.left,
                 cell.top,
                 cell.width,
@@ -62,5 +61,16 @@ impl Painter {
                 cell.height * scale,
             )
             .unwrap();
+    }
+
+    pub fn get_measurements_painter(size: Size) -> Painter {
+        let measurements_canvas = create_canvas(size.width as u32, size.width as u32, false);
+
+        let measurements_context = get_canvas_context(&measurements_canvas);
+
+        Painter {
+            canvas: measurements_canvas,
+            context: measurements_context,
+        }
     }
 }

@@ -114,19 +114,10 @@ impl Engine {
         let initial_trigger_ref = Rc::clone(&main_loop_ref);
 
         let game = Rc::clone(&self.game);
-        let mut iter = 0;
         *initial_trigger_ref.borrow_mut() = Some(Closure::wrap(Box::new(move || {
             let mut game = game.borrow_mut();
-            iter += 1;
 
             game.run();
-
-            if iter > 1000 {
-                log!("Game done");
-                game.game_over();
-                let _ = main_loop_ref.borrow_mut().take();
-                return;
-            }
 
             request_animation_frame(main_loop_ref.borrow().as_ref().unwrap());
         }) as Box<dyn FnMut()>));

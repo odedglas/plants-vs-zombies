@@ -1,4 +1,5 @@
 use web_sys::{HtmlCanvasElement, MouseEvent};
+
 use crate::fps::Fps;
 use crate::log;
 use crate::model::{GameEvent, GameState};
@@ -50,7 +51,6 @@ impl Game {
 
         // TODO - SunGenerator::tick()
 
-        log!("Running game tick with {} Sprites", self.sprites.len());
         self.fps.set(current_time);
     }
 
