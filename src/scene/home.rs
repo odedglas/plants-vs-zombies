@@ -16,7 +16,7 @@ impl HomeScene {
             &game.resources,
         );
 
-        let outline = Outline::get_outlines(sprites.get(1).unwrap(), Some(true));
+        let outline = Outline::get_outlines(sprites.get(1).unwrap(), true);
 
         log!("Outlines {:?}", outline);
 

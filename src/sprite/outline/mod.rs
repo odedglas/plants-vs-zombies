@@ -12,17 +12,13 @@ use crate::sprite::{DrawingState, Sprite};
 pub struct Outline;
 
 impl Outline {
-    pub fn get_outlines(sprite: &Sprite, exact: Option<bool>) -> Vec<Position> {
+    pub fn get_outlines(sprite: &Sprite, exact: bool) -> Vec<Position> {
         let (cell, position) = DrawingState::get(sprite);
         let scale = sprite.drawing_state.scale;
-        let exact_outlines = match exact {
-            Some(_e) => true,
-            None => false,
-        };
 
         let size = cell.into();
 
-        if exact_outlines {
+        if exact {
             return Outline::get_exact_outlines(&sprite.image, cell, position, size, scale);
         }
 
@@ -55,6 +51,7 @@ impl Outline {
             .upgrade()
             .expect("[Outline] - Cannot get exact outline Image is not available");
 
+        // Get measurements painter for off screen drawings
         let painter = Painter::get_measurements_painter(size);
 
         let image_draw_start = Position::new(0.0, 0.0);
@@ -65,6 +62,7 @@ impl Outline {
             .get_image_data(0.0, 0.0, width, height)
             .unwrap();
 
+        // Apply MarchingSquares upon image data as blob, to leave only it's outline
         MarchingSquares::new(offset.clone()).get(
             &image_data.data(),
             width as i32,

@@ -16,30 +16,26 @@ impl MarchingSquares {
         }
     }
 
-    pub fn get(&self, data: &[u8], width: i32, height: i32) -> Vec<Position> {
-        self.get_blob_outline_points(data, width, height)
-    }
-
-    fn get_blob_outline_points(&self, data4: &[u8], width: i32, height: i32) -> Vec<Position> {
+    pub fn get(&self, data4: &[u8], width: i32, height: i32) -> Vec<Position> {
         let size = width * height;
         let mut data: Vec<u8> = vec![0; size as usize];
 
-        let multiplier = 4;
+        let opacity_index = 4; // Data is a JS `Uint8ClampedArray`, each item represented as `r,g,b,a` e.g as 4 cells.
         for i in 0..size {
-            data[i as usize] = data4[(i * multiplier) as usize];
+            data[i as usize] = data4[(i * opacity_index) as usize];
         }
 
-        let starting_point = self.get_first_non_transparent_pixel_top_down(&data, width, height);
+        let starting_point = self.get_first_non_transparent_pixel(&data, width, height);
 
         match starting_point {
             Some(starting_point) => {
-                self.walk_perimeter(&data, width, height, starting_point.0, starting_point.1)
+                self.walk_points(&data, width, height, starting_point.0, starting_point.1)
             }
             None => vec![],
         }
     }
 
-    fn get_first_non_transparent_pixel_top_down(
+    fn get_first_non_transparent_pixel(
         &self,
         data: &[u8],
         width: i32,
@@ -60,7 +56,7 @@ impl MarchingSquares {
         None
     }
 
-    fn walk_perimeter(
+    fn walk_points(
         &self,
         data: &[u8],
         width: i32,
