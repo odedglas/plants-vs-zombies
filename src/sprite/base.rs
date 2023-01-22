@@ -48,6 +48,7 @@ pub struct Sprite {
     pub name: String,
     pub order: usize,
     pub position: Vec<Position>,
+    pub outlines: Vec<Position>,
     pub cells: Vec<SpriteCell>,
     pub image: Option<Weak<HtmlImageElement>>,
     pub drawing_state: DrawingState,
@@ -70,6 +71,7 @@ impl Sprite {
             cells,
             image,
             drawing_state: DrawingState::new(scale),
+            outlines: vec![]
         }
     }
 

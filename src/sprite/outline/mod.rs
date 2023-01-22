@@ -12,6 +12,7 @@ use crate::sprite::{DrawingState, Sprite};
 pub struct Outline;
 
 impl Outline {
+    /// Calculates a given Sprite entity outlines points (min of 4 points).
     pub fn get_outlines(sprite: &Sprite, exact: bool) -> Vec<Position> {
         let (cell, position) = DrawingState::get(sprite);
         let scale = sprite.drawing_state.scale;
@@ -63,7 +64,7 @@ impl Outline {
             .unwrap();
 
         // Apply MarchingSquares upon image data as blob, to leave only it's outline
-        MarchingSquares::new(offset.clone()).get(
+        MarchingSquares::new(offset.clone()).data_outlines(
             &image_data.data(),
             width as i32,
             height as i32,

@@ -16,7 +16,7 @@ impl MarchingSquares {
         }
     }
 
-    pub fn get(&self, data4: &[u8], width: i32, height: i32) -> Vec<Position> {
+    pub fn data_outlines(&self, data4: &[u8], width: i32, height: i32) -> Vec<Position> {
         let size = width * height;
         let mut data: Vec<u8> = vec![0; size as usize];
 
