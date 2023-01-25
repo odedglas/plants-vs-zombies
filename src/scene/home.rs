@@ -16,6 +16,7 @@ impl HomeScene {
             &game.resources,
         );
 
+        // TODO calc outline on creation?
         let outline = Outline::get_outlines(sprites.get(1).unwrap(), true);
 
         log!("Outlines {:?}", outline);

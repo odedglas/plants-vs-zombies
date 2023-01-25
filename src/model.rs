@@ -49,6 +49,7 @@ pub struct SpriteData {
     pub position: Vec<Position>,
     pub order: usize,
     pub scale: f64,
+    pub behaviors: Vec<BehaviorData>,
 }
 
 impl Default for SpriteData {
@@ -57,8 +58,26 @@ impl Default for SpriteData {
             position: vec![Position::default()],
             order: 1,
             scale: 1.0,
+            behaviors: vec![],
         }
     }
+}
+
+#[derive(Debug, Clone, Copy, Deserialize, PartialEq)]
+pub enum BehaviorType {
+    Hover,
+    Click,
+}
+
+impl Default for BehaviorType {
+    fn default() -> BehaviorType {
+        BehaviorType::Click
+    }
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct BehaviorData {
+    pub name: String,
 }
 
 #[derive(Debug, Default, PartialEq, Clone, Copy, Deserialize)]

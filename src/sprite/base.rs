@@ -3,8 +3,10 @@ use std::rc::Weak;
 use js_sys::Math;
 use web_sys::HtmlImageElement;
 
-use crate::model::{Position, SpriteCell, SpriteData};
+use crate::log;
+use crate::model::{BehaviorData, Position, SpriteCell, SpriteData};
 use crate::resource_loader::{ResourceKind, Resources};
+use crate::sprite::behavior::{Behavior, BehaviorManager};
 
 #[derive(Debug, Default)]
 pub struct DrawingState {
@@ -42,13 +44,13 @@ impl DrawingState {
     }
 }
 
-#[derive(Debug)]
 pub struct Sprite {
     pub id: String,
     pub name: String,
     pub order: usize,
     pub position: Vec<Position>,
     pub outlines: Vec<Position>,
+    pub behaviors: Vec<Box<dyn Behavior>>,
     pub cells: Vec<SpriteCell>,
     pub image: Option<Weak<HtmlImageElement>>,
     pub drawing_state: DrawingState,
@@ -62,16 +64,27 @@ impl Sprite {
         cells: Vec<SpriteCell>,
         image: Option<Weak<HtmlImageElement>>,
         scale: f64,
+        behaviors: Vec<BehaviorData>,
     ) -> Sprite {
+        let id = uid(name);
+        let sprite_behaviors = behaviors
+            .iter()
+            .map(|behavior_data| {
+                log!("Adding behaviour for {} / {:?}", name, behavior_data.name);
+                BehaviorManager::create(&id, &behavior_data.name)
+            })
+            .collect();
+
         Sprite {
-            id: uid(name),
+            id,
             name: String::from(name),
             order,
             position,
             cells,
             image,
             drawing_state: DrawingState::new(scale),
-            outlines: vec![]
+            outlines: vec![],
+            behaviors: sprite_behaviors,
         }
     }
 
@@ -94,6 +107,7 @@ impl Sprite {
             position,
             order,
             scale,
+            behaviors,
             ..
         } = resource.data;
 
@@ -104,6 +118,7 @@ impl Sprite {
             resource.cell,
             resource.image,
             scale,
+            behaviors,
         )
     }
 }

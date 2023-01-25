@@ -2,20 +2,20 @@ use web_sys::{HtmlCanvasElement, MouseEvent};
 
 use crate::fps::Fps;
 use crate::log;
-use crate::model::{GameEvent, GameState};
+use crate::model::{GameEvent, GameState, Position};
 use crate::painter::Painter;
 use crate::resource_loader::Resources;
 use crate::scene::HomeScene;
-use crate::sprite::Sprite;
+use crate::sprite::{BehaviorManager, Sprite, SpriteMutation};
 use crate::timers::GameTime;
 
 pub struct Game {
     pub resources: Resources,
     pub painter: Painter,
+    pub game_time: GameTime,
 
     sprites: Vec<Sprite>,
     state: GameState,
-    game_time: GameTime,
     fps: Fps,
 }
 
@@ -57,6 +57,28 @@ impl Game {
     fn draw(&mut self) {
         self.painter.clear();
 
+        let mutations = self
+            .sprites
+            .iter_mut()
+            .map(|sprite| {
+                BehaviorManager::run_sprite_behaviours(
+                    sprite,
+                    self.game_time.time,
+                    self.game_time.last_timestamp,
+                    &Position {
+                        left: 0.0,
+                        top: 0.0,
+                    },
+                    &self.painter.context,
+                )
+            })
+            .flatten()
+            .collect();
+
+        // Handle add mutations
+        self.handle_sprite_mutation(mutations);
+
+        // Draw update Sprites
         self.sprites
             .iter()
             .for_each(|sprite| self.painter.draw_sprite(sprite));
@@ -66,6 +88,10 @@ impl Game {
 
     pub fn handle_event(&self, name: GameEvent, _event: MouseEvent) {
         log!("Game handling event for: {}", name.to_string())
+    }
+
+    pub fn handle_sprite_mutation(&mut self, mutations: Vec<SpriteMutation>) {
+        log!("Handle sprite mutation: {}", mutations.len())
     }
 
     // Game Actions //
