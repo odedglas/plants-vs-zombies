@@ -3,7 +3,7 @@ use web_sys::CanvasRenderingContext2d;
 use super::base::{Behavior, BehaviorState};
 use crate::log;
 use crate::model::{BehaviorType, Position};
-use crate::sprite::SpriteMutation;
+use crate::sprite::{Sprite, SpriteMutation};
 
 pub struct Click {
     name: BehaviorType,
@@ -46,6 +46,7 @@ impl Behavior for Click {
 
     fn execute(
         &mut self,
+        sprite: &Sprite,
         now: f64,
         _last_frame: f64,
         mouse: &Position,

@@ -2,7 +2,9 @@ mod base;
 mod click;
 mod hover;
 
-use std::slice::IterMut;
+use std::borrow::{Borrow, BorrowMut};
+use std::rc::Rc;
+use std::slice::Iter;
 
 pub use base::Behavior;
 pub use click::Click;
@@ -27,32 +29,33 @@ impl BehaviorManager {
     }
 
     pub fn run(
-        sprite: &mut Sprite,
+        sprite: &Sprite,
         time: &GameTime,
         position: &Position,
         context: &CanvasRenderingContext2d,
     ) -> Vec<SpriteMutation> {
         sprite
             .behaviors
+            .borrow_mut()
             .iter_mut()
             .filter(|behavior| behavior.is_running())
             .map(|behavior| {
-                log!("Working {}", sprite.id);
-                behavior.execute(time.time, time.last_timestamp, position, context)
+                behavior.execute(sprite, time.time, time.last_timestamp, position, context)
             })
             .filter_map(|mutation| mutation)
             .collect()
     }
 
     pub fn toggle_behaviors(
-        sprite: IterMut<Sprite>,
+        sprites: Iter<Sprite>,
         behavior_types: &[BehaviorType],
         should_run: bool,
         now: f64,
     ) {
-        sprite.for_each(|sprite| {
+        sprites.for_each(|sprite| {
             sprite
                 .behaviors
+                .borrow_mut()
                 .iter_mut()
                 .filter(|behavior| behavior_types.contains(&behavior.name()))
                 .for_each(|behavior| behavior.toggle(should_run, now));

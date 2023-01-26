@@ -1,4 +1,5 @@
-use std::rc::Weak;
+use std::cell::RefCell;
+use std::rc::{Rc, Weak};
 
 use js_sys::Math;
 use web_sys::HtmlImageElement;
@@ -51,7 +52,7 @@ pub struct Sprite {
     pub order: usize,
     pub position: Vec<Position>,
     pub outlines: Vec<Position>,
-    pub behaviors: Vec<Box<dyn Behavior>>,
+    pub behaviors: RefCell<Vec<Box<dyn Behavior>>>,
     pub cells: Vec<SpriteCell>,
     pub image: Option<Weak<HtmlImageElement>>,
     pub drawing_state: DrawingState,
@@ -68,13 +69,14 @@ impl Sprite {
         behaviors: Vec<BehaviorData>,
     ) -> Sprite {
         let id = uid(name);
-        let sprite_behaviors = behaviors
-            .iter()
-            .map(|behavior_data| {
-                log!("Adding behaviour for {} / {:?}", name, behavior_data.name);
-                BehaviorManager::create(&id, &behavior_data.name)
-            })
-            .collect();
+        let sprite_behaviors = RefCell::new(
+            behaviors
+                .iter()
+                .map(|behavior_data| {
+                    BehaviorManager::create(&id, &behavior_data.name)
+                })
+                .collect(),
+        );
 
         Sprite {
             id,

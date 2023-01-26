@@ -91,7 +91,7 @@ impl Game {
     }
 
     pub fn toggle_game_behavior(&mut self, active: bool, types: &[BehaviorType]) {
-        BehaviorManager::toggle_behaviors(self.sprites.iter_mut(), types, active, self.game_time.time)
+        BehaviorManager::toggle_behaviors(self.sprites.iter(), types, active, self.game_time.time)
     }
 
     // Game Actions //
