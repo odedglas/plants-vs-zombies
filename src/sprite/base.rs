@@ -7,6 +7,7 @@ use crate::log;
 use crate::model::{BehaviorData, Position, SpriteCell, SpriteData};
 use crate::resource_loader::{ResourceKind, Resources};
 use crate::sprite::behavior::{Behavior, BehaviorManager};
+use crate::sprite::SpriteMutation;
 
 #[derive(Debug, Default)]
 pub struct DrawingState {
@@ -120,6 +121,23 @@ impl Sprite {
             scale,
             behaviors,
         )
+    }
+
+    pub fn apply_mutation(&mut self, mutations: Vec<SpriteMutation>) {
+        mutations.iter().for_each(|mutation| {
+            log!("Apply sprite mutation {}", self.id);
+            if let Some(hovered) = mutation.hovered {
+                log!("Sprite Hovered!");
+            }
+
+            if let Some(clicked) = mutation.clicked {
+                log!("Sprite clicked")
+            }
+
+            if let Some(position) = mutation.position {
+                log!("Sprite position Changed")
+            }
+        });
     }
 }
 

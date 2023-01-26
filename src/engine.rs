@@ -22,11 +22,10 @@ impl Default for Engine {
         Engine {
             game: Rc::new(RefCell::new(Game::new())),
             handled_events: vec![
-                GameEvent::Mousemove,
-                GameEvent::Mouseup,
-                GameEvent::Mouseleave,
-                GameEvent::Mouseenter,
-                GameEvent::Mousedown,
+                GameEvent::MouseMove,
+                GameEvent::MouseUp,
+                GameEvent::MouseLeave,
+                GameEvent::MouseDown,
             ],
         }
     }

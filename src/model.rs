@@ -1,6 +1,7 @@
 use std::fmt;
 
 use serde_derive::Deserialize;
+use web_sys::MouseEvent;
 
 #[derive(Debug, Default)]
 pub struct GameState {
@@ -20,11 +21,10 @@ impl GameState {
 /// The events being listened by our game.
 #[derive(Debug, Clone, Copy)]
 pub enum GameEvent {
-    Mousedown,
-    Mousemove,
-    Mouseup,
-    Mouseleave,
-    Mouseenter,
+    MouseDown,
+    MouseMove,
+    MouseUp,
+    MouseLeave,
 }
 
 impl fmt::Display for GameEvent {
@@ -89,6 +89,13 @@ pub struct Position {
 impl Position {
     pub fn new(top: f64, left: f64) -> Self {
         Self { top, left }
+    }
+
+    pub fn from_event(event: MouseEvent) -> Self {
+        Self {
+            top: event.offset_y() as f64,
+            left: event.offset_x() as f64,
+        }
     }
 }
 

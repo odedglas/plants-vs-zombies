@@ -1,7 +1,7 @@
 use web_sys::CanvasRenderingContext2d;
 
 use crate::model::{BehaviorType, Position};
-use crate::sprite::{Sprite, SpriteMutation};
+use crate::sprite::SpriteMutation;
 
 pub trait BehaviorState {
     fn start(&mut self, now: f64);

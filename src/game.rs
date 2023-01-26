@@ -2,7 +2,7 @@ use web_sys::{HtmlCanvasElement, MouseEvent};
 
 use crate::fps::Fps;
 use crate::log;
-use crate::model::{GameEvent, GameState, Position};
+use crate::model::{BehaviorType, GameEvent, GameState, Position};
 use crate::painter::Painter;
 use crate::resource_loader::Resources;
 use crate::scene::HomeScene;
@@ -13,6 +13,7 @@ pub struct Game {
     pub resources: Resources,
     pub painter: Painter,
     pub game_time: GameTime,
+    pub mouse_position: Position,
 
     sprites: Vec<Sprite>,
     state: GameState,
@@ -27,6 +28,7 @@ impl Game {
             game_time: GameTime::new(),
             state: GameState::new(),
             fps: Fps::new(),
+            mouse_position: Position::new(0.0, 0.0),
             sprites: vec![],
         }
     }
@@ -57,41 +59,39 @@ impl Game {
     fn draw(&mut self) {
         self.painter.clear();
 
-        let mutations = self
-            .sprites
-            .iter_mut()
-            .map(|sprite| {
-                BehaviorManager::run_sprite_behaviours(
-                    sprite,
-                    self.game_time.time,
-                    self.game_time.last_timestamp,
-                    &Position {
-                        left: 0.0,
-                        top: 0.0,
-                    },
-                    &self.painter.context,
-                )
-            })
-            .flatten()
-            .collect();
+        self.sprites.iter_mut().for_each(|sprite| {
+            // Collect mutations
+            let mutations = BehaviorManager::run(
+                sprite,
+                &self.game_time,
+                &self.mouse_position,
+                &self.painter.context,
+            );
 
-        // Handle add mutations
-        self.handle_sprite_mutation(mutations);
+            // Apply on Sprite
+            sprite.apply_mutation(mutations);
 
-        // Draw update Sprites
-        self.sprites
-            .iter()
-            .for_each(|sprite| self.painter.draw_sprite(sprite));
+            self.painter.draw_sprite(sprite);
+        });
     }
 
     // Events //
 
-    pub fn handle_event(&self, name: GameEvent, _event: MouseEvent) {
-        log!("Game handling event for: {}", name.to_string())
+    pub fn handle_event(&mut self, event_name: GameEvent, event: MouseEvent) {
+        log!("Game handling event for: {}", event_name.to_string());
+        let current_mouse = Position::from_event(event);
+        self.mouse_position = current_mouse;
+
+        match event_name {
+            GameEvent::MouseMove => self.toggle_game_behavior(true, &[BehaviorType::Hover]),
+            GameEvent::MouseDown => {}
+            GameEvent::MouseUp => {}
+            GameEvent::MouseLeave => self.toggle_game_behavior(false, &[BehaviorType::Hover]),
+        }
     }
 
-    pub fn handle_sprite_mutation(&mut self, mutations: Vec<SpriteMutation>) {
-        log!("Handle sprite mutation: {}", mutations.len())
+    pub fn toggle_game_behavior(&mut self, active: bool, types: &[BehaviorType]) {
+        BehaviorManager::toggle_behaviors(self.sprites.iter_mut(), types, active, self.game_time.time)
     }
 
     // Game Actions //
