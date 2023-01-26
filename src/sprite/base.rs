@@ -1,4 +1,4 @@
-use std::cell::RefCell;
+use std::cell::{RefCell, RefMut};
 use std::rc::{Rc, Weak};
 
 use js_sys::Math;
@@ -140,6 +140,10 @@ impl Sprite {
                 log!("Sprite position Changed")
             }
         });
+    }
+
+    pub fn mutable_behaviors(&self) -> RefMut<'_, Vec<Box<dyn Behavior>>> {
+        self.behaviors.borrow_mut()
     }
 }
 

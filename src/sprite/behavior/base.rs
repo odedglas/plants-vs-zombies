@@ -19,7 +19,7 @@ pub trait BehaviorState {
 }
 
 pub trait Behavior: BehaviorState {
-    fn id(&self) -> &String;
+    fn id(&self) -> &String; // TODO Remove, uneeded.
 
     fn name(&self) -> BehaviorType;
 

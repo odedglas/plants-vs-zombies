@@ -35,8 +35,7 @@ impl BehaviorManager {
         context: &CanvasRenderingContext2d,
     ) -> Vec<SpriteMutation> {
         sprite
-            .behaviors
-            .borrow_mut()
+            .mutable_behaviors()
             .iter_mut()
             .filter(|behavior| behavior.is_running())
             .map(|behavior| {
@@ -54,8 +53,7 @@ impl BehaviorManager {
     ) {
         sprites.for_each(|sprite| {
             sprite
-                .behaviors
-                .borrow_mut()
+                .mutable_behaviors()
                 .iter_mut()
                 .filter(|behavior| behavior_types.contains(&behavior.name()))
                 .for_each(|behavior| behavior.toggle(should_run, now));
