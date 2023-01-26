@@ -8,13 +8,11 @@ use crate::sprite::{Sprite, SpriteMutation};
 pub struct Click {
     name: BehaviorType,
     running: bool,
-    id: String,
 }
 
 impl Click {
-    pub fn new(id: String) -> Click {
+    pub fn new() -> Click {
         Click {
-            id,
             name: BehaviorType::Click,
             running: false,
         }
@@ -36,10 +34,6 @@ impl BehaviorState for Click {
 }
 
 impl Behavior for Click {
-    fn id(&self) -> &String {
-        &self.id
-    }
-
     fn name(&self) -> BehaviorType {
         BehaviorType::Click
     }

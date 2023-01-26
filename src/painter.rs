@@ -63,6 +63,38 @@ impl Painter {
             .unwrap();
     }
 
+    pub fn in_path(
+        outline: &Vec<Position>,
+        point: &Position,
+        context: &CanvasRenderingContext2d,
+    ) -> bool {
+        // Draw outline within context
+        if outline.is_empty() {
+            return false;
+        }
+
+        context.save();
+
+        context.begin_path();
+        context.set_stroke_style(&"#00CCFF".into());
+
+        let first = outline.get(0).unwrap();
+        context.move_to(first.left, first.top);
+
+        outline
+            .iter()
+            .skip(1)
+            .for_each(|path| context.line_to(path.left, path.top));
+
+        context.close_path();
+        context.stroke();
+
+        context.restore();
+
+        // Check rather if point is within that shape.
+        context.is_point_in_path_with_f64(point.left, point.top)
+    }
+
     pub fn get_measurements_painter(size: Size) -> Painter {
         let measurements_canvas = create_canvas(size.width as u32, size.width as u32, false);
 

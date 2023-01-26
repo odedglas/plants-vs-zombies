@@ -68,18 +68,15 @@ impl Sprite {
         scale: f64,
         behaviors: Vec<BehaviorData>,
     ) -> Sprite {
-        let id = uid(name);
         let sprite_behaviors = RefCell::new(
             behaviors
                 .iter()
-                .map(|behavior_data| {
-                    BehaviorManager::create(&id, &behavior_data.name)
-                })
+                .map(|behavior_data| BehaviorManager::create(&behavior_data))
                 .collect(),
         );
 
         Sprite {
-            id,
+            id: uid(name),
             name: String::from(name),
             order,
             position,
@@ -129,7 +126,7 @@ impl Sprite {
         mutations.iter().for_each(|mutation| {
             log!("Apply sprite mutation {}", self.id);
             if let Some(hovered) = mutation.hovered {
-                log!("Sprite Hovered!");
+                log!("Sprite Hovered! {}", hovered);
             }
 
             if let Some(clicked) = mutation.clicked {

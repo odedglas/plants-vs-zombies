@@ -12,19 +12,17 @@ pub use hover::Hover;
 use web_sys::CanvasRenderingContext2d;
 
 use crate::log;
-use crate::model::{BehaviorType, Position};
+use crate::model::{BehaviorData, BehaviorType, Position};
 use crate::sprite::{Sprite, SpriteMutation};
 use crate::timers::GameTime;
 
 pub struct BehaviorManager;
 
 impl BehaviorManager {
-    pub fn create(id: &str, name: &str) -> Box<dyn Behavior> {
-        let behavior_id = String::from(id);
-
-        match name {
-            "Click" => Box::new(Click::new(behavior_id)),
-            _ => Box::new(Hover::new(behavior_id)),
+    pub fn create(data: &BehaviorData) -> Box<dyn Behavior> {
+        match data.name.trim() {
+            "Click" => Box::new(Click::new()),
+            _ => Box::new(Hover::new()),
         }
     }
 
