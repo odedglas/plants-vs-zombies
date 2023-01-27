@@ -21,7 +21,7 @@ pub struct BehaviorManager;
 impl BehaviorManager {
     pub fn create(data: &BehaviorData) -> Box<dyn Behavior> {
         match data.name.trim() {
-            "Click" => Box::new(Click::new()),
+            "Click" => Box::new(Click::new()), // TODO - BEhaviour enum check
             _ => Box::new(Hover::new()),
         }
     }

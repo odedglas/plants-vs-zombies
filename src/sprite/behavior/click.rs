@@ -3,6 +3,7 @@ use web_sys::CanvasRenderingContext2d;
 use super::base::{Behavior, BehaviorState};
 use crate::log;
 use crate::model::{BehaviorType, Position};
+use crate::painter::Painter;
 use crate::sprite::{Sprite, SpriteMutation};
 
 pub struct Click {
@@ -44,10 +45,13 @@ impl Behavior for Click {
         now: f64,
         _last_frame: f64,
         mouse: &Position,
-        _context: &CanvasRenderingContext2d,
+        context: &CanvasRenderingContext2d,
     ) -> Option<SpriteMutation> {
+        self.stop(now);
         log!("Execute Click action! {} / {:?}", now, mouse);
 
-        None
+        let clicked = Painter::in_path(&sprite.outlines, mouse, context);
+
+        Some(SpriteMutation::new(None, None, Some(clicked)))
     }
 }

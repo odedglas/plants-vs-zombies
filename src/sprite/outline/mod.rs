@@ -3,8 +3,8 @@ mod marching_squares;
 use std::rc::Weak;
 
 use web_sys::HtmlImageElement;
-use crate::log;
 
+use crate::log;
 use crate::model::{Position, Size, SpriteCell};
 use crate::painter::Painter;
 use crate::sprite::outline::marching_squares::MarchingSquares;

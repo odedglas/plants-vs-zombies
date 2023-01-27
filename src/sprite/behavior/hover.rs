@@ -53,6 +53,6 @@ impl Behavior for Hover {
 
         let hovered = Painter::in_path(&sprite.outlines, mouse, context);
 
-        Some(SpriteMutation::new(None, Some(hovered), None))
+        Some(SpriteMutation::new(None, Some(hovered), None)) // TODO -> Builder pattern
     }
 }

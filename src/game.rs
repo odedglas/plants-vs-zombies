@@ -84,8 +84,8 @@ impl Game {
 
         match event_name {
             GameEvent::MouseMove => self.toggle_game_behavior(true, &[BehaviorType::Hover]),
-            GameEvent::MouseDown => {}
-            GameEvent::MouseUp => {}
+            GameEvent::MouseDown => self.toggle_game_behavior(true, &[BehaviorType::Click]),
+            GameEvent::MouseUp => self.toggle_game_behavior(false, &[BehaviorType::Click]),
             GameEvent::MouseLeave => self.toggle_game_behavior(false, &[BehaviorType::Hover]),
         }
     }

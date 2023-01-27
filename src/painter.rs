@@ -68,7 +68,6 @@ impl Painter {
         point: &Position,
         context: &CanvasRenderingContext2d,
     ) -> bool {
-        // Draw outline within context
         if outline.is_empty() {
             return false;
         }
@@ -80,6 +79,7 @@ impl Painter {
         let first = outline.get(0).unwrap();
         context.move_to(first.left, first.top);
 
+        // Draw outline within context
         outline
             .iter()
             .skip(1)

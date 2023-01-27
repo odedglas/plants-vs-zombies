@@ -67,7 +67,7 @@ impl Sprite {
         image: Option<Weak<HtmlImageElement>>,
         scale: f64,
         behaviors: Vec<BehaviorData>,
-        exact_outlines: bool
+        exact_outlines: bool,
     ) -> Sprite {
         let sprite_behaviors = RefCell::new(
             behaviors
@@ -88,10 +88,7 @@ impl Sprite {
             behaviors: sprite_behaviors,
         };
 
-        sprite.outlines = Outline::get_outlines(
-            &sprite,
-            exact_outlines
-        );
+        sprite.outlines = Outline::get_outlines(&sprite, exact_outlines);
 
         sprite
     }
@@ -128,7 +125,7 @@ impl Sprite {
             resource.image,
             scale,
             behaviors,
-            exact_outlines
+            exact_outlines,
         )
     }
 
@@ -144,7 +141,11 @@ impl Sprite {
             }
 
             if let Some(clicked) = mutation.clicked {
-                log!("Sprite clicked")
+                if !clicked {
+                    return;
+                }
+
+                log!("Sprite clicked! {}", self.id);
             }
 
             if let Some(position) = mutation.position {

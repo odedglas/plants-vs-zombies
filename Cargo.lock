@@ -177,6 +177,7 @@ dependencies = [
  "serde",
  "serde-wasm-bindgen",
  "serde_derive",
+ "typemap",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
@@ -269,10 +270,34 @@ dependencies = [
 ]
 
 [[package]]
+name = "traitobject"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "efd1f82c56340fdf16f2a953d7bda4f8fdffba13d93b00844c25572110b26079"
+
+[[package]]
+name = "typemap"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "653be63c80a3296da5551e1bfd2cca35227e13cdd08c6668903ae2f4f77aa1f6"
+dependencies = [
+ "unsafe-any",
+]
+
+[[package]]
 name = "unicode-ident"
 version = "1.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "84a22b9f218b40614adcb3f4ff08b703773ad44fa9423e4e0d346d5db86e4ebc"
+
+[[package]]
+name = "unsafe-any"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f30360d7979f5e9c6e6cea48af192ea8fab4afb3cf72597154b8f08935bc9c7f"
+dependencies = [
+ "traitobject",
+]
 
 [[package]]
 name = "wasm-bindgen"
