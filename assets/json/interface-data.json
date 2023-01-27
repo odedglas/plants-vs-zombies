@@ -11,7 +11,7 @@
   "SelectorAdventureButton": {
     "constructor": "Sprite",
     "position": [{ "left": 474, "top": 80 }],
-    "normal_shape": false,
+    "exact_outlines": true,
     "behaviors": [{ "name": "Hover" }, { "name": "Click" }]
   },
   "SelectorSurvivalShadow": {
@@ -21,7 +21,7 @@
   "SelectorSurvivalButton": {
     "constructor": "Sprite",
     "position": [{ "left": 474, "top": 203 }],
-    "normal_shape": false,
+    "exact_outlines": true,
     "behaviors": [{ "name": "Hover" }, { "name": "Click" }]
   },
   "SelectorChallengeShadow": {
@@ -32,7 +32,7 @@
   "SelectorChallengeButton": {
     "constructor": "Sprite",
     "position": [{ "left": 478, "top": 303 }],
-    "normal_shape": false,
+    "exact_outlines": true,
     "behaviors": [{ "name": "Hover" }, { "name": "Click" }]
   },
   "SelectorZombieHand": {

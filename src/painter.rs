@@ -74,9 +74,8 @@ impl Painter {
         }
 
         context.save();
-
+        context.set_global_alpha(0.0);
         context.begin_path();
-        context.set_stroke_style(&"#00CCFF".into());
 
         let first = outline.get(0).unwrap();
         context.move_to(first.left, first.top);

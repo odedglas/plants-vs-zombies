@@ -3,6 +3,7 @@ mod marching_squares;
 use std::rc::Weak;
 
 use web_sys::HtmlImageElement;
+use crate::log;
 
 use crate::model::{Position, Size, SpriteCell};
 use crate::painter::Painter;
@@ -14,6 +15,7 @@ pub struct Outline;
 impl Outline {
     /// Calculates a given Sprite entity outlines points (min of 4 points).
     pub fn get_outlines(sprite: &Sprite, exact: bool) -> Vec<Position> {
+        log!("Calculating sprite outlines!");
         let (cell, position) = DrawingState::get(sprite);
         let scale = sprite.drawing_state.scale;
 

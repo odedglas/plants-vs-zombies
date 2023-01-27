@@ -8,7 +8,7 @@ use crate::log;
 use crate::model::{BehaviorData, Position, SpriteCell, SpriteData};
 use crate::resource_loader::{ResourceKind, Resources};
 use crate::sprite::behavior::{Behavior, BehaviorManager};
-use crate::sprite::SpriteMutation;
+use crate::sprite::{Outline, SpriteMutation};
 
 #[derive(Debug, Default)]
 pub struct DrawingState {
@@ -67,6 +67,7 @@ impl Sprite {
         image: Option<Weak<HtmlImageElement>>,
         scale: f64,
         behaviors: Vec<BehaviorData>,
+        exact_outlines: bool
     ) -> Sprite {
         let sprite_behaviors = RefCell::new(
             behaviors
@@ -75,7 +76,7 @@ impl Sprite {
                 .collect(),
         );
 
-        Sprite {
+        let mut sprite = Sprite {
             id: uid(name),
             name: String::from(name),
             order,
@@ -85,7 +86,14 @@ impl Sprite {
             drawing_state: DrawingState::new(scale),
             outlines: vec![],
             behaviors: sprite_behaviors,
-        }
+        };
+
+        sprite.outlines = Outline::get_outlines(
+            &sprite,
+            exact_outlines
+        );
+
+        sprite
     }
 
     pub fn create_sprites(
@@ -108,6 +116,7 @@ impl Sprite {
             order,
             scale,
             behaviors,
+            exact_outlines,
             ..
         } = resource.data;
 
@@ -119,14 +128,19 @@ impl Sprite {
             resource.image,
             scale,
             behaviors,
+            exact_outlines
         )
     }
 
     pub fn apply_mutation(&mut self, mutations: Vec<SpriteMutation>) {
         mutations.iter().for_each(|mutation| {
-            log!("Apply sprite mutation {}", self.id);
             if let Some(hovered) = mutation.hovered {
-                log!("Sprite Hovered! {}", hovered);
+                if !hovered {
+                    self.drawing_state.active_cell = 0;
+                    return;
+                }
+
+                self.drawing_state.active_cell = 1;
             }
 
             if let Some(clicked) = mutation.clicked {

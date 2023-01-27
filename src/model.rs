@@ -49,6 +49,7 @@ pub struct SpriteData {
     pub position: Vec<Position>,
     pub order: usize,
     pub scale: f64,
+    pub exact_outlines: bool,
     pub behaviors: Vec<BehaviorData>,
 }
 
@@ -58,6 +59,7 @@ impl Default for SpriteData {
             position: vec![Position::default()],
             order: 1,
             scale: 1.0,
+            exact_outlines: false,
             behaviors: vec![],
         }
     }
