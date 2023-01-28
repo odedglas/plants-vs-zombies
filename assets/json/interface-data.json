@@ -12,7 +12,7 @@
     "constructor": "Sprite",
     "position": [{ "left": 474, "top": 80 }],
     "exact_outlines": true,
-    "behaviors": [{ "name": "Hover" }, { "name": "Click" }]
+    "behaviors": [{ "name": "Hover" }, { "name": "Click", "callback": "StartBattleScene" }]
   },
   "SelectorSurvivalShadow": {
     "constructor": "Sprite",

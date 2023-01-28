@@ -2,7 +2,7 @@ use web_sys::{HtmlCanvasElement, MouseEvent};
 
 use crate::fps::Fps;
 use crate::log;
-use crate::model::{BehaviorType, GameInteraction, GameMouseEvent, GameState, Position};
+use crate::model::{BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position};
 use crate::painter::Painter;
 use crate::resource_loader::Resources;
 use crate::scene::HomeScene;
@@ -107,12 +107,16 @@ impl Game {
         game_interactions
             .iter()
             .for_each(|interaction| match interaction {
-                GameInteraction::SpriteClick(name) => self.on_sprite_click(name),
+                GameInteraction::SpriteClick(callback) => self.on_sprite_click(callback),
             });
     }
 
-    pub fn on_sprite_click(&mut self, clicked_sprite_name: &String) {
-        log!("Game handling click event for {}", clicked_sprite_name);
+    pub fn on_sprite_click(&mut self, callback: &Callback) {
+        log!("Game handling click event for {:?}", callback);
+
+        match callback {
+            Callback::StartBattleScene => log!("[Game Callback] Starting Battle scene")
+        }
     }
 
     // Game Actions //

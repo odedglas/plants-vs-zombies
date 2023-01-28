@@ -8,8 +8,9 @@ pub use base::Behavior;
 pub use click::Click;
 pub use hover::Hover;
 use web_sys::CanvasRenderingContext2d;
+use crate::log;
 
-use crate::model::{BehaviorData, BehaviorType, GameInteraction, Position};
+use crate::model::{BehaviorData, BehaviorType, Callback, GameInteraction, Position};
 use crate::sprite::{Sprite, SpriteMutation};
 use crate::timers::GameTime;
 
@@ -20,7 +21,7 @@ impl BehaviorManager {
         let behavior_type = BehaviorType::from_string(&data.name);
 
         match behavior_type {
-            BehaviorType::Click => Box::new(Click::new()),
+            BehaviorType::Click => Box::new(Click::new(data.callback.unwrap())),
             BehaviorType::Hover => Box::new(Hover::new()),
         }
     }
@@ -57,15 +58,15 @@ impl BehaviorManager {
         });
     }
 
-    pub fn collect_interactions(sprites: &Sprite) -> Vec<GameInteraction> {
-        let interactions = sprites
+    pub fn collect_interactions(sprite: &Sprite) -> Vec<GameInteraction> {
+        let interactions = sprite
             .mutable_behaviors()
             .iter_mut()
             .map(|behavior| behavior.get_interaction())
             .filter_map(|interaction| interaction)
             .collect();
 
-        sprites.mutable_behaviors().iter_mut().for_each(|behavior| {
+        sprite.mutable_behaviors().iter_mut().for_each(|behavior| {
             behavior.clean_interaction();
         });
 

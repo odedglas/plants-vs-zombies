@@ -33,9 +33,14 @@ impl fmt::Display for GameMouseEvent {
     }
 }
 
+#[derive(Debug, Clone, Copy, Deserialize)]
+pub enum Callback {
+    StartBattleScene,
+}
+
 #[derive(Debug)]
 pub enum GameInteraction {
-    SpriteClick(String),
+    SpriteClick(Callback),
 }
 
 /// Sprite cell represents a Sprite given possible states position pointing to a respective interface asset.
@@ -95,6 +100,7 @@ impl BehaviorType {
 #[derive(Debug, Clone, Deserialize)]
 pub struct BehaviorData {
     pub name: String,
+    pub callback: Option<Callback>
 }
 
 #[derive(Debug, Default, PartialEq, Clone, Copy, Deserialize)]

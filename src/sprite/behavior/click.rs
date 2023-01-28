@@ -1,7 +1,7 @@
 use web_sys::CanvasRenderingContext2d;
 
 use super::base::{Behavior, BehaviorState};
-use crate::model::{BehaviorType, GameInteraction, Position};
+use crate::model::{BehaviorType, Callback, GameInteraction, Position};
 use crate::painter::Painter;
 use crate::sprite::{Sprite, SpriteMutation};
 
@@ -9,11 +9,13 @@ pub struct Click {
     name: BehaviorType,
     running: bool,
     interaction_active: bool,
+    callback: Callback
 }
 
 impl Click {
-    pub fn new() -> Click {
+    pub fn new(callback: Callback) -> Click {
         Click {
+            callback,
             name: BehaviorType::Click,
             running: false,
             interaction_active: false,
@@ -42,9 +44,7 @@ impl Behavior for Click {
 
     fn get_interaction(&self) -> Option<GameInteraction> {
         if self.interaction_active {
-            return Some(GameInteraction::SpriteClick(String::from(
-                "TODO CONNECT ID",
-            )));
+            return Some(GameInteraction::SpriteClick(self.callback));
         }
 
         None
