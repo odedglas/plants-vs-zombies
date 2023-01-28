@@ -1,5 +1,5 @@
 use std::cell::{RefCell, RefMut};
-use std::rc::{Rc, Weak};
+use std::rc::Weak;
 
 use js_sys::Math;
 use web_sys::HtmlImageElement;
@@ -140,16 +140,8 @@ impl Sprite {
                 self.drawing_state.active_cell = 1;
             }
 
-            if let Some(clicked) = mutation.clicked {
-                if !clicked {
-                    return;
-                }
-
-                log!("Sprite clicked! {}", self.id);
-            }
-
             if let Some(position) = mutation.position {
-                log!("Sprite position Changed")
+                log!("TODO - Sprite position Changed")
             }
         });
     }

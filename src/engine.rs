@@ -7,14 +7,13 @@ use wasm_bindgen_futures::spawn_local;
 use web_sys::MouseEvent;
 
 use crate::game::Game;
-use crate::log;
-use crate::model::GameEvent;
+use crate::model::GameMouseEvent;
 use crate::resource_loader::ResourceLoader;
 use crate::web_utils::request_animation_frame;
 
 pub struct Engine {
     game: Rc<RefCell<Game>>,
-    handled_events: Vec<GameEvent>,
+    handled_events: Vec<GameMouseEvent>,
 }
 
 impl Default for Engine {
@@ -22,10 +21,10 @@ impl Default for Engine {
         Engine {
             game: Rc::new(RefCell::new(Game::new())),
             handled_events: vec![
-                GameEvent::MouseMove,
-                GameEvent::MouseUp,
-                GameEvent::MouseLeave,
-                GameEvent::MouseDown,
+                GameMouseEvent::MouseMove,
+                GameMouseEvent::MouseUp,
+                GameMouseEvent::MouseLeave,
+                GameMouseEvent::MouseDown,
             ],
         }
     }
@@ -85,11 +84,13 @@ impl Engine {
             .for_each(|event| self.listen_event(*event));
     }
 
-    fn listen_event(&self, name: GameEvent) {
+    fn listen_event(&self, name: GameMouseEvent) {
         let game_closure_ref = Rc::clone(&self.game);
 
         let closure = Closure::wrap(Box::new(move |event: MouseEvent| {
-            game_closure_ref.borrow_mut().handle_event(name, event);
+            game_closure_ref
+                .borrow_mut()
+                .handle_mouse_event(name, event);
         }) as Box<dyn FnMut(_)>);
 
         self.game

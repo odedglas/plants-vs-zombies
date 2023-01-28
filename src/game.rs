@@ -2,11 +2,11 @@ use web_sys::{HtmlCanvasElement, MouseEvent};
 
 use crate::fps::Fps;
 use crate::log;
-use crate::model::{BehaviorType, GameEvent, GameState, Position};
+use crate::model::{BehaviorType, GameInteraction, GameMouseEvent, GameState, Position};
 use crate::painter::Painter;
 use crate::resource_loader::Resources;
 use crate::scene::HomeScene;
-use crate::sprite::{BehaviorManager, Sprite, SpriteMutation};
+use crate::sprite::{BehaviorManager, Sprite};
 use crate::timers::GameTime;
 
 pub struct Game {
@@ -47,7 +47,11 @@ impl Game {
         let current_time = self.game_time.current_time();
         self.fps.calc(current_time);
 
+        // Draw game Sprites
         self.draw();
+
+        // Handle Sprites interactions
+        self.handle_game_interactions();
 
         // TODO - Handle Game internal sprites garbage collection Game::gc()
 
@@ -75,23 +79,40 @@ impl Game {
         });
     }
 
-    // Events //
+    // Canvas Mouse Events //
 
-    pub fn handle_event(&mut self, event_name: GameEvent, event: MouseEvent) {
-        log!("Game handling event for: {}", event_name.to_string());
+    pub fn handle_mouse_event(&mut self, event_name: GameMouseEvent, event: MouseEvent) {
         let current_mouse = Position::from_event(event);
         self.mouse_position = current_mouse;
 
         match event_name {
-            GameEvent::MouseMove => self.toggle_game_behavior(true, &[BehaviorType::Hover]),
-            GameEvent::MouseDown => self.toggle_game_behavior(true, &[BehaviorType::Click]),
-            GameEvent::MouseUp => self.toggle_game_behavior(false, &[BehaviorType::Click]),
-            GameEvent::MouseLeave => self.toggle_game_behavior(false, &[BehaviorType::Hover]),
+            GameMouseEvent::MouseMove => self.toggle_game_behavior(true, &[BehaviorType::Hover]),
+            GameMouseEvent::MouseDown => self.toggle_game_behavior(true, &[BehaviorType::Click]),
+            GameMouseEvent::MouseUp => self.toggle_game_behavior(false, &[BehaviorType::Click]),
+            GameMouseEvent::MouseLeave => self.toggle_game_behavior(false, &[BehaviorType::Hover]),
         }
     }
 
     pub fn toggle_game_behavior(&mut self, active: bool, types: &[BehaviorType]) {
         BehaviorManager::toggle_behaviors(self.sprites.iter(), types, active, self.game_time.time)
+    }
+
+    pub fn handle_game_interactions(&mut self) {
+        let game_interactions = self
+            .sprites
+            .iter_mut()
+            .flat_map(|sprite| BehaviorManager::collect_interactions(sprite))
+            .collect::<Vec<GameInteraction>>();
+
+        game_interactions
+            .iter()
+            .for_each(|interaction| match interaction {
+                GameInteraction::SpriteClick(name) => self.on_sprite_click(name),
+            });
+    }
+
+    pub fn on_sprite_click(&mut self, clicked_sprite_name: &String) {
+        log!("Game handling click event for {}", clicked_sprite_name);
     }
 
     // Game Actions //

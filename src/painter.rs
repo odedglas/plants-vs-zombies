@@ -3,7 +3,6 @@ use std::rc::Rc;
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, HtmlImageElement};
 
 use crate::constants::{CANVAS_HEIGHT, CANVAS_HEIGHT_F64, CANVAS_WIDTH, CANVAS_WIDTH_F64};
-use crate::log;
 use crate::model::{Position, Size, SpriteCell};
 use crate::sprite::{DrawingState, Sprite};
 use crate::web_utils::{create_canvas, get_canvas_context};

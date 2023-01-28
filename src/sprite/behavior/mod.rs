@@ -2,8 +2,6 @@ mod base;
 mod click;
 mod hover;
 
-use std::borrow::{Borrow, BorrowMut};
-use std::rc::Rc;
 use std::slice::Iter;
 
 pub use base::Behavior;
@@ -11,8 +9,7 @@ pub use click::Click;
 pub use hover::Hover;
 use web_sys::CanvasRenderingContext2d;
 
-use crate::log;
-use crate::model::{BehaviorData, BehaviorType, Position};
+use crate::model::{BehaviorData, BehaviorType, GameInteraction, Position};
 use crate::sprite::{Sprite, SpriteMutation};
 use crate::timers::GameTime;
 
@@ -20,9 +17,11 @@ pub struct BehaviorManager;
 
 impl BehaviorManager {
     pub fn create(data: &BehaviorData) -> Box<dyn Behavior> {
-        match data.name.trim() {
-            "Click" => Box::new(Click::new()), // TODO - BEhaviour enum check
-            _ => Box::new(Hover::new()),
+        let behavior_type = BehaviorType::from_string(&data.name);
+
+        match behavior_type {
+            BehaviorType::Click => Box::new(Click::new()),
+            BehaviorType::Hover => Box::new(Hover::new()),
         }
     }
 
@@ -56,5 +55,20 @@ impl BehaviorManager {
                 .filter(|behavior| behavior_types.contains(&behavior.name()))
                 .for_each(|behavior| behavior.toggle(should_run, now));
         });
+    }
+
+    pub fn collect_interactions(sprites: &Sprite) -> Vec<GameInteraction> {
+        let interactions = sprites
+            .mutable_behaviors()
+            .iter_mut()
+            .map(|behavior| behavior.get_interaction())
+            .filter_map(|interaction| interaction)
+            .collect();
+
+        sprites.mutable_behaviors().iter_mut().for_each(|behavior| {
+            behavior.clean_interaction();
+        });
+
+        interactions
     }
 }

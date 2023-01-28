@@ -35,6 +35,7 @@ pub fn create_canvas(width: u32, height: u32, attach_to_body: bool) -> HtmlCanva
 
     canvas.set_width(width);
     canvas.set_height(height);
+    canvas.set_id("game_canvas");
 
     if attach_to_body {
         document().body().unwrap().append_child(&canvas).unwrap();

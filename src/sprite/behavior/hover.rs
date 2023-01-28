@@ -1,7 +1,6 @@
 use web_sys::CanvasRenderingContext2d;
 
 use super::base::{Behavior, BehaviorState};
-use crate::log;
 use crate::model::{BehaviorType, Position};
 use crate::painter::Painter;
 use crate::sprite::{Sprite, SpriteMutation};
@@ -47,12 +46,10 @@ impl Behavior for Hover {
         mouse: &Position,
         context: &CanvasRenderingContext2d,
     ) -> Option<SpriteMutation> {
-        log!("Execute Hover aciton! {} / {:?}", sprite.id, mouse);
-
         self.stop(now);
 
         let hovered = Painter::in_path(&sprite.outlines, mouse, context);
 
-        Some(SpriteMutation::new(None, Some(hovered), None)) // TODO -> Builder pattern
+        Some(SpriteMutation::new().hovered(hovered))
     }
 }

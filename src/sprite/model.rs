@@ -3,15 +3,25 @@ use crate::model::Position;
 pub struct SpriteMutation {
     pub position: Option<Position>,
     pub hovered: Option<bool>,
-    pub clicked: Option<bool>,
 }
 
 impl SpriteMutation {
-    pub fn new(position: Option<Position>, hovered: Option<bool>, clicked: Option<bool>) -> Self {
+    pub fn new() -> Self {
         Self {
-            position,
-            hovered,
-            clicked,
+            position: None,
+            hovered: None,
         }
+    }
+
+    pub fn position(mut self, position: Position) -> Self {
+        self.position = Some(position);
+
+        self
+    }
+
+    pub fn hovered(mut self, hovered: bool) -> Self {
+        self.hovered = Some(hovered);
+
+        self
     }
 }

@@ -1,14 +1,14 @@
 use web_sys::CanvasRenderingContext2d;
 
 use super::base::{Behavior, BehaviorState};
-use crate::log;
-use crate::model::{BehaviorType, Position};
+use crate::model::{BehaviorType, GameInteraction, Position};
 use crate::painter::Painter;
 use crate::sprite::{Sprite, SpriteMutation};
 
 pub struct Click {
     name: BehaviorType,
     running: bool,
+    interaction_active: bool,
 }
 
 impl Click {
@@ -16,6 +16,7 @@ impl Click {
         Click {
             name: BehaviorType::Click,
             running: false,
+            interaction_active: false,
         }
     }
 }
@@ -39,6 +40,20 @@ impl Behavior for Click {
         BehaviorType::Click
     }
 
+    fn get_interaction(&self) -> Option<GameInteraction> {
+        if self.interaction_active {
+            return Some(GameInteraction::SpriteClick(String::from(
+                "TODO CONNECT ID",
+            )));
+        }
+
+        None
+    }
+
+    fn clean_interaction(&mut self) {
+        self.interaction_active = false;
+    }
+
     fn execute(
         &mut self,
         sprite: &Sprite,
@@ -48,10 +63,13 @@ impl Behavior for Click {
         context: &CanvasRenderingContext2d,
     ) -> Option<SpriteMutation> {
         self.stop(now);
-        log!("Execute Click action! {} / {:?}", now, mouse);
 
         let clicked = Painter::in_path(&sprite.outlines, mouse, context);
 
-        Some(SpriteMutation::new(None, None, Some(clicked)))
+        if clicked {
+            self.interaction_active = true;
+        }
+
+        None
     }
 }

@@ -1,7 +1,6 @@
 use crate::game::Game;
-use crate::log;
 use crate::resource_loader::ResourceKind;
-use crate::sprite::{Outline, Sprite};
+use crate::sprite::Sprite;
 
 pub struct HomeScene;
 

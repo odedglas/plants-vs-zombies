@@ -20,17 +20,22 @@ impl GameState {
 
 /// The events being listened by our game.
 #[derive(Debug, Clone, Copy)]
-pub enum GameEvent {
+pub enum GameMouseEvent {
     MouseDown,
     MouseMove,
     MouseUp,
     MouseLeave,
 }
 
-impl fmt::Display for GameEvent {
+impl fmt::Display for GameMouseEvent {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         fmt::Debug::fmt(self, f)
     }
+}
+
+#[derive(Debug)]
+pub enum GameInteraction {
+    SpriteClick(String),
 }
 
 /// Sprite cell represents a Sprite given possible states position pointing to a respective interface asset.
@@ -74,6 +79,16 @@ pub enum BehaviorType {
 impl Default for BehaviorType {
     fn default() -> BehaviorType {
         BehaviorType::Click
+    }
+}
+
+impl BehaviorType {
+    pub fn from_string(name: &str) -> BehaviorType {
+        match name {
+            "Click" => BehaviorType::Click,
+            "Hover" => BehaviorType::Hover,
+            _ => BehaviorType::default(),
+        }
     }
 }
 
