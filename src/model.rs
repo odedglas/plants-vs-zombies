@@ -100,7 +100,7 @@ impl BehaviorType {
 #[derive(Debug, Clone, Deserialize)]
 pub struct BehaviorData {
     pub name: String,
-    pub callback: Option<Callback>
+    pub callback: Option<Callback>,
 }
 
 #[derive(Debug, Default, PartialEq, Clone, Copy, Deserialize)]

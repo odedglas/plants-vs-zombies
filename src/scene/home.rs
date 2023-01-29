@@ -5,8 +5,23 @@ use crate::sprite::Sprite;
 pub struct HomeScene;
 
 impl HomeScene {
+    pub fn home_sprites() -> Vec<&'static str> {
+        vec![
+            "SelectorBackground",
+            "SelectorAdventureShadow",
+            "SelectorSurvivalShadow",
+            "SelectorChallengeShadow",
+            "SelectorWoodSign1",
+            "SelectorWoodSign2",
+            "SelectorWoodSign3",
+            "SelectorAdventureButton",
+            "SelectorSurvivalButton",
+            "SelectorChallengeButton",
+        ]
+    }
+
     pub fn start(game: &mut Game) {
-        let scene_sprites_name = vec!["SelectorBackground", "SelectorAdventureButton"];
+        let scene_sprites_name = HomeScene::home_sprites();
 
         // Convert each scene sprites into a actual Sprite using it's corresponding Game.Resource
         let mut sprites = Sprite::create_sprites(

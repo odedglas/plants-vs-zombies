@@ -115,7 +115,7 @@ impl Game {
         log!("Game handling click event for {:?}", callback);
 
         match callback {
-            Callback::StartBattleScene => log!("[Game Callback] Starting Battle scene")
+            Callback::StartBattleScene => log!("[Game Callback] Starting Battle scene"),
         }
     }
 

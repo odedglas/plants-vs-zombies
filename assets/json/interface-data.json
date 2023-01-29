@@ -22,7 +22,7 @@
     "constructor": "Sprite",
     "position": [{ "left": 474, "top": 203 }],
     "exact_outlines": true,
-    "behaviors": [{ "name": "Hover" }, { "name": "Click" }]
+    "behaviors": [{ "name": "Hover" }, { "name": "Click", "callback": "StartBattleScene" }]
   },
   "SelectorChallengeShadow": {
     "constructor": "Sprite",
@@ -33,7 +33,7 @@
     "constructor": "Sprite",
     "position": [{ "left": 478, "top": 303 }],
     "exact_outlines": true,
-    "behaviors": [{ "name": "Hover" }, { "name": "Click" }]
+    "behaviors": [{ "name": "Hover" }, { "name": "Click", "callback": "StartBattleScene" }]
   },
   "SelectorZombieHand": {
     "constructor": "Sprite",

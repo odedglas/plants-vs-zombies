@@ -9,7 +9,7 @@ pub struct Click {
     name: BehaviorType,
     running: bool,
     interaction_active: bool,
-    callback: Callback
+    callback: Callback,
 }
 
 impl Click {
