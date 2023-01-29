@@ -6,43 +6,50 @@ use web_sys::HtmlImageElement;
 
 use crate::log;
 use crate::model::{BehaviorData, Position, SpriteCell, SpriteData};
-use crate::resource_loader::{ResourceKind, Resources};
+use crate::resource_loader::{Resource, ResourceKind, Resources};
 use crate::sprite::behavior::{Behavior, BehaviorManager};
 use crate::sprite::{Outline, SpriteMutation};
 
 #[derive(Debug, Default)]
 pub struct DrawingState {
+    pub cells: Vec<SpriteCell>,
     pub active_cell: usize,
-    pub active_position: usize,
     pub scale: f64,
 }
 
 impl DrawingState {
-    pub fn new(scale: f64) -> Self {
+    pub fn new(cells: Vec<SpriteCell>, scale: f64) -> Self {
         Self {
             scale,
+            cells,
             ..DrawingState::default()
         }
     }
 
-    pub fn get(sprite: &Sprite) -> (&SpriteCell, &Position) {
-        let cell = sprite
+    pub fn get_active_cell(sprite: &Sprite) -> &SpriteCell {
+        let drawing_state = &sprite.drawing_state;
+        let cell = drawing_state
             .cells
-            .get(sprite.drawing_state.active_cell)
+            .get(drawing_state.active_cell)
             .expect(&format!(
                 "[Sprite] Cannot get drawing state cell of {}",
                 sprite.name
             ));
 
-        let position = sprite
-            .position
-            .get(sprite.drawing_state.active_position)
-            .expect(&format!(
-                "[Sprite] Cannot get drawing state position of {}",
-                sprite.name
-            ));
+        return cell;
+    }
 
-        return (cell, position);
+    pub fn hover(&mut self, hover: bool) {
+        let active_index = match hover {
+            true => 1,
+            false => 0,
+        };
+
+        self.set_cell(active_index);
+    }
+
+    fn set_cell(&mut self, index: usize) {
+        self.active_cell = index;
     }
 }
 
@@ -50,10 +57,9 @@ pub struct Sprite {
     pub id: String,
     pub name: String,
     pub order: usize,
-    pub position: Vec<Position>,
+    pub position: Position,
     pub outlines: Vec<Position>,
     pub behaviors: RefCell<Vec<Box<dyn Behavior>>>,
-    pub cells: Vec<SpriteCell>,
     pub image: Option<Weak<HtmlImageElement>>,
     pub drawing_state: DrawingState,
 }
@@ -62,11 +68,11 @@ impl Sprite {
     pub fn new(
         name: &str,
         order: usize,
-        position: Vec<Position>,
+        position: Position,
         cells: Vec<SpriteCell>,
         image: Option<Weak<HtmlImageElement>>,
         scale: f64,
-        behaviors: Vec<BehaviorData>,
+        behaviors: &Vec<BehaviorData>,
         exact_outlines: bool,
     ) -> Sprite {
         let sprite_behaviors = RefCell::new(
@@ -81,9 +87,8 @@ impl Sprite {
             name: String::from(name),
             order,
             position,
-            cells,
             image,
-            drawing_state: DrawingState::new(scale),
+            drawing_state: DrawingState::new(cells, scale),
             outlines: vec![],
             behaviors: sprite_behaviors,
         };
@@ -100,13 +105,17 @@ impl Sprite {
     ) -> Vec<Sprite> {
         return sprite_names
             .iter()
-            .map(|sprite_name| Sprite::create_sprite(sprite_name, kind, resources))
+            .flat_map(|sprite_name| Sprite::create_sprite(sprite_name, kind, resources))
             .collect();
     }
 
     /// Creates a Sprite by a given name and kind.
-    pub fn create_sprite(sprite_name: &str, kind: &ResourceKind, resources: &Resources) -> Sprite {
-        let resource = resources.get_resource(sprite_name, kind);
+    pub fn create_sprite(
+        sprite_name: &str,
+        kind: &ResourceKind,
+        resources: &Resources,
+    ) -> Vec<Sprite> {
+        let Resource { data, .. } = resources.get_resource(sprite_name, kind);
 
         let SpriteData {
             position,
@@ -115,29 +124,31 @@ impl Sprite {
             behaviors,
             exact_outlines,
             ..
-        } = resource.data;
+        } = data;
 
-        Sprite::new(
-            sprite_name,
-            order,
-            position,
-            resource.cell,
-            resource.image,
-            scale,
-            behaviors,
-            exact_outlines,
-        )
+        // Map each position into it's own Sprite.
+        position
+            .iter()
+            .map(|position| {
+                let resource = resources.get_resource(sprite_name, kind);
+                Sprite::new(
+                    sprite_name,
+                    order,
+                    *position,
+                    resource.cell,
+                    resource.image,
+                    scale,
+                    &behaviors,
+                    exact_outlines,
+                )
+            })
+            .collect()
     }
 
     pub fn apply_mutation(&mut self, mutations: Vec<SpriteMutation>) {
         mutations.iter().for_each(|mutation| {
             if let Some(hovered) = mutation.hovered {
-                if !hovered {
-                    self.drawing_state.active_cell = 0;
-                    return;
-                }
-
-                self.drawing_state.active_cell = 1;
+                self.drawing_state.hover(hovered);
             }
 
             if let Some(position) = mutation.position {

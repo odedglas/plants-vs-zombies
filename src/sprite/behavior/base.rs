@@ -4,7 +4,6 @@ use crate::model::{BehaviorType, GameInteraction, Position};
 use crate::sprite::{Sprite, SpriteMutation};
 
 pub trait BehaviorState {
-    // TODO - Extract to derived
     fn start(&mut self, now: f64);
 
     fn stop(&mut self, now: f64);

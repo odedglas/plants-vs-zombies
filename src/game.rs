@@ -112,8 +112,6 @@ impl Game {
     }
 
     pub fn on_sprite_click(&mut self, callback: &Callback) {
-        log!("Game handling click event for {:?}", callback);
-
         match callback {
             Callback::StartBattleScene => log!("[Game Callback] Starting Battle scene"),
         }

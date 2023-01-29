@@ -26,7 +26,7 @@ impl Painter {
     }
 
     pub fn draw_sprite(&self, sprite: &Sprite) {
-        let (cell, position) = DrawingState::get(sprite);
+        let cell = DrawingState::get_active_cell(sprite);
 
         // Draw Sprite according to it's type.
         if let Some(image) = &sprite.image {
@@ -34,7 +34,12 @@ impl Painter {
                 .upgrade()
                 .expect("[Painter] - Cannot draw Image is not available");
 
-            self.draw_image(&image_ref, position, cell, sprite.drawing_state.scale);
+            self.draw_image(
+                &image_ref,
+                &sprite.position,
+                cell,
+                sprite.drawing_state.scale,
+            );
         }
 
         // TODO TextSprite case
