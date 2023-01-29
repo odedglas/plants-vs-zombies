@@ -1,14 +1,15 @@
+use derives::{derive_behavior_fields, BaseBehavior};
 use web_sys::CanvasRenderingContext2d;
 
-use super::base::{Behavior, BehaviorState};
+use super::base::Behavior;
 use crate::model::{BehaviorType, Callback, GameInteraction, Position};
 use crate::painter::Painter;
 use crate::sprite::{Sprite, SpriteMutation};
 
+#[derive_behavior_fields("")]
+#[derive(BaseBehavior, Default)]
 pub struct Click {
     name: BehaviorType,
-    running: bool,
-    interaction_active: bool,
     callback: Callback,
 }
 
@@ -17,23 +18,8 @@ impl Click {
         Click {
             callback,
             name: BehaviorType::Click,
-            running: false,
-            interaction_active: false,
+            ..Default::default()
         }
-    }
-}
-
-impl BehaviorState for Click {
-    fn start(&mut self, _now: f64) {
-        self.running = true;
-    }
-
-    fn stop(&mut self, _now: f64) {
-        self.running = false;
-    }
-
-    fn is_running(&self) -> bool {
-        self.running
     }
 }
 

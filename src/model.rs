@@ -38,6 +38,12 @@ pub enum Callback {
     StartBattleScene,
 }
 
+impl Default for Callback {
+    fn default() -> Callback {
+        Callback::StartBattleScene
+    }
+}
+
 #[derive(Debug)]
 pub enum GameInteraction {
     SpriteClick(Callback),

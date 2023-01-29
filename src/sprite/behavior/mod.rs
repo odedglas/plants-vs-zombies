@@ -9,7 +9,6 @@ pub use click::Click;
 pub use hover::Hover;
 use web_sys::CanvasRenderingContext2d;
 
-
 use crate::model::{BehaviorData, BehaviorType, GameInteraction, Position};
 use crate::sprite::{Sprite, SpriteMutation};
 use crate::timers::GameTime;

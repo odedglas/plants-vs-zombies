@@ -1,35 +1,23 @@
+use derives::{derive_behavior_fields, BaseBehavior};
 use web_sys::CanvasRenderingContext2d;
 
-use super::base::{Behavior, BehaviorState};
+use super::base::Behavior;
 use crate::model::{BehaviorType, Position};
 use crate::painter::Painter;
 use crate::sprite::{Sprite, SpriteMutation};
 
+#[derive_behavior_fields("")]
+#[derive(BaseBehavior, Default)]
 pub struct Hover {
     name: BehaviorType,
-    running: bool,
 }
 
 impl Hover {
     pub fn new() -> Hover {
         Hover {
             name: BehaviorType::Hover,
-            running: false,
+            ..Default::default()
         }
-    }
-}
-
-impl BehaviorState for Hover {
-    fn start(&mut self, _now: f64) {
-        self.running = true;
-    }
-
-    fn stop(&mut self, _now: f64) {
-        self.running = false;
-    }
-
-    fn is_running(&self) -> bool {
-        self.running
     }
 }
 
