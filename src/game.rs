@@ -1,20 +1,22 @@
 use web_sys::{HtmlCanvasElement, MouseEvent};
+
 use crate::fps::Fps;
 use crate::log;
-use crate::model::{GameEvent, GameState};
+use crate::model::{BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position};
 use crate::painter::Painter;
 use crate::resource_loader::Resources;
 use crate::scene::HomeScene;
-use crate::sprite::Sprite;
+use crate::sprite::{BehaviorManager, Sprite};
 use crate::timers::GameTime;
 
 pub struct Game {
     pub resources: Resources,
     pub painter: Painter,
+    pub game_time: GameTime,
+    pub mouse_position: Position,
 
     sprites: Vec<Sprite>,
     state: GameState,
-    game_time: GameTime,
     fps: Fps,
 }
 
@@ -26,6 +28,7 @@ impl Game {
             game_time: GameTime::new(),
             state: GameState::new(),
             fps: Fps::new(),
+            mouse_position: Position::new(0.0, 0.0),
             sprites: vec![],
         }
     }
@@ -44,28 +47,76 @@ impl Game {
         let current_time = self.game_time.current_time();
         self.fps.calc(current_time);
 
+        // Draw game Sprites
         self.draw();
+
+        // Handle Sprites interactions
+        self.handle_game_interactions();
 
         // TODO - Handle Game internal sprites garbage collection Game::gc()
 
         // TODO - SunGenerator::tick()
 
-        log!("Running game tick with {} Sprites", self.sprites.len());
         self.fps.set(current_time);
     }
 
     fn draw(&mut self) {
         self.painter.clear();
 
-        self.sprites
-            .iter()
-            .for_each(|sprite| self.painter.draw_sprite(sprite));
+        self.sprites.iter_mut().for_each(|sprite| {
+            // Collect mutations
+            let mutations = BehaviorManager::run(
+                sprite,
+                &self.game_time,
+                &self.mouse_position,
+                &self.painter.context,
+            );
+
+            // Apply on Sprite
+            sprite.apply_mutation(mutations);
+
+            self.painter.draw_sprite(sprite);
+        });
     }
 
-    // Events //
+    // Canvas Mouse Events //
 
-    pub fn handle_event(&self, name: GameEvent, _event: MouseEvent) {
-        log!("Game handling event for: {}", name.to_string())
+    pub fn handle_mouse_event(&mut self, event_name: GameMouseEvent, event: MouseEvent) {
+        let current_mouse = Position::from_event(event);
+        self.mouse_position = current_mouse;
+
+        match event_name {
+            GameMouseEvent::MouseMove => self.toggle_game_behavior(true, &[BehaviorType::Hover]),
+            GameMouseEvent::MouseDown => self.toggle_game_behavior(true, &[BehaviorType::Click]),
+            GameMouseEvent::MouseUp => self.toggle_game_behavior(false, &[BehaviorType::Click]),
+            GameMouseEvent::MouseLeave => self.toggle_game_behavior(false, &[BehaviorType::Hover]),
+        }
+    }
+
+    pub fn toggle_game_behavior(&mut self, active: bool, types: &[BehaviorType]) {
+        BehaviorManager::toggle_behaviors(self.sprites.iter(), types, active, self.game_time.time)
+    }
+
+    pub fn handle_game_interactions(&mut self) {
+        let game_interactions = self
+            .sprites
+            .iter_mut()
+            .flat_map(|sprite| BehaviorManager::collect_interactions(sprite))
+            .collect::<Vec<GameInteraction>>();
+
+        game_interactions
+            .iter()
+            .for_each(|interaction| match interaction {
+                GameInteraction::SpriteClick(callback) => self.on_sprite_click(callback),
+            });
+    }
+
+    pub fn on_sprite_click(&mut self, callback: &Callback) {
+        log!("Game handling click event for {:?}", callback);
+
+        match callback {
+            Callback::StartBattleScene => log!("[Game Callback] Starting Battle scene"),
+        }
     }
 
     // Game Actions //

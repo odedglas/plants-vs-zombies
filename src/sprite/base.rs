@@ -1,18 +1,30 @@
+use std::cell::{RefCell, RefMut};
 use std::rc::Weak;
 
 use js_sys::Math;
 use web_sys::HtmlImageElement;
 
-use crate::model::{Position, SpriteCell, SpriteData};
+use crate::log;
+use crate::model::{BehaviorData, Position, SpriteCell, SpriteData};
 use crate::resource_loader::{ResourceKind, Resources};
+use crate::sprite::behavior::{Behavior, BehaviorManager};
+use crate::sprite::{Outline, SpriteMutation};
 
 #[derive(Debug, Default)]
 pub struct DrawingState {
     pub active_cell: usize,
     pub active_position: usize,
+    pub scale: f64,
 }
 
 impl DrawingState {
+    pub fn new(scale: f64) -> Self {
+        Self {
+            scale,
+            ..DrawingState::default()
+        }
+    }
+
     pub fn get(sprite: &Sprite) -> (&SpriteCell, &Position) {
         let cell = sprite
             .cells
@@ -34,15 +46,15 @@ impl DrawingState {
     }
 }
 
-#[derive(Debug)]
 pub struct Sprite {
     pub id: String,
     pub name: String,
     pub order: usize,
     pub position: Vec<Position>,
+    pub outlines: Vec<Position>,
+    pub behaviors: RefCell<Vec<Box<dyn Behavior>>>,
     pub cells: Vec<SpriteCell>,
     pub image: Option<Weak<HtmlImageElement>>,
-    pub scale: f64,
     pub drawing_state: DrawingState,
 }
 
@@ -54,17 +66,31 @@ impl Sprite {
         cells: Vec<SpriteCell>,
         image: Option<Weak<HtmlImageElement>>,
         scale: f64,
+        behaviors: Vec<BehaviorData>,
+        exact_outlines: bool,
     ) -> Sprite {
-        Sprite {
+        let sprite_behaviors = RefCell::new(
+            behaviors
+                .iter()
+                .map(|behavior_data| BehaviorManager::create(&behavior_data))
+                .collect(),
+        );
+
+        let mut sprite = Sprite {
             id: uid(name),
             name: String::from(name),
             order,
             position,
             cells,
             image,
-            scale,
-            drawing_state: DrawingState::default(),
-        }
+            drawing_state: DrawingState::new(scale),
+            outlines: vec![],
+            behaviors: sprite_behaviors,
+        };
+
+        sprite.outlines = Outline::get_outlines(&sprite, exact_outlines);
+
+        sprite
     }
 
     pub fn create_sprites(
@@ -86,6 +112,8 @@ impl Sprite {
             position,
             order,
             scale,
+            behaviors,
+            exact_outlines,
             ..
         } = resource.data;
 
@@ -96,7 +124,30 @@ impl Sprite {
             resource.cell,
             resource.image,
             scale,
+            behaviors,
+            exact_outlines,
         )
+    }
+
+    pub fn apply_mutation(&mut self, mutations: Vec<SpriteMutation>) {
+        mutations.iter().for_each(|mutation| {
+            if let Some(hovered) = mutation.hovered {
+                if !hovered {
+                    self.drawing_state.active_cell = 0;
+                    return;
+                }
+
+                self.drawing_state.active_cell = 1;
+            }
+
+            if let Some(position) = mutation.position {
+                log!("TODO - Sprite position Changed")
+            }
+        });
+    }
+
+    pub fn mutable_behaviors(&self) -> RefMut<'_, Vec<Box<dyn Behavior>>> {
+        self.behaviors.borrow_mut()
     }
 }
 

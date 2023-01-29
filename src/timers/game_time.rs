@@ -1,8 +1,9 @@
 use crate::timers::base_timer::Timer;
 
 pub struct GameTime {
-    time: f64,
-    last_timestamp: f64,
+    pub time: f64,
+    pub last_timestamp: f64,
+
     timer: Timer,
 }
 

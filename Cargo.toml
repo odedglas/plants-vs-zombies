@@ -8,6 +8,7 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+derives = { path = "./derives" }
 futures = "0.3.17"
 js-sys = "0.3.55"
 serde = { version = "1.0.130", features = ["derive"] }
