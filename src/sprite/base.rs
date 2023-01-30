@@ -9,49 +9,7 @@ use crate::model::{BehaviorData, Position, SpriteCell, SpriteData};
 use crate::resource_loader::{Resource, ResourceKind, Resources};
 use crate::sprite::behavior::{Behavior, BehaviorManager};
 use crate::sprite::{Outline, SpriteMutation};
-
-#[derive(Debug, Default)]
-pub struct DrawingState {
-    pub cells: Vec<SpriteCell>,
-    pub active_cell: usize,
-    pub scale: f64,
-}
-
-impl DrawingState {
-    pub fn new(cells: Vec<SpriteCell>, scale: f64) -> Self {
-        Self {
-            scale,
-            cells,
-            ..DrawingState::default()
-        }
-    }
-
-    pub fn get_active_cell(sprite: &Sprite) -> &SpriteCell {
-        let drawing_state = &sprite.drawing_state;
-        let cell = drawing_state
-            .cells
-            .get(drawing_state.active_cell)
-            .expect(&format!(
-                "[Sprite] Cannot get drawing state cell of {}",
-                sprite.name
-            ));
-
-        return cell;
-    }
-
-    pub fn hover(&mut self, hover: bool) {
-        let active_index = match hover {
-            true => 1,
-            false => 0,
-        };
-
-        self.set_cell(active_index);
-    }
-
-    fn set_cell(&mut self, index: usize) {
-        self.active_cell = index;
-    }
-}
+use crate::sprite::drawing_state::DrawingState;
 
 pub struct Sprite {
     pub id: String,
