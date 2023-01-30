@@ -1,4 +1,5 @@
 use crate::game::Game;
+use crate::log;
 use crate::resource_loader::ResourceKind;
 use crate::sprite::Sprite;
 
@@ -32,5 +33,15 @@ impl HomeScene {
 
         // Adding scene sprites into game.
         game.add_sprites(sprites.as_mut());
+    }
+
+    pub fn show_zombie_hand(game: &mut Game) {
+        let mut zombie_hand = Sprite::create_sprite(
+            "SelectorZombieHand",
+            &ResourceKind::Interface,
+            &game.resources,
+        );
+
+        game.add_sprites(zombie_hand.as_mut());
     }
 }

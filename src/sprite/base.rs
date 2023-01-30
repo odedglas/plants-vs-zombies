@@ -8,8 +8,8 @@ use crate::log;
 use crate::model::{BehaviorData, Position, SpriteCell, SpriteData};
 use crate::resource_loader::{Resource, ResourceKind, Resources};
 use crate::sprite::behavior::{Behavior, BehaviorManager};
-use crate::sprite::{Outline, SpriteMutation};
 use crate::sprite::drawing_state::DrawingState;
+use crate::sprite::{Outline, SpriteMutation};
 
 pub struct Sprite {
     pub id: String,

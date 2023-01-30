@@ -97,6 +97,8 @@ impl Game {
         BehaviorManager::toggle_behaviors(self.sprites.iter(), types, active, self.game_time.time)
     }
 
+    // Game Actions //
+
     pub fn handle_game_interactions(&mut self) {
         let game_interactions = self
             .sprites
@@ -113,11 +115,11 @@ impl Game {
 
     pub fn on_sprite_click(&mut self, callback: &Callback) {
         match callback {
-            Callback::StartBattleScene => log!("[Game Callback] Starting Battle scene"),
+            Callback::ShowZombieHand => self.show_zombie_hand_animation(),
         }
     }
 
-    // Game Actions //
+    // Game Scene //
     pub fn game_over(&mut self) {
         self.painter.clear();
     }
@@ -127,11 +129,15 @@ impl Game {
         HomeScene::start(self);
     }
 
-    // Game State mutations //
+    pub fn show_zombie_hand_animation(&mut self) {
+        HomeScene::show_zombie_hand(self);
+    }
+
+    // Game State Mutations //
 
     pub fn reset_state(&mut self) {
+        self.sprites.clear();
         self.state = GameState::new();
-        // TODO - Clear all sprites once available
     }
 
     pub fn add_sprites(&mut self, sprites: &mut Vec<Sprite>) {

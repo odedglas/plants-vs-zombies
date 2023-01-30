@@ -45,7 +45,7 @@ impl DrawingState {
 
         let next_index = match current < max {
             true => current + 1,
-            false => 0
+            false => 0,
         };
 
         self.set_cell(next_index);
