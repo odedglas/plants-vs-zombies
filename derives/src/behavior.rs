@@ -22,6 +22,10 @@ pub fn impl_base_bevhior_derive(parsed_input: DeriveInput) -> TokenStream {
                     fn is_running(&self) -> bool {
                         self.running
                     }
+
+                    fn clean_interaction(&mut self) {
+                        self.interaction_active = false
+                    }
                 }
             };
 

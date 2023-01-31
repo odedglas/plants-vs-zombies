@@ -14,7 +14,8 @@ pub struct Outline;
 impl Outline {
     /// Calculates a given Sprite entity outlines points (min of 4 points).
     pub fn get_outlines(sprite: &Sprite, exact: bool) -> Vec<Position> {
-        let (cell, position) = DrawingState::get(sprite);
+        let cell = DrawingState::get_active_cell(sprite);
+        let position = &sprite.position;
         let scale = sprite.drawing_state.scale;
 
         let size = cell.into();

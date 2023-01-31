@@ -35,18 +35,20 @@ impl fmt::Display for GameMouseEvent {
 
 #[derive(Debug, Clone, Copy, Deserialize)]
 pub enum Callback {
-    StartBattleScene,
+    ShowZombieHand,
+    StartLevel,
 }
 
 impl Default for Callback {
     fn default() -> Callback {
-        Callback::StartBattleScene
+        Callback::ShowZombieHand
     }
 }
 
 #[derive(Debug)]
 pub enum GameInteraction {
     SpriteClick(Callback),
+    AnimationCallback(Callback),
 }
 
 /// Sprite cell represents a Sprite given possible states position pointing to a respective interface asset.
@@ -85,11 +87,12 @@ impl Default for SpriteData {
 pub enum BehaviorType {
     Hover,
     Click,
+    Animate,
 }
 
 impl Default for BehaviorType {
     fn default() -> BehaviorType {
-        BehaviorType::Click
+        BehaviorType::Hover
     }
 }
 
@@ -98,15 +101,20 @@ impl BehaviorType {
         match name {
             "Click" => BehaviorType::Click,
             "Hover" => BehaviorType::Hover,
+            "Animate" => BehaviorType::Animate,
             _ => BehaviorType::default(),
         }
     }
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Default, Clone, Deserialize)]
+#[serde(default)]
 pub struct BehaviorData {
     pub name: String,
+    pub duration: f64,
     pub callback: Option<Callback>,
+    pub callback_delay: Option<f64>,
+    pub max_cycles: Option<usize>,
 }
 
 #[derive(Debug, Default, PartialEq, Clone, Copy, Deserialize)]

@@ -4,7 +4,6 @@ use crate::model::{BehaviorType, GameInteraction, Position};
 use crate::sprite::{Sprite, SpriteMutation};
 
 pub trait BehaviorState {
-    // TODO - Extract to derived
     fn start(&mut self, now: f64);
 
     fn stop(&mut self, now: f64);
@@ -17,6 +16,8 @@ pub trait BehaviorState {
             false => self.stop(now),
         }
     }
+
+    fn clean_interaction(&mut self);
 }
 
 pub trait Behavior: BehaviorState {
@@ -25,8 +26,6 @@ pub trait Behavior: BehaviorState {
     fn get_interaction(&self) -> Option<GameInteraction> {
         return None;
     }
-
-    fn clean_interaction(&mut self) {}
 
     fn execute(
         &mut self,
