@@ -56,17 +56,24 @@ impl Sprite {
         };
 
         sprite.text_overlay = match text_overlay_data {
-            Some(data) => Some(TextOverlay::new(
-                data,
-                sprite.drawing_state.cells.get(0).unwrap(),
-                &sprite.position,
-            )),
+            Some(data) => Some(TextOverlay::new(data, &sprite)),
             None => None,
         };
 
         sprite.outlines = Outline::get_outlines(&sprite, exact_outlines);
 
         sprite
+    }
+
+    pub fn dimensions(&self) -> SpriteCell {
+        let active_cell = DrawingState::get_active_cell(&self);
+
+        return SpriteCell {
+            left: self.position.left,
+            top: self.position.top,
+            width: active_cell.width,
+            height: active_cell.height,
+        };
     }
 
     pub fn create_sprites(

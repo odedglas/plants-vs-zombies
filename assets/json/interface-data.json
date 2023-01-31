@@ -46,7 +46,7 @@
     "text_overlay": {
       "text": "Playa Name",
       "size": 24,
-      "offset": { "left": 0, "top":  32 }
+      "offset": { "left": 0, "top":  34 }
     }
   },
   "SelectorWoodSign2": {
