@@ -5,10 +5,11 @@ use js_sys::Math;
 use web_sys::HtmlImageElement;
 
 use crate::log;
-use crate::model::{BehaviorData, Position, SpriteCell, SpriteData};
+use crate::model::{BehaviorData, Position, SpriteCell, SpriteData, TextOverlayData};
 use crate::resource_loader::{Resource, ResourceKind, Resources};
 use crate::sprite::behavior::{Behavior, BehaviorManager};
 use crate::sprite::drawing_state::DrawingState;
+use crate::sprite::text_overlay::TextOverlay;
 use crate::sprite::{Outline, SpriteMutation};
 
 pub struct Sprite {
@@ -20,6 +21,7 @@ pub struct Sprite {
     pub behaviors: RefCell<Vec<Box<dyn Behavior>>>,
     pub image: Option<Weak<HtmlImageElement>>,
     pub drawing_state: DrawingState,
+    pub text_overlay: Option<TextOverlay>,
 }
 
 impl Sprite {
@@ -32,6 +34,7 @@ impl Sprite {
         scale: f64,
         behaviors: &Vec<BehaviorData>,
         exact_outlines: bool,
+        text_overlay_data: &Option<TextOverlayData>,
     ) -> Sprite {
         let sprite_behaviors = RefCell::new(
             behaviors
@@ -49,6 +52,16 @@ impl Sprite {
             drawing_state: DrawingState::new(cells, scale),
             outlines: vec![],
             behaviors: sprite_behaviors,
+            text_overlay: None,
+        };
+
+        sprite.text_overlay = match text_overlay_data {
+            Some(data) => Some(TextOverlay::new(
+                data,
+                sprite.drawing_state.cells.get(0).unwrap(),
+                &sprite.position,
+            )),
+            None => None,
         };
 
         sprite.outlines = Outline::get_outlines(&sprite, exact_outlines);
@@ -81,6 +94,7 @@ impl Sprite {
             scale,
             behaviors,
             exact_outlines,
+            text_overlay,
             ..
         } = data;
 
@@ -98,6 +112,7 @@ impl Sprite {
                     scale,
                     &behaviors,
                     exact_outlines,
+                    &text_overlay,
                 )
             })
             .collect()

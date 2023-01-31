@@ -42,7 +42,12 @@
   },
   "SelectorWoodSign1": {
     "constructor": "Sprite",
-    "position": [{ "left": 20, "top": -8 }]
+    "position": [{ "left": 20, "top": -8 }],
+    "text_overlay": {
+      "text": "Playa Name",
+      "size": 24,
+      "offset": { "left": 0, "top":  32 }
+    }
   },
   "SelectorWoodSign2": {
     "constructor": "Sprite",

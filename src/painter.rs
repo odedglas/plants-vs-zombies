@@ -4,7 +4,7 @@ use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, HtmlImageElement};
 
 use crate::constants::{CANVAS_HEIGHT, CANVAS_HEIGHT_F64, CANVAS_WIDTH, CANVAS_WIDTH_F64};
 use crate::model::{Position, Size, SpriteCell};
-use crate::sprite::{DrawingState, Sprite};
+use crate::sprite::{DrawingState, Sprite, TextOverlay};
 use crate::web_utils::{create_canvas, get_canvas_context};
 
 pub struct Painter {
@@ -42,7 +42,9 @@ impl Painter {
             );
         }
 
-        // TODO TextSprite case
+        if let Some(text_overlay) = &sprite.text_overlay {
+            self.draw_text_overlay(text_overlay);
+        }
     }
 
     pub fn draw_image(
@@ -65,6 +67,28 @@ impl Painter {
                 cell.height * scale,
             )
             .unwrap();
+    }
+
+    pub fn draw_text_overlay(&self, text_overlay: &TextOverlay) {
+        self.context.save();
+
+        let font_size = format!("{}px Kavivanar", text_overlay.size);
+
+        self.context.set_font(&font_size);
+        self.context.set_text_baseline("top");
+
+        let position = &text_overlay.position.unwrap();
+        let offset = &text_overlay.offset.unwrap_or(Position::default());
+
+        self.context
+            .fill_text(
+                &text_overlay.text,
+                position.left + offset.left,
+                position.top + offset.top,
+            )
+            .unwrap();
+
+        self.context.restore();
     }
 
     pub fn in_path(
