@@ -16,6 +16,8 @@ pub trait BehaviorState {
             false => self.stop(now),
         }
     }
+
+    fn clean_interaction(&mut self);
 }
 
 pub trait Behavior: BehaviorState {
@@ -24,8 +26,6 @@ pub trait Behavior: BehaviorState {
     fn get_interaction(&self) -> Option<GameInteraction> {
         return None;
     }
-
-    fn clean_interaction(&mut self) {}
 
     fn execute(
         &mut self,

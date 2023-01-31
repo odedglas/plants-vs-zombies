@@ -23,8 +23,8 @@ impl DrawingState {
             .cells
             .get(drawing_state.active_cell)
             .expect(&format!(
-                "[Sprite] Cannot get drawing state cell of {}",
-                sprite.name
+                "[Sprite] Cannot get drawing state cell of {} / {}",
+                sprite.name, drawing_state.active_cell
             ));
 
         return cell;
@@ -43,7 +43,7 @@ impl DrawingState {
         let current = self.active_cell;
         let max = self.cells.len();
 
-        let next_index = match current < max {
+        let next_index = match current < max - 1 {
             true => current + 1,
             false => 0,
         };

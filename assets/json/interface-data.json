@@ -38,7 +38,7 @@
   "SelectorZombieHand": {
     "constructor": "Sprite",
     "position": [{ "left": 262, "top": 264 }],
-    "behaviors": [{ "name": "Cycle", "duration": 120 }]
+    "behaviors": [{ "name": "Animate", "duration": 120, "callback": "StartLevel" }]
   },
   "SelectorWoodSign1": {
     "constructor": "Sprite",

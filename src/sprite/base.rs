@@ -109,6 +109,10 @@ impl Sprite {
                 self.drawing_state.hover(hovered);
             }
 
+            if let Some(_) = mutation.cycle_cells {
+                self.drawing_state.cycle_cells();
+            }
+
             if let Some(position) = mutation.position {
                 log!("TODO - Sprite position Changed")
             }

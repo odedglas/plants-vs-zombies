@@ -1,13 +1,13 @@
+mod animate;
 mod base;
 mod click;
-mod cycle;
 mod hover;
 
 use std::slice::Iter;
 
+pub use animate::Animate;
 pub use base::Behavior;
 pub use click::Click;
-pub use cycle::Cycle;
 pub use hover::Hover;
 use web_sys::CanvasRenderingContext2d;
 
@@ -23,7 +23,12 @@ impl BehaviorManager {
 
         match behavior_type {
             BehaviorType::Click => Box::new(Click::new(data.callback.unwrap())),
-            BehaviorType::Cycle => Box::new(Cycle::new()),
+            BehaviorType::Animate => Box::new(Animate::new(
+                data.duration,
+                data.callback,
+                data.callback_delay,
+                data.max_cycles,
+            )),
             BehaviorType::Hover => Box::new(Hover::new()),
         }
     }

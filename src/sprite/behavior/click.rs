@@ -36,10 +36,6 @@ impl Behavior for Click {
         None
     }
 
-    fn clean_interaction(&mut self) {
-        self.interaction_active = false;
-    }
-
     fn execute(
         &mut self,
         sprite: &Sprite,
