@@ -33,8 +33,6 @@ impl Animate {
             ..Default::default()
         }
     }
-
-    pub fn delayed_callback(&mut self) {}
 }
 
 impl Behavior for Animate {
