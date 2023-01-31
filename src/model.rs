@@ -1,7 +1,7 @@
 use std::fmt;
 
 use serde_derive::Deserialize;
-use web_sys::MouseEvent;
+use web_sys::{MouseEvent, TextMetrics};
 
 #[derive(Debug, Default)]
 pub struct GameState {
@@ -69,6 +69,7 @@ pub struct SpriteData {
     pub scale: f64,
     pub exact_outlines: bool,
     pub behaviors: Vec<BehaviorData>,
+    pub text_overlay: Option<TextOverlayData>,
 }
 
 impl Default for SpriteData {
@@ -79,6 +80,7 @@ impl Default for SpriteData {
             scale: 1.0,
             exact_outlines: false,
             behaviors: vec![],
+            text_overlay: None,
         }
     }
 }
@@ -117,6 +119,14 @@ pub struct BehaviorData {
     pub max_cycles: Option<usize>,
 }
 
+#[derive(Debug, Default, Clone, Deserialize)]
+#[serde(default)]
+pub struct TextOverlayData {
+    pub text: String,
+    pub size: usize,
+    pub offset: Option<Position>,
+}
+
 #[derive(Debug, Default, PartialEq, Clone, Copy, Deserialize)]
 pub struct Position {
     pub left: f64,
@@ -142,12 +152,27 @@ pub struct Size {
     pub height: f64,
 }
 
+impl Size {
+    pub fn new(width: f64, height: f64) -> Self {
+        Size { width, height }
+    }
+}
+
 impl From<&SpriteCell> for Size {
     fn from(cell: &SpriteCell) -> Size {
         Size {
             width: cell.width,
             height: cell.height,
         }
+    }
+}
+
+impl From<TextMetrics> for Size {
+    fn from(text_metrics: TextMetrics) -> Self {
+        Size::new(
+            text_metrics.width(),
+            text_metrics.font_bounding_box_descent(),
+        )
     }
 }
 

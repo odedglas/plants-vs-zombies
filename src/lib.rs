@@ -6,6 +6,7 @@ mod constants;
 mod engine;
 mod fps;
 mod game;
+mod location_builder;
 mod model;
 mod painter;
 mod resource_loader;
