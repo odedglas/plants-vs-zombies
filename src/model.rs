@@ -37,6 +37,7 @@ impl fmt::Display for GameMouseEvent {
 pub enum Callback {
     ShowZombieHand,
     StartLevel,
+    BackHome,
 }
 
 impl Default for Callback {

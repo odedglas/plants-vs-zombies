@@ -118,6 +118,7 @@ impl Game {
         match callback {
             Callback::ShowZombieHand => self.show_zombie_hand_animation(),
             Callback::StartLevel => self.start_level_scene(),
+            Callback::BackHome => self.start_home_scene()
         }
     }
 
@@ -135,7 +136,7 @@ impl Game {
     fn start_level_scene(&mut self) {
         self.reset_state();
 
-        BattleScene::choose_plants(self);
+        BattleScene::start(self);
     }
 
     pub fn show_zombie_hand_animation(&mut self) {

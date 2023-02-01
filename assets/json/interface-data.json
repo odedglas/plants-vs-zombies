@@ -77,7 +77,15 @@
   "Button": {
     "constructor": "Sprite",
     "position": [{ "left": 787, "top": 0 }],
-    "behaviors": [{ "name": "Click" }],
+    "behaviors": [{ "name": "Click", "callback": "BackHome" }],
+    "text_overlay": {
+      "text": "Back",
+      "size": 24,
+      "offset": {
+        "left": 0,
+        "top": 4
+      }
+    },
     "order": 4
   },
   "ShovelBack": {
