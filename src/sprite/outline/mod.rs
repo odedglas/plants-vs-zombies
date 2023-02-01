@@ -56,8 +56,8 @@ impl Outline {
         // Get measurements painter for off screen drawings
         let painter = Painter::get_measurements_painter(size);
 
-        let image_draw_start = Position::new(0.0, 0.0);
-        painter.draw_image(&image_ref, &image_draw_start, cell, scale);
+        let starting_point = Position::new(0.0, 0.0);
+        painter.draw_image(&image_ref, &starting_point, &starting_point, cell, scale);
 
         let image_data = painter
             .context

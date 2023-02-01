@@ -5,7 +5,7 @@ use crate::log;
 use crate::model::{BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position};
 use crate::painter::Painter;
 use crate::resource_loader::Resources;
-use crate::scene::HomeScene;
+use crate::scene::{BattleScene, HomeScene};
 use crate::sprite::{BehaviorManager, Sprite};
 use crate::timers::GameTime;
 
@@ -109,12 +109,12 @@ impl Game {
         game_interactions
             .iter()
             .for_each(|interaction| match interaction {
-                GameInteraction::SpriteClick(callback) => self.on_sprite_click(callback),
-                GameInteraction::AnimationCallback(callback) => self.on_sprite_click(callback),
+                GameInteraction::SpriteClick(callback) => self.interaction_callback(callback),
+                GameInteraction::AnimationCallback(callback) => self.interaction_callback(callback),
             });
     }
 
-    pub fn on_sprite_click(&mut self, callback: &Callback) {
+    pub fn interaction_callback(&mut self, callback: &Callback) {
         match callback {
             Callback::ShowZombieHand => self.show_zombie_hand_animation(),
             Callback::StartLevel => self.start_level_scene(),
@@ -128,11 +128,14 @@ impl Game {
 
     fn start_home_scene(&mut self) {
         self.reset_state();
+
         HomeScene::start(self);
     }
 
     fn start_level_scene(&mut self) {
-        log!("[Game Controller] Starting Level Scene!!");
+        self.reset_state();
+
+        BattleScene::choose_plants(self);
     }
 
     pub fn show_zombie_hand_animation(&mut self) {

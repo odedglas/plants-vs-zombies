@@ -68,6 +68,7 @@ pub struct SpriteData {
     pub order: usize,
     pub scale: f64,
     pub exact_outlines: bool,
+    pub draw_offset: Position,
     pub behaviors: Vec<BehaviorData>,
     pub text_overlay: Option<TextOverlayData>,
 }
@@ -76,6 +77,7 @@ impl Default for SpriteData {
     fn default() -> Self {
         Self {
             position: vec![Position::default()],
+            draw_offset: Position::default(),
             order: 1,
             scale: 1.0,
             exact_outlines: false,

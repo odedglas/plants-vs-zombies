@@ -1,4 +1,4 @@
-use crate::model::SpriteCell;
+use crate::model::{Position, SpriteCell};
 use crate::sprite::Sprite;
 
 #[derive(Debug, Default)]
@@ -6,13 +6,15 @@ pub struct DrawingState {
     pub cells: Vec<SpriteCell>,
     pub active_cell: usize,
     pub scale: f64,
+    pub offset: Position,
 }
 
 impl DrawingState {
-    pub fn new(cells: Vec<SpriteCell>, scale: f64) -> Self {
+    pub fn new(cells: Vec<SpriteCell>, scale: f64, offset: Position) -> Self {
         Self {
             scale,
             cells,
+            offset,
             ..DrawingState::default()
         }
     }

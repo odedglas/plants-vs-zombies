@@ -1,5 +1,5 @@
 {
-  "Background1": [{ "left": 0, "top": 0, "width": 1400, "height": 600 }],
+  "BattleBackground": [{ "left": 0, "top": 0, "width": 1400, "height": 600 }],
   "Button": [{ "left": 350, "top": 1673, "width": 113, "height": 41 }],
   "FinalWave": [{ "left": 1618, "top": 1820, "width": 252, "height": 71 }],
   "FlagMeterEmpty": [{ "left": 0, "top": 1860, "width": 157, "height": 21 }],

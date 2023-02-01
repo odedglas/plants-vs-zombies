@@ -1,4 +1,3 @@
-
 use crate::location_builder::LocationBuilder;
 use crate::model::{Position, TextOverlayData};
 use crate::painter::Painter;

@@ -58,11 +58,10 @@
     "cells": [{ "left": 0, "top": 0, "width": 92, "height": 40 }],
     "position": [{ "left": 34, "top": 179 }]
   },
-  "Background1": {
+  "BattleBackground": {
     "constructor": "Sprite",
     "position": [{ "left": 0, "top": 0 }],
-    "behaviors": [{ "name": "Scroll", "distance": 385, "rate": 350 }],
-    "offset": { "left": 115, "top": 0 },
+    "draw_offset": { "left": 115, "top": 0 },
     "order": 0
   },
   "Sun": {

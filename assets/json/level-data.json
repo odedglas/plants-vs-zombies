@@ -3,7 +3,7 @@
     "name": "1-1",
     "flag_num": 3,
     "scenes": [
-      "Background1",
+      "BattleBackground",
       "ShovelBack",
       "Shovel",
       "Button",
