@@ -38,6 +38,7 @@ pub enum Callback {
     ShowZombieHand,
     StartLevel,
     BackHome,
+    ShowPlantsChooser,
 }
 
 impl Default for Callback {
@@ -93,6 +94,7 @@ pub enum BehaviorType {
     Hover,
     Click,
     Animate,
+    Scroll,
 }
 
 impl Default for BehaviorType {
@@ -107,6 +109,7 @@ impl BehaviorType {
             "Click" => BehaviorType::Click,
             "Hover" => BehaviorType::Hover,
             "Animate" => BehaviorType::Animate,
+            "Scroll" => BehaviorType::Scroll,
             _ => BehaviorType::default(),
         }
     }
@@ -117,6 +120,7 @@ impl BehaviorType {
 pub struct BehaviorData {
     pub name: String,
     pub duration: f64,
+    pub distance: f64,
     pub callback: Option<Callback>,
     pub callback_delay: Option<f64>,
     pub max_cycles: Option<usize>,

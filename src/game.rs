@@ -118,11 +118,12 @@ impl Game {
         match callback {
             Callback::ShowZombieHand => self.show_zombie_hand_animation(),
             Callback::StartLevel => self.start_level_scene(),
-            Callback::BackHome => self.start_home_scene()
+            Callback::BackHome => self.start_home_scene(),
+            Callback::ShowPlantsChooser => self.show_plans_chooser(),
         }
     }
 
-    // Game Scene //
+    // Scenes //
     pub fn game_over(&mut self) {
         self.painter.clear();
     }
@@ -141,6 +142,10 @@ impl Game {
 
     pub fn show_zombie_hand_animation(&mut self) {
         HomeScene::show_zombie_hand(self);
+    }
+
+    pub fn show_plans_chooser(&mut self) {
+        BattleScene::show_plants_chooser(self);
     }
 
     // Game State Mutations //

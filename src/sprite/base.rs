@@ -138,6 +138,10 @@ impl Sprite {
                 self.drawing_state.cycle_cells();
             }
 
+            if let Some(offset) = mutation.offset {
+                self.drawing_state.offset = offset;
+            }
+
             if let Some(position) = mutation.position {
                 log!("TODO - Sprite position Changed")
             }

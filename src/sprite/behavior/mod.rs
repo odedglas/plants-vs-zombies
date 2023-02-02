@@ -2,6 +2,7 @@ mod animate;
 mod base;
 mod click;
 mod hover;
+mod scroll;
 
 use std::slice::Iter;
 
@@ -9,6 +10,7 @@ pub use animate::Animate;
 pub use base::Behavior;
 pub use click::Click;
 pub use hover::Hover;
+pub use scroll::Scroll;
 use web_sys::CanvasRenderingContext2d;
 
 use crate::model::{BehaviorData, BehaviorType, GameInteraction, Position};
@@ -30,6 +32,11 @@ impl BehaviorManager {
                 data.max_cycles,
             )),
             BehaviorType::Hover => Box::new(Hover::new()),
+            BehaviorType::Scroll => Box::new(Scroll::new(
+                data.distance,
+                data.duration,
+                data.callback.unwrap(),
+            )),
         }
     }
 
