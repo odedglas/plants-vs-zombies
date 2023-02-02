@@ -3,7 +3,7 @@ use web_sys::CanvasRenderingContext2d;
 
 use super::base::Behavior;
 use crate::log;
-use crate::model::{BehaviorType, Callback, Position};
+use crate::model::{BehaviorType, Callback, GameInteraction, Position};
 use crate::sprite::{Sprite, SpriteMutation};
 
 const SCROLL_ADDITION: f64 = 8.5;
@@ -36,6 +36,14 @@ impl Behavior for Scroll {
         BehaviorType::Scroll
     }
 
+    fn get_interaction(&self) -> Option<GameInteraction> {
+        if self.interaction_active {
+            return Some(GameInteraction::SpriteClick(self.callback));
+        }
+
+        None
+    }
+
     fn execute(
         &mut self,
         sprite: &Sprite,
@@ -48,10 +56,14 @@ impl Behavior for Scroll {
         let should_scroll = now - self.last_tick >= self.duration;
 
         if finished {
-            log!("Finished scrolling Triggering callback!");
+            self.stop(now);
+            self.interaction_active = true;
+
             return None;
         }
 
+        // TODO - Needs to consider also directions e.g Starts with right, a ends with a left once re-toggled
+        // State will be preserved so we can tell if we directed.
         if should_scroll {
             self.last_tick = now;
             self.scrolled_distance += SCROLL_ADDITION;

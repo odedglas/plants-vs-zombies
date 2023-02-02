@@ -67,7 +67,7 @@
         "name": "Scroll",
         "callback": "ShowPlantsChooser",
         "distance": 335,
-        "duration": 15
+        "duration": 12
       }
     ],
     "order": 0
@@ -82,7 +82,7 @@
     ],
     "order": 3
   },
-  "Button": {
+  "BackButton": {
     "constructor": "Sprite",
     "position": [{ "left": 787, "top": 0 }],
     "behaviors": [{ "name": "Click", "callback": "BackHome" }],
@@ -130,7 +130,13 @@
   },
   "SeedChooserBackground": {
     "constructor": "Sprite",
-    "position": [{ "left": 100, "top": 0 }]
+    "position": [{ "left": 100, "top": 0 }],
+    "text_overlay": {
+      "text": "Choose your Plants",
+      "size": 20,
+      "offset": { "left": 0, "top":  8 },
+      "location_type": "Top"
+    }
   },
   "SelectCardButton": {
     "constructor": "Sprite",

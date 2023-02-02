@@ -1,5 +1,5 @@
 use crate::location_builder::LocationBuilder;
-use crate::model::{Position, TextOverlayData};
+use crate::model::{LocationType, Position, TextOverlayData};
 use crate::painter::Painter;
 use crate::sprite::Sprite;
 
@@ -9,6 +9,7 @@ pub struct TextOverlay {
     pub text: String,
     pub size: usize,
     pub position: Option<Position>,
+    pub location_type: LocationType,
 }
 
 impl TextOverlay {
@@ -18,6 +19,7 @@ impl TextOverlay {
             size: data.size,
             offset: data.offset,
             position: None,
+            location_type: data.location_type,
         };
 
         overlay.calculate_text_position(source_sprite);
@@ -30,6 +32,10 @@ impl TextOverlay {
         let text_size = Painter::measure_text(&self.text, self.size);
 
         // Placing text at the center of the given source sprite.
-        self.position = Some(LocationBuilder::place_at_center(source_sprite, text_size));
+        self.position = Some(LocationBuilder::locate_text_overlay(
+            source_sprite,
+            text_size,
+            &self.location_type,
+        ));
     }
 }

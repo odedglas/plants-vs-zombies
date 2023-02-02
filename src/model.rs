@@ -126,12 +126,25 @@ pub struct BehaviorData {
     pub max_cycles: Option<usize>,
 }
 
+#[derive(Debug, Clone, Copy, Deserialize)]
+pub enum LocationType {
+    Center,
+    Top,
+}
+
+impl Default for LocationType {
+    fn default() -> Self {
+        LocationType::Center
+    }
+}
+
 #[derive(Debug, Default, Clone, Deserialize)]
 #[serde(default)]
 pub struct TextOverlayData {
     pub text: String,
     pub size: usize,
     pub offset: Option<Position>,
+    pub location_type: LocationType,
 }
 
 #[derive(Debug, Default, PartialEq, Clone, Copy, Deserialize)]
