@@ -18,7 +18,10 @@
   "SeedChooserBackground": [
     { "left": 498, "top": 1200, "width": 465, "height": 554 }
   ],
-  "SelectCardButton": [
+  "OkButton": [
+    { "left": 1083, "top": 1859, "width": 65, "height": 35 }
+  ],
+  "ResetButton": [
     { "left": 1083, "top": 1859, "width": 65, "height": 35 }
   ],
   "SelectorAdventureButton": [
@@ -64,7 +67,7 @@
   ],
   "Shovel": [{ "left": 1623, "top": 1520, "width": 77, "height": 55 }],
   "ShovelBack": [{ "left": 1012, "top": 1859, "width": 71, "height": 35 }],
-  "SunBack": [{ "left": 350, "top": 1639, "width": 123, "height": 34 }],
+  "SunScore": [{ "left": 350, "top": 1639, "width": 123, "height": 34 }],
   "Sun": [
     { "left": 1702, "top": 1283, "width": 79, "height": 79 },
     { "left": 1400, "top": 409, "width": 79, "height": 79 },

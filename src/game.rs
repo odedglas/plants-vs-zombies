@@ -5,7 +5,7 @@ use crate::log;
 use crate::model::{BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position};
 use crate::painter::Painter;
 use crate::resource_loader::Resources;
-use crate::scene::{BattleScene, HomeScene};
+use crate::scene::{BattleScene, HomeScene, PlantsChooser};
 use crate::sprite::{BehaviorManager, Sprite};
 use crate::timers::GameTime;
 
@@ -119,7 +119,9 @@ impl Game {
             Callback::ShowZombieHand => self.show_zombie_hand_animation(),
             Callback::StartLevel => self.start_level_scene(),
             Callback::BackHome => self.start_home_scene(),
-            Callback::ShowPlantsChooser => self.show_plans_chooser(),
+            Callback::ShowPlantsChooser => self.show_plants_chooser(),
+            Callback::ResetPlantsChoose => self.reset_plants_choose(),
+            Callback::StartBattle => self.start_battle_scene(),
         }
     }
 
@@ -137,15 +139,23 @@ impl Game {
     fn start_level_scene(&mut self) {
         self.reset_state();
 
-        BattleScene::start(self);
+        BattleScene::prepare(self);
     }
 
     pub fn show_zombie_hand_animation(&mut self) {
         HomeScene::show_zombie_hand(self);
     }
 
-    pub fn show_plans_chooser(&mut self) {
-        BattleScene::show_plants_chooser(self);
+    pub fn show_plants_chooser(&mut self) {
+        PlantsChooser::show(self);
+    }
+
+    pub fn reset_plants_choose(&mut self) {
+        log!("Game scene - Reset PlantsChooser");
+    }
+
+    pub fn start_battle_scene(&mut self) {
+        log!("Game scene - Start Battle");
     }
 
     // Game State Mutations //
@@ -159,6 +169,12 @@ impl Game {
         self.sprites.append(sprites);
 
         self.sprites.sort_by(|a, b| a.order.cmp(&b.order));
+    }
+
+    pub fn add_sprite(&mut self, sprite: Sprite) {
+        let mut sprites = vec![sprite];
+
+        self.add_sprites(sprites.as_mut());
     }
 
     // Getters //

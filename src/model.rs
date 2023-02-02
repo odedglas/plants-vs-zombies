@@ -39,6 +39,8 @@ pub enum Callback {
     StartLevel,
     BackHome,
     ShowPlantsChooser,
+    ResetPlantsChoose,
+    StartBattle,
 }
 
 impl Default for Callback {

@@ -138,15 +138,33 @@
       "location_type": "Top"
     }
   },
-  "SelectCardButton": {
+  "ResetButton": {
     "constructor": "Sprite",
     "position": [
-      { "left": 265, "top": 495 },
+      { "left": 265, "top": 495 }
+    ],
+    "behaviors": [{ "name": "Click",
+      "callback": "ResetPlantsChoose"
+    }],
+    "text_overlay": {
+      "text": "Reset",
+      "size": 20
+    }
+  },
+  "OkButton": {
+    "constructor": "Sprite",
+    "position": [
       { "left": 340, "top": 495 }
     ],
-    "behaviors": [{ "name": "Click" }]
+    "behaviors": [{ "name": "Click",
+      "callback": "StartBattle"
+    }],
+    "text_overlay": {
+      "text": "Start",
+      "size": 20
+    }
   },
-  "SunBack": {
+  "SunScore": {
     "constructor": "Sprite",
     "position": [{ "left": 100, "top": 0 }],
     "order": 4,
