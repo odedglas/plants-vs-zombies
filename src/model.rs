@@ -40,6 +40,7 @@ pub enum Callback {
     BackHome,
     ShowPlantsChooser,
     ResetPlantsChoose,
+    EnterBattleAnimation,
     StartBattle,
 }
 

@@ -24,7 +24,11 @@ impl PlantsChooser {
     }
 
     pub fn clear(game: &mut Game) {
-        // TODO Game clear by sprite.
+        let mut scene_sprites = vec!["SunScore"];
+
+        scene_sprites.append(Self::chooser_sprites().as_mut());
+
+        game.remove_sprites(scene_sprites);
     }
 
     fn create_bottom_sun_score(game: &mut Game) {

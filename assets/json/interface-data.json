@@ -67,7 +67,7 @@
         "name": "Scroll",
         "callback": "ShowPlantsChooser",
         "distance": 335,
-        "duration": 12
+        "duration": 18
       }
     ],
     "order": 0
@@ -157,7 +157,7 @@
       { "left": 340, "top": 495 }
     ],
     "behaviors": [{ "name": "Click",
-      "callback": "StartBattle"
+      "callback": "EnterBattleAnimation"
     }],
     "text_overlay": {
       "text": "Start",

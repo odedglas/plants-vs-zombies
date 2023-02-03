@@ -1,5 +1,6 @@
 use crate::game::Game;
-use crate::model::BehaviorType;
+use crate::log;
+use crate::model::{BehaviorType, Callback};
 use crate::resource_loader::ResourceKind;
 use crate::scene::PlantsChooser;
 use crate::sprite::{BehaviorManager, Sprite};
@@ -14,11 +15,11 @@ impl BattleScene {
             &game.resources,
         );
 
-        // Show Enemies (Zombies)
+        // TODO - Show Enemies (Zombies)
 
         // Trigger background scroll
         BehaviorManager::toggle_behaviors(
-            sprites.iter(),
+            &sprites,
             &[BehaviorType::Scroll],
             true,
             game.game_time.time,
@@ -27,15 +28,20 @@ impl BattleScene {
         game.add_sprites(sprites.as_mut());
     }
 
-    pub fn start(game: &mut Game) {
+    pub fn enter(game: &mut Game) {
+        let now = game.game_time.time;
+
         PlantsChooser::clear(game);
 
-        // TODO - Game find by name.
-        /*        BehaviorManager::toggle_behaviors(
-            sprites.iter(),
-            &[BehaviorType::Scroll],
-            true,
-            game.game_time.time,
-        );*/
+        // Trigger background reverse scroll behavior
+        let background = game.get_sprite("BattleBackground");
+        let scroll = BehaviorManager::get_sprite_behavior(background, BehaviorType::Scroll);
+
+        scroll.reverse(now, Callback::StartBattle);
+    }
+
+    pub fn start(game: &mut Game) {
+        log!("Starting Battle Scene!");
+        todo!()
     }
 }

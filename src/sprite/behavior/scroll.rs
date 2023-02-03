@@ -17,6 +17,7 @@ pub struct Scroll {
     duration: f64,
     last_tick: f64,
     scrolled_distance: f64,
+    direction: i32,
 }
 
 impl Scroll {
@@ -25,6 +26,7 @@ impl Scroll {
             callback,
             duration,
             distance,
+            direction: 1,
             name: BehaviorType::Click,
             ..Default::default()
         }
@@ -44,6 +46,17 @@ impl Behavior for Scroll {
         None
     }
 
+    fn reverse(&mut self, now: f64, callback: Callback) {
+        log!("Reversing scroll behavior nigga");
+        self.direction *= -1;
+        self.scrolled_distance = 0.0;
+        self.callback = callback;
+
+        if !self.is_running() {
+            self.start(now);
+        }
+    }
+
     fn execute(
         &mut self,
         sprite: &Sprite,
@@ -52,7 +65,7 @@ impl Behavior for Scroll {
         _mouse: &Position,
         _context: &CanvasRenderingContext2d,
     ) -> Option<SpriteMutation> {
-        let finished = self.scrolled_distance >= self.distance;
+        let finished = self.scrolled_distance.abs() >= self.distance;
         let should_scroll = now - self.last_tick >= self.duration;
 
         if finished {
@@ -62,16 +75,17 @@ impl Behavior for Scroll {
             return None;
         }
 
-        // TODO - Needs to consider also directions e.g Starts with right, a ends with a left once re-toggled
         // State will be preserved so we can tell if we directed.
         if should_scroll {
+            let addition = SCROLL_ADDITION * self.direction as f64;
             self.last_tick = now;
-            self.scrolled_distance += SCROLL_ADDITION;
+            self.scrolled_distance += addition;
+
             let current_offset = &sprite.drawing_state.offset;
 
             return Some(SpriteMutation::new().offset(Position::new(
                 current_offset.top,
-                current_offset.left + SCROLL_ADDITION,
+                current_offset.left + addition,
             )));
         }
 

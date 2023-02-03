@@ -15,7 +15,7 @@ pub struct Game {
     pub game_time: GameTime,
     pub mouse_position: Position,
 
-    sprites: Vec<Sprite>,
+    pub sprites: Vec<Sprite>,
     state: GameState,
     fps: Fps,
 }
@@ -94,7 +94,7 @@ impl Game {
     }
 
     pub fn toggle_game_behavior(&mut self, active: bool, types: &[BehaviorType]) {
-        BehaviorManager::toggle_behaviors(self.sprites.iter(), types, active, self.game_time.time)
+        BehaviorManager::toggle_behaviors(&self.sprites, types, active, self.game_time.time)
     }
 
     // Game Actions //
@@ -121,7 +121,8 @@ impl Game {
             Callback::BackHome => self.start_home_scene(),
             Callback::ShowPlantsChooser => self.show_plants_chooser(),
             Callback::ResetPlantsChoose => self.reset_plants_choose(),
-            Callback::StartBattle => self.start_battle_scene(),
+            Callback::EnterBattleAnimation => self.enter_battle_animation(),
+            Callback::StartBattle => self.start_battle(),
         }
     }
 
@@ -152,10 +153,15 @@ impl Game {
 
     pub fn reset_plants_choose(&mut self) {
         log!("Game scene - Reset PlantsChooser");
+        todo!()
     }
 
-    pub fn start_battle_scene(&mut self) {
-        log!("Game scene - Start Battle");
+    pub fn enter_battle_animation(&mut self) {
+        BattleScene::enter(self)
+    }
+
+    pub fn start_battle(&mut self) {
+        BattleScene::start(self);
     }
 
     // Game State Mutations //
@@ -177,7 +183,21 @@ impl Game {
         self.add_sprites(sprites.as_mut());
     }
 
+    pub fn remove_sprites(&mut self, sprites: Vec<&str>) {
+        self.sprites
+            .retain(|sprite| !sprites.contains(&sprite.name.trim()))
+    }
+
     // Getters //
+    pub fn get_sprite(&mut self, sprite_name: &str) -> &mut Sprite {
+        self.sprites
+            .iter_mut()
+            .find(|sprite| sprite_name == sprite.name)
+            .expect(&format!(
+                "[Game Controller] Cannot find Sprite {}",
+                &sprite_name
+            ))
+    }
 
     pub fn canvas(&self) -> &HtmlCanvasElement {
         &self.painter.canvas

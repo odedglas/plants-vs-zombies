@@ -1,6 +1,6 @@
 use web_sys::CanvasRenderingContext2d;
 
-use crate::model::{BehaviorType, GameInteraction, Position};
+use crate::model::{BehaviorType, Callback, GameInteraction, Position};
 use crate::sprite::{Sprite, SpriteMutation};
 
 pub trait BehaviorState {
@@ -26,6 +26,8 @@ pub trait Behavior: BehaviorState {
     fn get_interaction(&self) -> Option<GameInteraction> {
         return None;
     }
+
+    fn reverse(&mut self, _now: f64, _callback: Callback) {}
 
     fn execute(
         &mut self,

@@ -4,8 +4,6 @@ mod click;
 mod hover;
 mod scroll;
 
-use std::slice::Iter;
-
 pub use animate::Animate;
 pub use base::Behavior;
 pub use click::Click;
@@ -58,18 +56,32 @@ impl BehaviorManager {
     }
 
     pub fn toggle_behaviors(
-        sprites: Iter<Sprite>,
+        sprites: &Vec<Sprite>,
         behavior_types: &[BehaviorType],
         should_run: bool,
         now: f64,
     ) {
-        sprites.for_each(|sprite| {
+        sprites.iter().for_each(|sprite| {
             sprite
                 .mutable_behaviors()
                 .iter_mut()
                 .filter(|behavior| behavior_types.contains(&behavior.name()))
                 .for_each(|behavior| behavior.toggle(should_run, now));
         });
+    }
+
+    pub fn get_sprite_behavior(
+        sprite: &mut Sprite,
+        behavior: BehaviorType,
+    ) -> &mut Box<dyn Behavior> {
+        let behavior = sprite
+            .behaviors
+            .get_mut()
+            .iter_mut()
+            .find(|sprite_behavior| behavior == sprite_behavior.name())
+            .expect(&format!("[BehaviorManager] Cannot find Sprite behavior: {:?}", behavior));
+
+        behavior
     }
 
     pub fn collect_interactions(sprite: &Sprite) -> Vec<GameInteraction> {
