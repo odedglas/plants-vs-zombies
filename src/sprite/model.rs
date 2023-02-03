@@ -2,6 +2,7 @@ use crate::model::Position;
 
 pub struct SpriteMutation {
     pub position: Option<Position>,
+    pub offset: Option<Position>,
     pub hovered: Option<bool>,
     pub cycle_cells: Option<bool>,
 }
@@ -10,6 +11,7 @@ impl SpriteMutation {
     pub fn new() -> Self {
         Self {
             position: None,
+            offset: None,
             hovered: None,
             cycle_cells: None,
         }
@@ -17,6 +19,12 @@ impl SpriteMutation {
 
     pub fn position(mut self, position: Position) -> Self {
         self.position = Some(position);
+
+        self
+    }
+
+    pub fn offset(mut self, offset: Position) -> Self {
+        self.offset = Some(offset);
 
         self
     }

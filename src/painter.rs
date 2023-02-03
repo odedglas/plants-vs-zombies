@@ -37,6 +37,7 @@ impl Painter {
             self.draw_image(
                 &image_ref,
                 &sprite.position,
+                &sprite.drawing_state.offset,
                 cell,
                 sprite.drawing_state.scale,
             );
@@ -51,9 +52,13 @@ impl Painter {
         &self,
         image: &Rc<HtmlImageElement>,
         pos: &Position,
+        offset: &Position,
         cell: &SpriteCell,
         scale: f64,
     ) {
+        // Setting translate if defined, which will cause a "partial image" view.
+        self.context.translate(-offset.left, -offset.top).unwrap();
+
         self.context
             .draw_image_with_html_image_element_and_sw_and_sh_and_dx_and_dy_and_dw_and_dh(
                 image,
@@ -67,6 +72,9 @@ impl Painter {
                 cell.height * scale,
             )
             .unwrap();
+
+        // Restoring translate
+        self.context.translate(offset.left, offset.top).unwrap();
     }
 
     pub fn draw_text_overlay(&self, text_overlay: &TextOverlay) {

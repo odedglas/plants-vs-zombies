@@ -29,6 +29,7 @@ impl Sprite {
         name: &str,
         order: usize,
         position: Position,
+        draw_offset: Position,
         cells: Vec<SpriteCell>,
         image: Option<Weak<HtmlImageElement>>,
         scale: f64,
@@ -49,7 +50,7 @@ impl Sprite {
             order,
             position,
             image,
-            drawing_state: DrawingState::new(cells, scale),
+            drawing_state: DrawingState::new(cells, scale, draw_offset),
             outlines: vec![],
             behaviors: sprite_behaviors,
             text_overlay: None,
@@ -97,6 +98,7 @@ impl Sprite {
 
         let SpriteData {
             position,
+            draw_offset,
             order,
             scale,
             behaviors,
@@ -114,6 +116,7 @@ impl Sprite {
                     sprite_name,
                     order,
                     *position,
+                    draw_offset,
                     resource.cell,
                     resource.image,
                     scale,
@@ -135,8 +138,13 @@ impl Sprite {
                 self.drawing_state.cycle_cells();
             }
 
+            if let Some(offset) = mutation.offset {
+                self.drawing_state.offset = offset;
+            }
+
             if let Some(position) = mutation.position {
-                log!("TODO - Sprite position Changed")
+                log!("TODO - Sprite position Changed");
+                todo!()
             }
         });
     }

@@ -5,7 +5,7 @@ use crate::log;
 use crate::model::{BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position};
 use crate::painter::Painter;
 use crate::resource_loader::Resources;
-use crate::scene::HomeScene;
+use crate::scene::{BattleScene, HomeScene, PlantsChooser};
 use crate::sprite::{BehaviorManager, Sprite};
 use crate::timers::GameTime;
 
@@ -15,7 +15,7 @@ pub struct Game {
     pub game_time: GameTime,
     pub mouse_position: Position,
 
-    sprites: Vec<Sprite>,
+    pub sprites: Vec<Sprite>,
     state: GameState,
     fps: Fps,
 }
@@ -94,7 +94,7 @@ impl Game {
     }
 
     pub fn toggle_game_behavior(&mut self, active: bool, types: &[BehaviorType]) {
-        BehaviorManager::toggle_behaviors(self.sprites.iter(), types, active, self.game_time.time)
+        BehaviorManager::toggle_behaviors(&self.sprites, types, active, self.game_time.time)
     }
 
     // Game Actions //
@@ -109,34 +109,59 @@ impl Game {
         game_interactions
             .iter()
             .for_each(|interaction| match interaction {
-                GameInteraction::SpriteClick(callback) => self.on_sprite_click(callback),
-                GameInteraction::AnimationCallback(callback) => self.on_sprite_click(callback),
+                GameInteraction::SpriteClick(callback) => self.interaction_callback(callback),
+                GameInteraction::AnimationCallback(callback) => self.interaction_callback(callback),
             });
     }
 
-    pub fn on_sprite_click(&mut self, callback: &Callback) {
+    pub fn interaction_callback(&mut self, callback: &Callback) {
         match callback {
             Callback::ShowZombieHand => self.show_zombie_hand_animation(),
             Callback::StartLevel => self.start_level_scene(),
+            Callback::BackHome => self.start_home_scene(),
+            Callback::ShowPlantsChooser => self.show_plants_chooser(),
+            Callback::ResetPlantsChoose => self.reset_plants_choose(),
+            Callback::EnterBattleAnimation => self.enter_battle_animation(),
+            Callback::StartBattle => self.start_battle(),
         }
     }
 
-    // Game Scene //
+    // Scenes //
     pub fn game_over(&mut self) {
         self.painter.clear();
     }
 
     fn start_home_scene(&mut self) {
         self.reset_state();
+
         HomeScene::start(self);
     }
 
     fn start_level_scene(&mut self) {
-        log!("[Game Controller] Starting Level Scene!!");
+        self.reset_state();
+
+        BattleScene::prepare(self);
     }
 
     pub fn show_zombie_hand_animation(&mut self) {
         HomeScene::show_zombie_hand(self);
+    }
+
+    pub fn show_plants_chooser(&mut self) {
+        PlantsChooser::show(self);
+    }
+
+    pub fn reset_plants_choose(&mut self) {
+        log!("Game scene - Reset PlantsChooser");
+        todo!()
+    }
+
+    pub fn enter_battle_animation(&mut self) {
+        BattleScene::enter(self)
+    }
+
+    pub fn start_battle(&mut self) {
+        BattleScene::start(self);
     }
 
     // Game State Mutations //
@@ -152,7 +177,27 @@ impl Game {
         self.sprites.sort_by(|a, b| a.order.cmp(&b.order));
     }
 
+    pub fn add_sprite(&mut self, sprite: Sprite) {
+        let mut sprites = vec![sprite];
+
+        self.add_sprites(sprites.as_mut());
+    }
+
+    pub fn remove_sprites(&mut self, sprites: Vec<&str>) {
+        self.sprites
+            .retain(|sprite| !sprites.contains(&sprite.name.trim()))
+    }
+
     // Getters //
+    pub fn get_sprite(&mut self, sprite_name: &str) -> &mut Sprite {
+        self.sprites
+            .iter_mut()
+            .find(|sprite| sprite_name == sprite.name)
+            .expect(&format!(
+                "[Game Controller] Cannot find Sprite {}",
+                &sprite_name
+            ))
+    }
 
     pub fn canvas(&self) -> &HtmlCanvasElement {
         &self.painter.canvas

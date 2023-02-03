@@ -58,11 +58,18 @@
     "cells": [{ "left": 0, "top": 0, "width": 92, "height": 40 }],
     "position": [{ "left": 34, "top": 179 }]
   },
-  "Background1": {
+  "BattleBackground": {
     "constructor": "Sprite",
     "position": [{ "left": 0, "top": 0 }],
-    "behaviors": [{ "name": "Scroll", "distance": 385, "rate": 350 }],
-    "offset": { "left": 115, "top": 0 },
+    "draw_offset": { "left": 115, "top": 0 },
+    "behaviors": [
+      {
+        "name": "Scroll",
+        "callback": "ShowPlantsChooser",
+        "distance": 335,
+        "duration": 18
+      }
+    ],
     "order": 0
   },
   "Sun": {
@@ -75,10 +82,18 @@
     ],
     "order": 3
   },
-  "Button": {
+  "BackButton": {
     "constructor": "Sprite",
     "position": [{ "left": 787, "top": 0 }],
-    "behaviors": [{ "name": "Click" }],
+    "behaviors": [{ "name": "Click", "callback": "BackHome" }],
+    "text_overlay": {
+      "text": "Back",
+      "size": 24,
+      "offset": {
+        "left": 0,
+        "top": 4
+      }
+    },
     "order": 4
   },
   "ShovelBack": {
@@ -115,17 +130,41 @@
   },
   "SeedChooserBackground": {
     "constructor": "Sprite",
-    "position": [{ "left": 100, "top": 0 }]
+    "position": [{ "left": 100, "top": 0 }],
+    "text_overlay": {
+      "text": "Choose your Plants",
+      "size": 20,
+      "offset": { "left": 0, "top":  8 },
+      "location_type": "Top"
+    }
   },
-  "SelectCardButton": {
+  "ResetButton": {
     "constructor": "Sprite",
     "position": [
-      { "left": 265, "top": 495 },
+      { "left": 265, "top": 495 }
+    ],
+    "behaviors": [{ "name": "Click",
+      "callback": "ResetPlantsChoose"
+    }],
+    "text_overlay": {
+      "text": "Reset",
+      "size": 20
+    }
+  },
+  "OkButton": {
+    "constructor": "Sprite",
+    "position": [
       { "left": 340, "top": 495 }
     ],
-    "behaviors": [{ "name": "Click" }]
+    "behaviors": [{ "name": "Click",
+      "callback": "EnterBattleAnimation"
+    }],
+    "text_overlay": {
+      "text": "Start",
+      "size": 20
+    }
   },
-  "SunBack": {
+  "SunScore": {
     "constructor": "Sprite",
     "position": [{ "left": 100, "top": 0 }],
     "order": 4,

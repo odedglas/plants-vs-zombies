@@ -44,7 +44,7 @@ impl HomeScene {
 
         // Activates zombie hand animation Cycle.
         BehaviorManager::toggle_behaviors(
-            zombie_hand.iter(),
+            &zombie_hand,
             &[BehaviorType::Animate],
             true,
             game.game_time.time,
