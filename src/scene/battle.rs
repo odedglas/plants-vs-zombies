@@ -42,6 +42,5 @@ impl BattleScene {
 
     pub fn start(game: &mut Game) {
         log!("Starting Battle Scene!");
-        todo!()
     }
 }

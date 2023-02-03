@@ -153,7 +153,6 @@ impl Game {
 
     pub fn reset_plants_choose(&mut self) {
         log!("Game scene - Reset PlantsChooser");
-        todo!()
     }
 
     pub fn enter_battle_animation(&mut self) {
