@@ -156,7 +156,7 @@ impl Sprite {
             }
 
             if let Some(position) = mutation.position {
-                log!("TODO - Sprite position Changed");
+                self.update_position(position);
             }
         });
     }
