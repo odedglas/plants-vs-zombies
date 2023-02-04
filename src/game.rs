@@ -1,10 +1,14 @@
+use std::borrow::Borrow;
+
 use web_sys::{HtmlCanvasElement, MouseEvent};
 
 use crate::fps::Fps;
 use crate::log;
-use crate::model::{BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position};
+use crate::model::{
+    BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, LevelData, Position,
+};
 use crate::painter::Painter;
-use crate::resource_loader::Resources;
+use crate::resource_loader::{ResourceKind, Resources};
 use crate::scene::{BattleScene, HomeScene, PlantsChooser};
 use crate::sprite::{BehaviorManager, Sprite};
 use crate::timers::GameTime;
@@ -14,7 +18,7 @@ pub struct Game {
     pub painter: Painter,
     pub game_time: GameTime,
     pub mouse_position: Position,
-
+    pub selected_level: LevelData,
     pub sprites: Vec<Sprite>,
     state: GameState,
     fps: Fps,
@@ -30,6 +34,7 @@ impl Game {
             fps: Fps::new(),
             mouse_position: Position::new(0.0, 0.0),
             sprites: vec![],
+            selected_level: LevelData::new(),
         }
     }
 
@@ -117,7 +122,7 @@ impl Game {
     pub fn interaction_callback(&mut self, callback: &Callback) {
         match callback {
             Callback::ShowZombieHand => self.show_zombie_hand_animation(),
-            Callback::StartLevel => self.start_level_scene(),
+            Callback::SelectLevel => self.select_level(),
             Callback::BackHome => self.start_home_scene(),
             Callback::ShowPlantsChooser => self.show_plants_chooser(),
             Callback::ResetPlantsChoose => self.reset_plants_choose(),
@@ -137,8 +142,10 @@ impl Game {
         HomeScene::start(self);
     }
 
-    fn start_level_scene(&mut self) {
+    fn select_level(&mut self) {
         self.reset_state();
+
+        self.selected_level = self.resources.get_level_data("1-1");
 
         BattleScene::prepare(self);
     }
@@ -168,6 +175,7 @@ impl Game {
     pub fn reset_state(&mut self) {
         self.sprites.clear();
         self.state = GameState::new();
+        self.selected_level = LevelData::new();
     }
 
     pub fn add_sprites(&mut self, sprites: &mut Vec<Sprite>) {
@@ -188,14 +196,22 @@ impl Game {
     }
 
     // Getters //
-    pub fn get_sprite(&mut self, sprite_name: &str) -> &mut Sprite {
+    pub fn get_sprite(&mut self, sprite_name: &str, kind: &ResourceKind) -> &mut Sprite {
         self.sprites
             .iter_mut()
-            .find(|sprite| sprite_name == sprite.name)
+            .find(|sprite| sprite_name == sprite.name && &sprite.kind == kind)
             .expect(&format!(
                 "[Game Controller] Cannot find Sprite {}",
                 &sprite_name
             ))
+    }
+
+    pub fn current_level_cards(&self) -> Vec<&str> {
+        self.selected_level
+            .plant_cards
+            .iter()
+            .map(|card| card.trim())
+            .collect::<Vec<&str>>()
     }
 
     pub fn canvas(&self) -> &HtmlCanvasElement {

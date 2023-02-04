@@ -22,6 +22,7 @@ pub struct Sprite {
     pub image: Option<Weak<HtmlImageElement>>,
     pub drawing_state: DrawingState,
     pub text_overlay: Option<TextOverlay>,
+    pub kind: ResourceKind,
 }
 
 impl Sprite {
@@ -36,6 +37,7 @@ impl Sprite {
         behaviors: &Vec<BehaviorData>,
         exact_outlines: bool,
         text_overlay_data: &Option<TextOverlayData>,
+        kind: ResourceKind,
     ) -> Sprite {
         let sprite_behaviors = RefCell::new(
             behaviors
@@ -54,6 +56,7 @@ impl Sprite {
             outlines: vec![],
             behaviors: sprite_behaviors,
             text_overlay: None,
+            kind,
         };
 
         sprite.text_overlay = match text_overlay_data {
@@ -123,6 +126,7 @@ impl Sprite {
                     &behaviors,
                     exact_outlines,
                     &text_overlay,
+                    kind.clone(),
                 )
             })
             .collect()

@@ -79,7 +79,10 @@ impl BehaviorManager {
             .get_mut()
             .iter_mut()
             .find(|sprite_behavior| behavior == sprite_behavior.name())
-            .expect(&format!("[BehaviorManager] Cannot find Sprite behavior: {:?}", behavior));
+            .expect(&format!(
+                "[BehaviorManager] Cannot find Sprite behavior: {:?}",
+                behavior
+            ));
 
         behavior
     }

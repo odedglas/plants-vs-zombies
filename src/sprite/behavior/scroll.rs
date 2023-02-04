@@ -47,7 +47,6 @@ impl Behavior for Scroll {
     }
 
     fn reverse(&mut self, now: f64, callback: Callback) {
-        log!("Reversing scroll behavior nigga");
         self.direction *= -1;
         self.scrolled_distance = 0.0;
         self.callback = callback;

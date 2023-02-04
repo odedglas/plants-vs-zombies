@@ -36,7 +36,7 @@ impl fmt::Display for GameMouseEvent {
 #[derive(Debug, Clone, Copy, Deserialize)]
 pub enum Callback {
     ShowZombieHand,
-    StartLevel,
+    SelectLevel,
     BackHome,
     ShowPlantsChooser,
     ResetPlantsChoose,
@@ -199,11 +199,18 @@ impl From<TextMetrics> for Size {
     }
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Default, Deserialize)]
 pub struct LevelData {
     pub name: String,
-    pub scenes: Vec<String>,
     pub flag_num: usize,
-    pub plants_options: Vec<String>,
+    pub plant_cards: Vec<String>,
     pub zombies: Vec<String>,
+}
+
+impl LevelData {
+    pub fn new() -> Self {
+        LevelData {
+            ..LevelData::default()
+        }
+    }
 }

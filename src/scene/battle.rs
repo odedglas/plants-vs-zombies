@@ -15,6 +15,12 @@ impl BattleScene {
             &game.resources,
         );
 
+        let mut cards = Sprite::create_sprites(
+            vec!["SunFlower", "Peashooter"],
+            &ResourceKind::Card,
+            &game.resources,
+        );
+
         // TODO - Show Enemies (Zombies)
 
         // Trigger background scroll
@@ -26,6 +32,7 @@ impl BattleScene {
         );
 
         game.add_sprites(sprites.as_mut());
+        game.add_sprites(cards.as_mut());
     }
 
     pub fn enter(game: &mut Game) {
@@ -34,7 +41,7 @@ impl BattleScene {
         PlantsChooser::clear(game);
 
         // Trigger background reverse scroll behavior
-        let background = game.get_sprite("BattleBackground");
+        let background = game.get_sprite("BattleBackground", &ResourceKind::Interface);
         let scroll = BehaviorManager::get_sprite_behavior(background, BehaviorType::Scroll);
 
         scroll.reverse(now, Callback::StartBattle);

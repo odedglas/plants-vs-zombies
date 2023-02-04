@@ -1,4 +1,4 @@
-#[derive(Debug, Hash, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Hash, Eq, PartialEq)]
 pub enum ResourceKind {
     Card,
     Interface,
