@@ -7,6 +7,7 @@ use web_sys::{MouseEvent, TextMetrics};
 pub struct GameState {
     pub sun: usize,
     pub current_level: Option<LevelData>,
+    pub selected_seeds: Vec<String>,
 }
 
 impl GameState {
@@ -14,6 +15,14 @@ impl GameState {
         GameState {
             sun: 600,
             current_level: None,
+            selected_seeds: vec![],
+        }
+    }
+
+    pub fn get_level(&self) -> LevelData {
+        match &self.current_level {
+            Some(level) => level.clone(),
+            None => LevelData::new(),
         }
     }
 }
@@ -42,7 +51,7 @@ pub enum Callback {
     ResetPlantsChoose,
     EnterBattleAnimation,
     StartBattle,
-    ToggleCardSelection,
+    ChooserSeedSelect,
 }
 
 impl Default for Callback {
@@ -51,9 +60,11 @@ impl Default for Callback {
     }
 }
 
+type SpriteId = String;
+
 #[derive(Debug)]
 pub enum GameInteraction {
-    SpriteClick(Callback),
+    SpriteClick(Callback, SpriteId),
     AnimationCallback(Callback),
 }
 

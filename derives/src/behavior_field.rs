@@ -36,6 +36,7 @@ impl BehaviorMacroInput {
             BehaviorDerivedType::DEFAULT => vec![
                 quote!(running: bool,).into(),
                 quote!(interaction_active: bool,).into(),
+                quote!(sprite_id: String,).into(),
             ]
         }
     }

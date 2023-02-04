@@ -18,9 +18,8 @@ pub struct Game {
     pub painter: Painter,
     pub game_time: GameTime,
     pub mouse_position: Position,
-    pub selected_level: LevelData,
     pub sprites: Vec<Sprite>,
-    state: GameState,
+    pub state: GameState,
     fps: Fps,
 }
 
@@ -34,7 +33,6 @@ impl Game {
             fps: Fps::new(),
             mouse_position: Position::new(0.0, 0.0),
             sprites: vec![],
-            selected_level: LevelData::new(),
         }
     }
 
@@ -114,12 +112,16 @@ impl Game {
         game_interactions
             .iter()
             .for_each(|interaction| match interaction {
-                GameInteraction::SpriteClick(callback) => self.interaction_callback(callback),
-                GameInteraction::AnimationCallback(callback) => self.interaction_callback(callback),
+                GameInteraction::SpriteClick(callback, sprite_id) => {
+                    self.interaction_callback(callback, Some(sprite_id))
+                }
+                GameInteraction::AnimationCallback(callback) => {
+                    self.interaction_callback(callback, None)
+                }
             });
     }
 
-    pub fn interaction_callback(&mut self, callback: &Callback) {
+    pub fn interaction_callback(&mut self, callback: &Callback, sprite_id: Option<&String>) {
         match callback {
             Callback::ShowZombieHand => self.show_zombie_hand_animation(),
             Callback::SelectLevel => self.select_level(),
@@ -128,7 +130,7 @@ impl Game {
             Callback::ResetPlantsChoose => self.reset_plants_choose(),
             Callback::EnterBattleAnimation => self.enter_battle_animation(),
             Callback::StartBattle => self.start_battle(),
-            Callback::ToggleCardSelection => self.toggle_card_selection(),
+            Callback::ChooserSeedSelect => self.on_chooser_seed_click(sprite_id.unwrap()),
         }
     }
 
@@ -146,7 +148,7 @@ impl Game {
     fn select_level(&mut self) {
         self.reset_state();
 
-        self.selected_level = self.resources.get_level_data("1-1");
+        self.state.current_level = Some(self.resources.get_level_data("1-1"));
 
         BattleScene::prepare(self);
     }
@@ -171,8 +173,17 @@ impl Game {
         BattleScene::start(self);
     }
 
-    pub fn toggle_card_selection(&mut self) {
-        log!("Game scene - Card selected");
+    pub fn on_chooser_seed_click(&mut self, sprite_id: &String) {
+        let selected = self.state.selected_seeds.contains(sprite_id);
+        let sprite = self.get_sprite_by_id(sprite_id);
+
+        if !selected {
+            sprite.drawing_state.hover(true);
+
+            BattleScene::draw_selected_seeds(self);
+
+            self.state.selected_seeds.push(sprite_id.clone());
+        }
     }
 
     // Game State Mutations //
@@ -180,7 +191,6 @@ impl Game {
     pub fn reset_state(&mut self) {
         self.sprites.clear();
         self.state = GameState::new();
-        self.selected_level = LevelData::new();
     }
 
     pub fn add_sprites(&mut self, sprites: &mut Vec<Sprite>) {
@@ -201,13 +211,37 @@ impl Game {
     }
 
     // Getters //
-    pub fn get_sprite(&mut self, sprite_name: &str, kind: &ResourceKind) -> &mut Sprite {
+    pub fn get_sprite_by_name(
+        &mut self,
+        sprite_name: &str
+    ) -> Vec<&mut Sprite> {
+        self.sprites
+            .iter_mut()
+            .filter(|sprite| sprite_name == sprite.name)
+            .collect()
+    }
+
+    pub fn get_sprite_by_name_and_kind(
+        &mut self,
+        sprite_name: &str,
+        kind: &ResourceKind,
+    ) -> &mut Sprite {
         self.sprites
             .iter_mut()
             .find(|sprite| sprite_name == sprite.name && &sprite.kind == kind)
             .expect(&format!(
                 "[Game Controller] Cannot find Sprite {}",
                 &sprite_name
+            ))
+    }
+
+    pub fn get_sprite_by_id(&mut self, sprite_id: &String) -> &mut Sprite {
+        self.sprites
+            .iter_mut()
+            .find(|sprite| sprite_id == &sprite.id)
+            .expect(&format!(
+                "[Game Controller] Cannot find Sprite {}",
+                &sprite_id
             ))
     }
 

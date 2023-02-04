@@ -34,10 +34,15 @@ impl BattleScene {
         PlantsChooser::clear(game);
 
         // Trigger background reverse scroll behavior
-        let background = game.get_sprite("BattleBackground", &ResourceKind::Interface);
+        let background =
+            game.get_sprite_by_name_and_kind("BattleBackground", &ResourceKind::Interface);
         let scroll = BehaviorManager::get_sprite_behavior(background, BehaviorType::Scroll);
 
         scroll.reverse(now, Callback::StartBattle);
+    }
+
+    pub fn draw_selected_seeds(game: &mut Game) {
+        log!("Selected cards: {:?}", game.state.selected_seeds);
     }
 
     pub fn start(game: &mut Game) {

@@ -39,15 +39,16 @@ impl Sprite {
         text_overlay_data: &Option<TextOverlayData>,
         kind: ResourceKind,
     ) -> Sprite {
+        let id = uid(name);
         let sprite_behaviors = RefCell::new(
             behaviors
                 .iter()
-                .map(|behavior_data| BehaviorManager::create(&behavior_data))
+                .map(|behavior_data| BehaviorManager::create(&behavior_data, id.clone()))
                 .collect(),
         );
 
         let mut sprite = Sprite {
-            id: uid(name),
+            id,
             name: String::from(name),
             order,
             position,

@@ -28,7 +28,7 @@ impl PlantsChooser {
     }
 
     pub fn clear(game: &mut Game) {
-        let game_cards_clone = game.selected_level.plant_cards.clone();
+        let game_cards_clone = game.state.get_level().plant_cards.clone();
         let mut scene_sprites = vec!["SunScore"];
 
         let mut cards = game_cards_clone
@@ -57,13 +57,14 @@ impl PlantsChooser {
         let card_scale = 0.725;
         let positions = LocationBuilder::create_row_layout(
             &Position::new(offset.top + 34.0, offset.left + 14.0),
-            game.selected_level.plant_cards.len(),
+            game.state.get_level().plant_cards.len(),
             6,
             Size::new(100.0 * card_scale, 60.0 * card_scale),
         );
 
         let mut cards = game
-            .selected_level
+            .state
+            .get_level()
             .plant_cards
             .iter()
             .enumerate()

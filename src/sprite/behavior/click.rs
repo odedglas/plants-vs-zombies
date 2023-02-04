@@ -30,7 +30,10 @@ impl Behavior for Click {
 
     fn get_interaction(&self) -> Option<GameInteraction> {
         if self.interaction_active {
-            return Some(GameInteraction::SpriteClick(self.callback));
+            return Some(GameInteraction::SpriteClick(
+                self.callback,
+                self.sprite_id.clone(),
+            ));
         }
 
         None
