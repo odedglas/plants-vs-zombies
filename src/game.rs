@@ -128,6 +128,7 @@ impl Game {
             Callback::ResetPlantsChoose => self.reset_plants_choose(),
             Callback::EnterBattleAnimation => self.enter_battle_animation(),
             Callback::StartBattle => self.start_battle(),
+            Callback::ToggleCardSelection => self.toggle_card_selection(),
         }
     }
 
@@ -170,6 +171,10 @@ impl Game {
         BattleScene::start(self);
     }
 
+    pub fn toggle_card_selection(&mut self) {
+        log!("Game scene - Card selected");
+    }
+
     // Game State Mutations //
 
     pub fn reset_state(&mut self) {
@@ -204,14 +209,6 @@ impl Game {
                 "[Game Controller] Cannot find Sprite {}",
                 &sprite_name
             ))
-    }
-
-    pub fn current_level_cards(&self) -> Vec<&str> {
-        self.selected_level
-            .plant_cards
-            .iter()
-            .map(|card| card.trim())
-            .collect::<Vec<&str>>()
     }
 
     pub fn canvas(&self) -> &HtmlCanvasElement {

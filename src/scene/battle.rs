@@ -15,12 +15,6 @@ impl BattleScene {
             &game.resources,
         );
 
-        let mut cards = Sprite::create_sprites(
-            vec!["SunFlower", "Peashooter"],
-            &ResourceKind::Card,
-            &game.resources,
-        );
-
         // TODO - Show Enemies (Zombies)
 
         // Trigger background scroll
@@ -32,7 +26,6 @@ impl BattleScene {
         );
 
         game.add_sprites(sprites.as_mut());
-        game.add_sprites(cards.as_mut());
     }
 
     pub fn enter(game: &mut Game) {

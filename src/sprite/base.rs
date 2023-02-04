@@ -64,7 +64,7 @@ impl Sprite {
             None => None,
         };
 
-        sprite.outlines = Outline::get_outlines(&sprite, exact_outlines);
+        sprite.update_outlines(exact_outlines);
 
         sprite
     }
@@ -78,6 +78,15 @@ impl Sprite {
             width: active_cell.width,
             height: active_cell.height,
         };
+    }
+
+    pub fn update_position(&mut self, position: Position) {
+        self.position = position;
+        self.update_outlines(false);
+    }
+
+    pub fn update_outlines(&mut self, exact_outlines: bool) {
+        self.outlines = Outline::get_outlines(&self, exact_outlines);
     }
 
     pub fn create_sprites(

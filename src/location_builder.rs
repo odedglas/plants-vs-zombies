@@ -10,12 +10,32 @@ impl LocationBuilder {
         location_type: &LocationType,
     ) -> Position {
         match location_type {
-            LocationType::Center => LocationBuilder::place_at_center(sprite, item_dimensions),
-            LocationType::Top => LocationBuilder::place_at_top(sprite, item_dimensions),
+            LocationType::Center => Self::place_at_center(sprite, item_dimensions),
+            LocationType::Top => Self::place_at_top(sprite, item_dimensions),
         }
     }
 
-    pub fn place_at_center(sprite: &Sprite, item_dimensions: Size) -> Position {
+    pub fn create_row_layout(
+        initial_position: &Position,
+        amount: usize,
+        max: usize,
+        item_size: Size,
+    ) -> Vec<Position> {
+        let mut row_layout = vec![];
+
+        for i in 0..amount {
+            let (row, col) = (i / max, i % max);
+
+            row_layout.push(Position::new(
+                initial_position.top + item_size.height * row as f64,
+                initial_position.left + item_size.width * col as f64,
+            ));
+        }
+
+        row_layout
+    }
+
+    fn place_at_center(sprite: &Sprite, item_dimensions: Size) -> Position {
         let target_dimensions = sprite.dimensions();
 
         let center_x =
@@ -26,7 +46,7 @@ impl LocationBuilder {
         Position::new(center_y, center_x)
     }
 
-    pub fn place_at_top(sprite: &Sprite, item_dimensions: Size) -> Position {
+    fn place_at_top(sprite: &Sprite, item_dimensions: Size) -> Position {
         let target_dimensions = sprite.dimensions();
 
         let center_x =

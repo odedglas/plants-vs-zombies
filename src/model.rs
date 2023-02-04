@@ -42,6 +42,7 @@ pub enum Callback {
     ResetPlantsChoose,
     EnterBattleAnimation,
     StartBattle,
+    ToggleCardSelection,
 }
 
 impl Default for Callback {
