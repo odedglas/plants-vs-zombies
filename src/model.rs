@@ -5,7 +5,7 @@ use web_sys::{MouseEvent, TextMetrics};
 
 use crate::resource_loader::ResourceKind;
 
-type SelectedSeed = (String, String);
+pub type SelectedSeed = (String, String);
 
 #[derive(Debug, Default)]
 pub struct GameState {

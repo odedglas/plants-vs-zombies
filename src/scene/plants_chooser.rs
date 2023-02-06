@@ -29,15 +29,19 @@ impl PlantsChooser {
 
     pub fn clear(game: &mut Game) {
         let mut scene_sprites = vec!["SunScore"];
-
         scene_sprites.append(Self::chooser_sprites().as_mut());
 
         game.remove_sprites_by_name(scene_sprites);
-
         game.remove_sprites_by_type(&SpriteType::Seed)
     }
 
     pub fn reset_selection(game: &mut Game) {
+        game.get_sprites_by_type(&SpriteType::Seed)
+            .iter_mut()
+            .for_each(|seed| {
+                seed.drawing_state.hover(false);
+            });
+
         game.remove_sprites_by_type(&SpriteType::Card);
     }
 

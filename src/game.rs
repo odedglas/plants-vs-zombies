@@ -164,12 +164,6 @@ impl Game {
     }
 
     pub fn reset_plants_choose(&mut self) {
-        self.get_sprites_by_type(&SpriteType::Seed)
-            .iter_mut()
-            .for_each(|seed| {
-                seed.drawing_state.hover(false);
-            });
-
         PlantsChooser::reset_selection(self);
 
         self.state.selected_seeds = vec![];
@@ -191,9 +185,6 @@ impl Game {
             &selected_seed.0 == clicked_sprite_id || &selected_seed.1 == clicked_sprite_id
         });
 
-        let clicked_sprite = self.get_sprite_by_id(clicked_sprite_id);
-        let name = clicked_sprite.name.clone();
-
         if let Some(selected) = selected {
             let is_seed_click = clicked_sprite_id == &selected.0;
 
@@ -207,17 +198,9 @@ impl Game {
                 .selected_seeds
                 .retain(|(_seed_id, card_id)| card_id != clicked_sprite_id);
 
-            let seed_sprite = self.get_sprite_by_id(&selected.0);
-            seed_sprite.drawing_state.hover(false);
-
-            self.remove_sprites_by_id(vec![&selected.1]);
-
-            BattleScene::update_selected_cards_layout(self);
+            BattleScene::deselect_seed(self, &selected);
         } else {
-            // Selecting Seed and adding Card.
-            clicked_sprite.drawing_state.hover(true);
-
-            let card_id = BattleScene::add_plant_card(self, &name);
+            let card_id = BattleScene::select_seed(self, clicked_sprite_id);
 
             self.state
                 .selected_seeds
