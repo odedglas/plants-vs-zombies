@@ -4,8 +4,7 @@ use std::rc::Weak;
 use js_sys::Math;
 use web_sys::HtmlImageElement;
 
-use crate::log;
-use crate::model::{BehaviorData, Position, SpriteCell, SpriteData, TextOverlayData};
+use crate::model::{BehaviorData, Position, SpriteCell, SpriteData, SpriteType, TextOverlayData};
 use crate::resource_loader::{Resource, ResourceKind, Resources};
 use crate::sprite::behavior::{Behavior, BehaviorManager};
 use crate::sprite::drawing_state::DrawingState;
@@ -22,7 +21,7 @@ pub struct Sprite {
     pub image: Option<Weak<HtmlImageElement>>,
     pub drawing_state: DrawingState,
     pub text_overlay: Option<TextOverlay>,
-    pub kind: ResourceKind,
+    pub sprite_type: SpriteType,
 }
 
 impl Sprite {
@@ -57,7 +56,7 @@ impl Sprite {
             outlines: vec![],
             behaviors: sprite_behaviors,
             text_overlay: None,
-            kind,
+            sprite_type: SpriteType::from_kind(&kind),
         };
 
         sprite.text_overlay = match text_overlay_data {

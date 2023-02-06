@@ -1,9 +1,9 @@
 use crate::game::Game;
 use crate::location_builder::LocationBuilder;
 use crate::log;
-use crate::model::{BehaviorType, LevelData, Position, Size};
+use crate::model::{Position, Size, SpriteType};
 use crate::resource_loader::ResourceKind;
-use crate::sprite::{BehaviorManager, Sprite};
+use crate::sprite::Sprite;
 
 pub struct PlantsChooser;
 
@@ -28,18 +28,17 @@ impl PlantsChooser {
     }
 
     pub fn clear(game: &mut Game) {
-        let game_cards_clone = game.state.get_level().plant_cards.clone();
         let mut scene_sprites = vec!["SunScore"];
 
-        let mut cards = game_cards_clone
-            .iter()
-            .map(|card| card.trim())
-            .collect::<Vec<&str>>();
-
         scene_sprites.append(Self::chooser_sprites().as_mut());
-        scene_sprites.append(cards.as_mut());
 
-        game.remove_sprites(scene_sprites);
+        game.remove_sprites_by_name(scene_sprites);
+
+        game.remove_sprites_by_type(&SpriteType::Seed)
+    }
+
+    pub fn reset_selection(game: &mut Game) {
+        game.remove_sprites_by_type(&SpriteType::Card);
     }
 
     fn create_bottom_sun_score(game: &mut Game) {
@@ -74,6 +73,7 @@ impl PlantsChooser {
 
                 card_sprite.iter_mut().for_each(|card| {
                     card.update_position(positions[index]);
+                    card.sprite_type = SpriteType::Seed;
                 });
 
                 card_sprite

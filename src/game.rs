@@ -6,6 +6,7 @@ use crate::fps::Fps;
 use crate::log;
 use crate::model::{
     BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, LevelData, Position,
+    SpriteType,
 };
 use crate::painter::Painter;
 use crate::resource_loader::{ResourceKind, Resources};
@@ -131,6 +132,7 @@ impl Game {
             Callback::EnterBattleAnimation => self.enter_battle_animation(),
             Callback::StartBattle => self.start_battle(),
             Callback::ChooserSeedSelect => self.on_chooser_seed_click(sprite_id.unwrap()),
+            Callback::PlantCardClick => log!("Plant card click!!"),
         }
     }
 
@@ -162,7 +164,15 @@ impl Game {
     }
 
     pub fn reset_plants_choose(&mut self) {
-        log!("Game scene - Reset PlantsChooser");
+        self.get_sprites_by_type(&SpriteType::Seed)
+            .iter_mut()
+            .for_each(|seed| {
+                seed.drawing_state.hover(false);
+            });
+
+        PlantsChooser::reset_selection(self);
+
+        self.state.selected_seeds = vec![];
     }
 
     pub fn enter_battle_animation(&mut self) {
@@ -173,17 +183,48 @@ impl Game {
         BattleScene::start(self);
     }
 
-    pub fn on_chooser_seed_click(&mut self, sprite_id: &String) {
-        let selected = self.state.selected_seeds.contains(sprite_id);
-        let sprite = self.get_sprite_by_id(sprite_id);
+    pub fn on_chooser_seed_click(&mut self, clicked_sprite_id: &String) {
+        let selected_seeds = self.state.selected_seeds.to_vec();
 
-        if !selected {
-            sprite.drawing_state.hover(true);
+        // Each selected seed is represented as a Seed/Card tuple.
+        let selected = selected_seeds.iter().find(|selected_seed| {
+            &selected_seed.0 == clicked_sprite_id || &selected_seed.1 == clicked_sprite_id
+        });
 
-            BattleScene::draw_selected_seeds(self);
+        let clicked_sprite = self.get_sprite_by_id(clicked_sprite_id);
+        let name = clicked_sprite.name.clone();
 
-            self.state.selected_seeds.push(sprite_id.clone());
+        if let Some(selected) = selected {
+            let is_seed_click = clicked_sprite_id == &selected.0;
+
+            // Seeds are disabled once clicked, and can be de-selected only on Card click.
+            if is_seed_click {
+                return;
+            }
+
+            // Deselecting
+            self.state
+                .selected_seeds
+                .retain(|(_seed_id, card_id)| card_id != clicked_sprite_id);
+
+            let seed_sprite = self.get_sprite_by_id(&selected.0);
+            seed_sprite.drawing_state.hover(false);
+
+            self.remove_sprites_by_id(vec![&selected.1]);
+
+            BattleScene::update_selected_cards_layout(self);
+        } else {
+            // Selecting Seed and adding Card.
+            clicked_sprite.drawing_state.hover(true);
+
+            let card_id = BattleScene::add_plant_card(self, &name);
+
+            self.state
+                .selected_seeds
+                .push((clicked_sprite_id.clone(), card_id));
         }
+
+        log!("After mutation {:?}", self.state.selected_seeds);
     }
 
     // Game State Mutations //
@@ -205,34 +246,38 @@ impl Game {
         self.add_sprites(sprites.as_mut());
     }
 
-    pub fn remove_sprites(&mut self, sprites: Vec<&str>) {
+    pub fn remove_sprites_by_name(&mut self, sprites: Vec<&str>) {
         self.sprites
             .retain(|sprite| !sprites.contains(&sprite.name.trim()))
     }
 
+    pub fn remove_sprites_by_type(&mut self, sprite_type: &SpriteType) {
+        self.sprites
+            .retain(|sprite| &sprite.sprite_type != sprite_type)
+    }
+
+    pub fn remove_sprites_by_id(&mut self, sprites: Vec<&str>) {
+        self.sprites
+            .retain(|sprite| !sprites.contains(&sprite.id.trim()))
+    }
+
     // Getters //
-    pub fn get_sprite_by_name(
-        &mut self,
-        sprite_name: &str
-    ) -> Vec<&mut Sprite> {
+    pub fn get_sprites_by_type(&mut self, sprite_type: &SpriteType) -> Vec<&mut Sprite> {
         self.sprites
             .iter_mut()
-            .filter(|sprite| sprite_name == sprite.name)
+            .filter(|sprite| &sprite.sprite_type == sprite_type)
             .collect()
     }
 
-    pub fn get_sprite_by_name_and_kind(
+    pub fn get_sprite_by_name_and_type(
         &mut self,
-        sprite_name: &str,
-        kind: &ResourceKind,
+        name: &str,
+        sprite_type: &SpriteType,
     ) -> &mut Sprite {
         self.sprites
             .iter_mut()
-            .find(|sprite| sprite_name == sprite.name && &sprite.kind == kind)
-            .expect(&format!(
-                "[Game Controller] Cannot find Sprite {}",
-                &sprite_name
-            ))
+            .find(|sprite| name == sprite.name && &sprite.sprite_type == sprite_type)
+            .expect(&format!("[Game Controller] Cannot find Sprite {}", &name))
     }
 
     pub fn get_sprite_by_id(&mut self, sprite_id: &String) -> &mut Sprite {

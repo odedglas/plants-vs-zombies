@@ -3,11 +3,15 @@ use std::fmt;
 use serde_derive::Deserialize;
 use web_sys::{MouseEvent, TextMetrics};
 
+use crate::resource_loader::ResourceKind;
+
+type SelectedSeed = (String, String);
+
 #[derive(Debug, Default)]
 pub struct GameState {
     pub sun: usize,
     pub current_level: Option<LevelData>,
-    pub selected_seeds: Vec<String>,
+    pub selected_seeds: Vec<SelectedSeed>,
 }
 
 impl GameState {
@@ -52,6 +56,7 @@ pub enum Callback {
     EnterBattleAnimation,
     StartBattle,
     ChooserSeedSelect,
+    PlantCardClick,
 }
 
 impl Default for Callback {
@@ -66,6 +71,28 @@ type SpriteId = String;
 pub enum GameInteraction {
     SpriteClick(Callback, SpriteId),
     AnimationCallback(Callback),
+}
+
+#[derive(Debug, Clone, Hash, Eq, PartialEq)]
+pub enum SpriteType {
+    Zombie,
+    Plant,
+    Interface,
+    Card,
+    Seed,
+    Meta,
+}
+
+impl SpriteType {
+    pub fn from_kind(kind: &ResourceKind) -> Self {
+        match kind {
+            ResourceKind::Card => SpriteType::Card,
+            ResourceKind::Interface => SpriteType::Interface,
+            ResourceKind::Plant => SpriteType::Plant,
+            ResourceKind::Zombie => SpriteType::Zombie,
+            ResourceKind::Level => SpriteType::Meta,
+        }
+    }
 }
 
 /// Sprite cell represents a Sprite given possible states position pointing to a respective interface asset.

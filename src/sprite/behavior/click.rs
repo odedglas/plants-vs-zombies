@@ -10,7 +10,7 @@ use crate::sprite::{Sprite, SpriteMutation};
 #[derive(BaseBehavior, Default)]
 pub struct Click {
     name: BehaviorType,
-    callback: Callback,
+    pub callback: Callback,
 }
 
 impl Click {
