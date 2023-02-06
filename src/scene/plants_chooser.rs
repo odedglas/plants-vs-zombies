@@ -1,6 +1,5 @@
 use crate::game::Game;
 use crate::location_builder::LocationBuilder;
-use crate::log;
 use crate::model::{Position, Size, SpriteType};
 use crate::resource_loader::ResourceKind;
 use crate::sprite::Sprite;

@@ -1,15 +1,13 @@
-use std::borrow::Borrow;
-
 use web_sys::{HtmlCanvasElement, MouseEvent};
 
 use crate::fps::Fps;
 use crate::log;
 use crate::model::{
-    BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, LevelData, Position,
+    BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position,
     SpriteType,
 };
 use crate::painter::Painter;
-use crate::resource_loader::{ResourceKind, Resources};
+use crate::resource_loader::{Resources};
 use crate::scene::{BattleScene, HomeScene, PlantsChooser};
 use crate::sprite::{BehaviorManager, Sprite};
 use crate::timers::GameTime;

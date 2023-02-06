@@ -1,5 +1,3 @@
-use std::any::Any;
-
 use web_sys::CanvasRenderingContext2d;
 
 use crate::model::{BehaviorType, Callback, GameInteraction, Position};
