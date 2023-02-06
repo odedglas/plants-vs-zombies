@@ -26,6 +26,10 @@ pub fn impl_base_bevhior_derive(parsed_input: DeriveInput) -> TokenStream {
                     fn clean_interaction(&mut self) {
                         self.interaction_active = false
                     }
+
+                    fn set_sprite_id(&mut self, sprite_id: String) {
+                        self.sprite_id = sprite_id;
+                    }
                 }
             };
 

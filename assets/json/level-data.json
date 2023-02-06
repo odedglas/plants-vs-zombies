@@ -2,15 +2,7 @@
   "1-1": {
     "name": "1-1",
     "flag_num": 3,
-    "scenes": [
-      "BattleBackground",
-      "ShovelBack",
-      "Shovel",
-      "Button",
-      "LawnCleaner",
-      "PrepareGrowPlants"
-    ],
-    "plants_options": [
+    "plant_cards": [
       "SunFlower",
       "Peashooter",
       "SnowPea",

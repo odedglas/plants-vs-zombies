@@ -4,8 +4,7 @@ use std::rc::Weak;
 use js_sys::Math;
 use web_sys::HtmlImageElement;
 
-use crate::log;
-use crate::model::{BehaviorData, Position, SpriteCell, SpriteData, TextOverlayData};
+use crate::model::{BehaviorData, Position, SpriteCell, SpriteData, SpriteType, TextOverlayData};
 use crate::resource_loader::{Resource, ResourceKind, Resources};
 use crate::sprite::behavior::{Behavior, BehaviorManager};
 use crate::sprite::drawing_state::DrawingState;
@@ -22,6 +21,7 @@ pub struct Sprite {
     pub image: Option<Weak<HtmlImageElement>>,
     pub drawing_state: DrawingState,
     pub text_overlay: Option<TextOverlay>,
+    pub sprite_type: SpriteType,
 }
 
 impl Sprite {
@@ -36,16 +36,18 @@ impl Sprite {
         behaviors: &Vec<BehaviorData>,
         exact_outlines: bool,
         text_overlay_data: &Option<TextOverlayData>,
+        kind: ResourceKind,
     ) -> Sprite {
+        let id = uid(name);
         let sprite_behaviors = RefCell::new(
             behaviors
                 .iter()
-                .map(|behavior_data| BehaviorManager::create(&behavior_data))
+                .map(|behavior_data| BehaviorManager::create(&behavior_data, id.clone()))
                 .collect(),
         );
 
         let mut sprite = Sprite {
-            id: uid(name),
+            id,
             name: String::from(name),
             order,
             position,
@@ -54,6 +56,7 @@ impl Sprite {
             outlines: vec![],
             behaviors: sprite_behaviors,
             text_overlay: None,
+            sprite_type: SpriteType::from_kind(&kind),
         };
 
         sprite.text_overlay = match text_overlay_data {
@@ -61,7 +64,7 @@ impl Sprite {
             None => None,
         };
 
-        sprite.outlines = Outline::get_outlines(&sprite, exact_outlines);
+        sprite.update_outlines(exact_outlines);
 
         sprite
     }
@@ -75,6 +78,15 @@ impl Sprite {
             width: active_cell.width,
             height: active_cell.height,
         };
+    }
+
+    pub fn update_position(&mut self, position: Position) {
+        self.position = position;
+        self.update_outlines(false);
+    }
+
+    pub fn update_outlines(&mut self, exact_outlines: bool) {
+        self.outlines = Outline::get_outlines(&self, exact_outlines);
     }
 
     pub fn create_sprites(
@@ -123,6 +135,7 @@ impl Sprite {
                     &behaviors,
                     exact_outlines,
                     &text_overlay,
+                    kind.clone(),
                 )
             })
             .collect()
@@ -143,8 +156,7 @@ impl Sprite {
             }
 
             if let Some(position) = mutation.position {
-                log!("TODO - Sprite position Changed");
-                todo!()
+                self.update_position(position);
             }
         });
     }

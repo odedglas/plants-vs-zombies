@@ -2,9 +2,12 @@ use web_sys::{HtmlCanvasElement, MouseEvent};
 
 use crate::fps::Fps;
 use crate::log;
-use crate::model::{BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position};
+use crate::model::{
+    BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position,
+    SpriteType,
+};
 use crate::painter::Painter;
-use crate::resource_loader::Resources;
+use crate::resource_loader::{Resources};
 use crate::scene::{BattleScene, HomeScene, PlantsChooser};
 use crate::sprite::{BehaviorManager, Sprite};
 use crate::timers::GameTime;
@@ -14,9 +17,8 @@ pub struct Game {
     pub painter: Painter,
     pub game_time: GameTime,
     pub mouse_position: Position,
-
     pub sprites: Vec<Sprite>,
-    state: GameState,
+    pub state: GameState,
     fps: Fps,
 }
 
@@ -109,20 +111,26 @@ impl Game {
         game_interactions
             .iter()
             .for_each(|interaction| match interaction {
-                GameInteraction::SpriteClick(callback) => self.interaction_callback(callback),
-                GameInteraction::AnimationCallback(callback) => self.interaction_callback(callback),
+                GameInteraction::SpriteClick(callback, sprite_id) => {
+                    self.interaction_callback(callback, Some(sprite_id))
+                }
+                GameInteraction::AnimationCallback(callback) => {
+                    self.interaction_callback(callback, None)
+                }
             });
     }
 
-    pub fn interaction_callback(&mut self, callback: &Callback) {
+    pub fn interaction_callback(&mut self, callback: &Callback, sprite_id: Option<&String>) {
         match callback {
             Callback::ShowZombieHand => self.show_zombie_hand_animation(),
-            Callback::StartLevel => self.start_level_scene(),
+            Callback::SelectLevel => self.select_level(),
             Callback::BackHome => self.start_home_scene(),
             Callback::ShowPlantsChooser => self.show_plants_chooser(),
             Callback::ResetPlantsChoose => self.reset_plants_choose(),
             Callback::EnterBattleAnimation => self.enter_battle_animation(),
             Callback::StartBattle => self.start_battle(),
+            Callback::ChooserSeedSelect => self.on_chooser_seed_click(sprite_id.unwrap()),
+            Callback::PlantCardClick => log!("Plant card click!!"),
         }
     }
 
@@ -137,8 +145,10 @@ impl Game {
         HomeScene::start(self);
     }
 
-    fn start_level_scene(&mut self) {
+    fn select_level(&mut self) {
         self.reset_state();
+
+        self.state.current_level = Some(self.resources.get_level_data("1-1"));
 
         BattleScene::prepare(self);
     }
@@ -152,8 +162,9 @@ impl Game {
     }
 
     pub fn reset_plants_choose(&mut self) {
-        log!("Game scene - Reset PlantsChooser");
-        todo!()
+        PlantsChooser::reset_selection(self);
+
+        self.state.selected_seeds = vec![];
     }
 
     pub fn enter_battle_animation(&mut self) {
@@ -162,6 +173,39 @@ impl Game {
 
     pub fn start_battle(&mut self) {
         BattleScene::start(self);
+    }
+
+    pub fn on_chooser_seed_click(&mut self, clicked_sprite_id: &String) {
+        let selected_seeds = self.state.selected_seeds.to_vec();
+
+        // Each selected seed is represented as a Seed/Card tuple.
+        let selected = selected_seeds.iter().find(|selected_seed| {
+            &selected_seed.0 == clicked_sprite_id || &selected_seed.1 == clicked_sprite_id
+        });
+
+        if let Some(selected) = selected {
+            let is_seed_click = clicked_sprite_id == &selected.0;
+
+            // Seeds are disabled once clicked, and can be de-selected only on Card click.
+            if is_seed_click {
+                return;
+            }
+
+            // Deselecting
+            self.state
+                .selected_seeds
+                .retain(|(_seed_id, card_id)| card_id != clicked_sprite_id);
+
+            BattleScene::deselect_seed(self, &selected);
+        } else {
+            let card_id = BattleScene::select_seed(self, clicked_sprite_id);
+
+            self.state
+                .selected_seeds
+                .push((clicked_sprite_id.clone(), card_id));
+        }
+
+        log!("After mutation {:?}", self.state.selected_seeds);
     }
 
     // Game State Mutations //
@@ -183,19 +227,47 @@ impl Game {
         self.add_sprites(sprites.as_mut());
     }
 
-    pub fn remove_sprites(&mut self, sprites: Vec<&str>) {
+    pub fn remove_sprites_by_name(&mut self, sprites: Vec<&str>) {
         self.sprites
             .retain(|sprite| !sprites.contains(&sprite.name.trim()))
     }
 
+    pub fn remove_sprites_by_type(&mut self, sprite_type: &SpriteType) {
+        self.sprites
+            .retain(|sprite| &sprite.sprite_type != sprite_type)
+    }
+
+    pub fn remove_sprites_by_id(&mut self, sprites: Vec<&str>) {
+        self.sprites
+            .retain(|sprite| !sprites.contains(&sprite.id.trim()))
+    }
+
     // Getters //
-    pub fn get_sprite(&mut self, sprite_name: &str) -> &mut Sprite {
+    pub fn get_sprites_by_type(&mut self, sprite_type: &SpriteType) -> Vec<&mut Sprite> {
         self.sprites
             .iter_mut()
-            .find(|sprite| sprite_name == sprite.name)
+            .filter(|sprite| &sprite.sprite_type == sprite_type)
+            .collect()
+    }
+
+    pub fn get_sprite_by_name_and_type(
+        &mut self,
+        name: &str,
+        sprite_type: &SpriteType,
+    ) -> &mut Sprite {
+        self.sprites
+            .iter_mut()
+            .find(|sprite| name == sprite.name && &sprite.sprite_type == sprite_type)
+            .expect(&format!("[Game Controller] Cannot find Sprite {}", &name))
+    }
+
+    pub fn get_sprite_by_id(&mut self, sprite_id: &String) -> &mut Sprite {
+        self.sprites
+            .iter_mut()
+            .find(|sprite| sprite_id == &sprite.id)
             .expect(&format!(
                 "[Game Controller] Cannot find Sprite {}",
-                &sprite_name
+                &sprite_id
             ))
     }
 

@@ -18,10 +18,10 @@ use crate::timers::GameTime;
 pub struct BehaviorManager;
 
 impl BehaviorManager {
-    pub fn create(data: &BehaviorData) -> Box<dyn Behavior> {
+    pub fn create(data: &BehaviorData, sprite_id: String) -> Box<dyn Behavior> {
         let behavior_type = BehaviorType::from_string(&data.name);
 
-        match behavior_type {
+        let mut behavior: Box<dyn Behavior> = match behavior_type {
             BehaviorType::Click => Box::new(Click::new(data.callback.unwrap())),
             BehaviorType::Animate => Box::new(Animate::new(
                 data.duration,
@@ -35,7 +35,11 @@ impl BehaviorManager {
                 data.duration,
                 data.callback.unwrap(),
             )),
-        }
+        };
+
+        behavior.set_sprite_id(sprite_id);
+
+        behavior
     }
 
     pub fn run(
@@ -79,7 +83,10 @@ impl BehaviorManager {
             .get_mut()
             .iter_mut()
             .find(|sprite_behavior| behavior == sprite_behavior.name())
-            .expect(&format!("[BehaviorManager] Cannot find Sprite behavior: {:?}", behavior));
+            .expect(&format!(
+                "[BehaviorManager] Cannot find Sprite behavior: {:?}",
+                behavior
+            ));
 
         behavior
     }

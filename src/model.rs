@@ -3,10 +3,15 @@ use std::fmt;
 use serde_derive::Deserialize;
 use web_sys::{MouseEvent, TextMetrics};
 
+use crate::resource_loader::ResourceKind;
+
+pub type SelectedSeed = (String, String);
+
 #[derive(Debug, Default)]
 pub struct GameState {
     pub sun: usize,
     pub current_level: Option<LevelData>,
+    pub selected_seeds: Vec<SelectedSeed>,
 }
 
 impl GameState {
@@ -14,6 +19,14 @@ impl GameState {
         GameState {
             sun: 600,
             current_level: None,
+            selected_seeds: vec![],
+        }
+    }
+
+    pub fn get_level(&self) -> LevelData {
+        match &self.current_level {
+            Some(level) => level.clone(),
+            None => LevelData::new(),
         }
     }
 }
@@ -36,12 +49,14 @@ impl fmt::Display for GameMouseEvent {
 #[derive(Debug, Clone, Copy, Deserialize)]
 pub enum Callback {
     ShowZombieHand,
-    StartLevel,
+    SelectLevel,
     BackHome,
     ShowPlantsChooser,
     ResetPlantsChoose,
     EnterBattleAnimation,
     StartBattle,
+    ChooserSeedSelect,
+    PlantCardClick,
 }
 
 impl Default for Callback {
@@ -50,10 +65,34 @@ impl Default for Callback {
     }
 }
 
+type SpriteId = String;
+
 #[derive(Debug)]
 pub enum GameInteraction {
-    SpriteClick(Callback),
+    SpriteClick(Callback, SpriteId),
     AnimationCallback(Callback),
+}
+
+#[derive(Debug, Clone, Hash, Eq, PartialEq)]
+pub enum SpriteType {
+    Zombie,
+    Plant,
+    Interface,
+    Card,
+    Seed,
+    Meta,
+}
+
+impl SpriteType {
+    pub fn from_kind(kind: &ResourceKind) -> Self {
+        match kind {
+            ResourceKind::Card => SpriteType::Card,
+            ResourceKind::Interface => SpriteType::Interface,
+            ResourceKind::Plant => SpriteType::Plant,
+            ResourceKind::Zombie => SpriteType::Zombie,
+            ResourceKind::Level => SpriteType::Meta,
+        }
+    }
 }
 
 /// Sprite cell represents a Sprite given possible states position pointing to a respective interface asset.
@@ -199,11 +238,18 @@ impl From<TextMetrics> for Size {
     }
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Default, Deserialize)]
 pub struct LevelData {
     pub name: String,
-    pub scenes: Vec<String>,
     pub flag_num: usize,
-    pub plants_options: Vec<String>,
+    pub plant_cards: Vec<String>,
     pub zombies: Vec<String>,
+}
+
+impl LevelData {
+    pub fn new() -> Self {
+        LevelData {
+            ..LevelData::default()
+        }
+    }
 }

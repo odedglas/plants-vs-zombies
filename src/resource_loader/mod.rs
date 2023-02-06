@@ -60,6 +60,14 @@ impl Resources {
             },
         }
     }
+
+    pub fn get_level_data(&self, level_id: &str) -> LevelData {
+        let resource_key = format!("{}/{}", ResourceKind::Level.value(), level_id);
+
+        let level_data = self.level_data.get(&resource_key).unwrap();
+
+        level_data.clone()
+    }
 }
 
 impl ResourceLoader {

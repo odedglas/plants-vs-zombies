@@ -2,7 +2,6 @@ use derives::{derive_behavior_fields, BaseBehavior};
 use web_sys::CanvasRenderingContext2d;
 
 use super::base::Behavior;
-use crate::log;
 use crate::model::{BehaviorType, Callback, GameInteraction, Position};
 use crate::sprite::{Sprite, SpriteMutation};
 
@@ -40,14 +39,16 @@ impl Behavior for Scroll {
 
     fn get_interaction(&self) -> Option<GameInteraction> {
         if self.interaction_active {
-            return Some(GameInteraction::SpriteClick(self.callback));
+            return Some(GameInteraction::SpriteClick(
+                self.callback,
+                self.sprite_id.clone(),
+            ));
         }
 
         None
     }
 
     fn reverse(&mut self, now: f64, callback: Callback) {
-        log!("Reversing scroll behavior nigga");
         self.direction *= -1;
         self.scrolled_distance = 0.0;
         self.callback = callback;

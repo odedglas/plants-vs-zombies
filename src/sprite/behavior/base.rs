@@ -18,6 +18,8 @@ pub trait BehaviorState {
     }
 
     fn clean_interaction(&mut self);
+
+    fn set_sprite_id(&mut self, sprite_id: String);
 }
 
 pub trait Behavior: BehaviorState {
