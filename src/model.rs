@@ -4,12 +4,13 @@ use serde_derive::Deserialize;
 use web_sys::{MouseEvent, TextMetrics};
 
 use crate::resource_loader::ResourceKind;
+use crate::sun_manager::SunState;
 
 pub type SelectedSeed = (String, String);
 
 #[derive(Debug, Default)]
 pub struct GameState {
-    pub sun: usize,
+    pub sun_state: SunState,
     pub current_level: Option<LevelData>,
     pub selected_seeds: Vec<SelectedSeed>,
 }
@@ -17,7 +18,7 @@ pub struct GameState {
 impl GameState {
     pub fn new() -> GameState {
         GameState {
-            sun: 600,
+            sun_state: SunState::new(),
             current_level: None,
             selected_seeds: vec![],
         }
@@ -187,6 +188,7 @@ pub struct TextOverlayData {
     pub size: usize,
     pub offset: Option<Position>,
     pub location_type: LocationType,
+    pub color: Option<String>,
 }
 
 #[derive(Debug, Default, PartialEq, Clone, Copy, Deserialize)]

@@ -3,13 +3,13 @@ use web_sys::{HtmlCanvasElement, MouseEvent};
 use crate::fps::Fps;
 use crate::log;
 use crate::model::{
-    BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position,
-    SpriteType,
+    BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position, SpriteType,
 };
 use crate::painter::Painter;
-use crate::resource_loader::{Resources};
+use crate::resource_loader::Resources;
 use crate::scene::{BattleScene, HomeScene, PlantsChooser};
 use crate::sprite::{BehaviorManager, Sprite};
+use crate::sun_manager::SunManager;
 use crate::timers::GameTime;
 
 pub struct Game {
@@ -57,7 +57,7 @@ impl Game {
 
         // TODO - Handle Game internal sprites garbage collection Game::gc()
 
-        // TODO - SunGenerator::tick()
+        SunManager::tick(self);
 
         self.fps.set(current_time);
     }
@@ -79,6 +79,8 @@ impl Game {
 
             self.painter.draw_sprite(sprite);
         });
+
+        SunManager::update_sun_score(self);
     }
 
     // Canvas Mouse Events //
@@ -142,6 +144,9 @@ impl Game {
     fn start_home_scene(&mut self) {
         self.reset_state();
 
+        self.state.sun_state.enable_score(false);
+        self.state.sun_state.enable_sun(false);
+
         HomeScene::start(self);
     }
 
@@ -158,6 +163,8 @@ impl Game {
     }
 
     pub fn show_plants_chooser(&mut self) {
+        self.state.sun_state.enable_score(true);
+
         PlantsChooser::show(self);
     }
 
@@ -172,6 +179,8 @@ impl Game {
     }
 
     pub fn start_battle(&mut self) {
+        self.state.sun_state.enable_sun(true);
+
         BattleScene::start(self);
     }
 

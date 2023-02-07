@@ -81,6 +81,10 @@ impl Painter {
         self.context.save();
         self.set_text_styles(text_overlay.size);
 
+        if let Some(color) = &text_overlay.color {
+            self.context.set_fill_style(&color.into());
+        }
+
         let position = &text_overlay.position.unwrap();
         let offset = &text_overlay.offset.unwrap_or(Position::default());
 
