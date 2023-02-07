@@ -74,11 +74,14 @@
   },
   "Sun": {
     "constructor": "Sprite",
-    "position": [{ "left": 0, "top": 0 }],
+    "position": [{ "left": 100, "top": 100 }],
     "behaviors": [
-      { "name": "Cycle", "duration": 25 },
-      { "name": "Click" },
-      { "name": "Interval", "interval": 20000 }
+      { "name": "Click", "callback": "CollectSun" },
+      { "name": "Animate", "duration": 25,
+        "max_cycles": 10,
+        "callback": "RemoveSun",
+        "callback_delay": 0
+      }
     ],
     "order": 3
   },

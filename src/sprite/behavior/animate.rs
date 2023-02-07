@@ -45,7 +45,10 @@ impl Behavior for Animate {
             return None;
         }
 
-        return Some(GameInteraction::AnimationCallback(self.callback.unwrap()));
+        return Some(GameInteraction::AnimationCallback(
+            self.callback.unwrap(),
+            self.sprite_id.clone(),
+        ));
     }
 
     fn execute(

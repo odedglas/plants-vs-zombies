@@ -58,6 +58,8 @@ pub enum Callback {
     StartBattle,
     ChooserSeedSelect,
     PlantCardClick,
+    RemoveSun,
+    CollectSun,
 }
 
 impl Default for Callback {
@@ -71,7 +73,7 @@ type SpriteId = String;
 #[derive(Debug)]
 pub enum GameInteraction {
     SpriteClick(Callback, SpriteId),
-    AnimationCallback(Callback),
+    AnimationCallback(Callback, SpriteId),
 }
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]

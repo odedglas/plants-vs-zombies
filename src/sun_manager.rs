@@ -1,7 +1,9 @@
 use crate::game::Game;
+use crate::location_builder::LocationBuilder;
 use crate::log;
-use crate::model::{Position, SpriteType, TextOverlayData};
-use crate::sprite::{Sprite, TextOverlay};
+use crate::model::{BehaviorType, Position, SpriteType, TextOverlayData};
+use crate::resource_loader::ResourceKind;
+use crate::sprite::{BehaviorManager, Sprite, TextOverlay};
 
 #[derive(Debug, Default)]
 pub struct Features {
@@ -13,7 +15,7 @@ pub struct Features {
 pub struct SunState {
     pub last_generated: f64,
     pub sun_interval: f64,
-    pub score: usize,
+    pub score: i32,
     pub features: Features,
 }
 
@@ -22,7 +24,7 @@ impl SunState {
         SunState {
             score: 600,
             last_generated: 0.0,
-            sun_interval: 15.0 * 1000.0,
+            sun_interval: 5.0 * 1000.0,
             features: Features {
                 update_score: false,
                 generate_sun: false,
@@ -37,6 +39,10 @@ impl SunState {
     pub fn enable_score(&mut self, enabled: bool) {
         self.features.update_score = enabled;
     }
+
+    pub fn add_score(&mut self, score: i32) {
+        self.score += score;
+    }
 }
 
 pub struct SunManager;
@@ -44,27 +50,31 @@ pub struct SunManager;
 impl SunManager {
     pub fn tick(game: &mut Game) {
         let now = game.game_time.time;
-        let mut state = &game.state.sun_state;
+        let state = &game.state.sun_state;
 
         if state.features.generate_sun {
             let should_generate = now - state.last_generated >= state.sun_interval;
 
             if should_generate {
-                log!("Generating SUN!");
+                log!("Generating SUN!"); // Create a random sun sprite
                 game.state.sun_state.last_generated = now;
+                Self::generate_random_sun(game);
             }
         }
     }
 
     pub fn update_sun_score(game: &mut Game) {
-        let mut state = &game.state.sun_state;
+        let state = &game.state.sun_state;
         let score = game.state.sun_state.score;
 
         if !state.features.update_score {
             return;
         }
 
-        let sun_score = game.sprites.iter_mut().find(|sprite| sprite.name == "SunScore");
+        let sun_score = game
+            .sprites
+            .iter_mut()
+            .find(|sprite| sprite.name == "SunScore");
 
         if let Some(sun_score) = sun_score {
             sun_score.text_overlay = Some(TextOverlay::new(
@@ -78,5 +88,24 @@ impl SunManager {
                 &sun_score,
             ));
         }
+    }
+
+    fn generate_random_sun(game: &mut Game) {
+        let mut sun_sprite =
+            Sprite::create_sprites(vec!["Sun"], &ResourceKind::Interface, &game.resources);
+
+        sun_sprite
+            .iter_mut()
+            .for_each(|sprite| sprite.update_position(LocationBuilder::locate_sun()));
+
+        // TODO - Add `Walk` Behavior
+        BehaviorManager::toggle_behaviors(
+            &sun_sprite,
+            &[BehaviorType::Animate],
+            true,
+            game.game_time.time,
+        );
+
+        game.add_sprites(sun_sprite.as_mut());
     }
 }

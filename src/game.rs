@@ -114,15 +114,15 @@ impl Game {
             .iter()
             .for_each(|interaction| match interaction {
                 GameInteraction::SpriteClick(callback, sprite_id) => {
-                    self.interaction_callback(callback, Some(sprite_id))
+                    self.interaction_callback(callback, sprite_id)
                 }
-                GameInteraction::AnimationCallback(callback) => {
-                    self.interaction_callback(callback, None)
+                GameInteraction::AnimationCallback(callback, sprite_id) => {
+                    self.interaction_callback(callback, sprite_id)
                 }
             });
     }
 
-    pub fn interaction_callback(&mut self, callback: &Callback, sprite_id: Option<&String>) {
+    pub fn interaction_callback(&mut self, callback: &Callback, sprite_id: &String) {
         match callback {
             Callback::ShowZombieHand => self.show_zombie_hand_animation(),
             Callback::SelectLevel => self.select_level(),
@@ -131,8 +131,10 @@ impl Game {
             Callback::ResetPlantsChoose => self.reset_plants_choose(),
             Callback::EnterBattleAnimation => self.enter_battle_animation(),
             Callback::StartBattle => self.start_battle(),
-            Callback::ChooserSeedSelect => self.on_chooser_seed_click(sprite_id.unwrap()),
+            Callback::ChooserSeedSelect => self.on_chooser_seed_click(sprite_id),
             Callback::PlantCardClick => log!("Plant card click!!"),
+            Callback::CollectSun => self.collect_sun(sprite_id),
+            Callback::RemoveSun => self.remove_sun(sprite_id),
         }
     }
 
@@ -215,6 +217,17 @@ impl Game {
         }
 
         log!("After mutation {:?}", self.state.selected_seeds);
+    }
+
+    pub fn collect_sun(&mut self, sprite_id: &String) {
+        log!("COLLECTING SUN");
+        self.state.sun_state.add_score(50);
+
+        self.remove_sun(sprite_id);
+    }
+
+    pub fn remove_sun(&mut self, sprite_id: &String) {
+        self.remove_sprites_by_id(vec![sprite_id]);
     }
 
     // Game State Mutations //
