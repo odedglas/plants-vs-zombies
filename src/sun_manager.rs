@@ -1,6 +1,5 @@
 use crate::game::Game;
 use crate::location_builder::LocationBuilder;
-use crate::log;
 use crate::model::{BehaviorType, Position, TextOverlayData};
 use crate::resource_loader::ResourceKind;
 use crate::sprite::{BehaviorManager, Sprite, TextOverlay};
@@ -24,7 +23,7 @@ impl SunState {
         SunState {
             score: 600,
             last_generated: 0.0,
-            sun_interval: 5.0 * 1000.0,
+            sun_interval: 15.0 * 1000.0,
             features: Features {
                 update_score: false,
                 generate_sun: false,
