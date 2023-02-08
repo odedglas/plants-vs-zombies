@@ -47,7 +47,9 @@ impl Game {
 
     pub fn run(&mut self) {
         let current_time = self.game_time.current_time();
-        self.fps.calc(current_time);
+        let last_frame = self.game_time.last_timestamp;
+
+        self.fps.calc(current_time, last_frame);
 
         // Draw game Sprites
         self.draw();
@@ -59,7 +61,7 @@ impl Game {
 
         SunManager::tick(self);
 
-        self.fps.set(current_time);
+        self.game_time.stamp();
     }
 
     fn draw(&mut self) {

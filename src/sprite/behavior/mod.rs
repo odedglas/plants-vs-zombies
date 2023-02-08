@@ -37,11 +37,7 @@ impl BehaviorManager {
                 data.rate,
                 data.callback.unwrap(),
             )),
-            BehaviorType::Walk => Box::new(Walk::new(
-                data.rate,
-                data.distance,
-                data.velocity.unwrap().clone(),
-            )),
+            BehaviorType::Walk => Box::new(Walk::new(data.distance, data.velocity.unwrap().clone())),
         };
 
         behavior.set_sprite_id(sprite_id);

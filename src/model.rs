@@ -164,8 +164,8 @@ impl BehaviorType {
 
 #[derive(Debug, Default, Clone, Copy, Deserialize)]
 pub struct Velocity {
-    x: f64,
-    y: f64,
+    pub x: f64,
+    pub y: f64,
 }
 
 #[derive(Debug, Default, Clone, Deserialize)]

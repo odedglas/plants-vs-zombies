@@ -2,6 +2,7 @@ use derives::{derive_behavior_fields, BaseBehavior};
 use web_sys::CanvasRenderingContext2d;
 
 use super::base::Behavior;
+use crate::log;
 use crate::model::{BehaviorType, Callback, GameInteraction, Position};
 use crate::sprite::{Sprite, SpriteMutation};
 
@@ -14,7 +15,6 @@ pub struct Scroll {
     callback: Callback,
     distance: f64,
     rate: f64,
-    last_tick: f64,
     scrolled_distance: f64,
     direction: i32,
 }
@@ -62,12 +62,11 @@ impl Behavior for Scroll {
         &mut self,
         sprite: &Sprite,
         now: f64,
-        _last_frame: f64,
+        last_frame: f64,
         _mouse: &Position,
         _context: &CanvasRenderingContext2d,
     ) -> Option<SpriteMutation> {
         let finished = self.scrolled_distance.abs() >= self.distance;
-        let should_scroll = now - self.last_tick >= self.rate; // TODO - Turn into relative movement (with addition)
 
         if finished {
             self.stop(now);
@@ -76,19 +75,15 @@ impl Behavior for Scroll {
             return None;
         }
 
-        if should_scroll {
-            let addition = SCROLL_ADDITION * self.direction as f64;
-            self.last_tick = now;
-            self.scrolled_distance += addition;
+        let addition = self.rate * self.animation_rate(now, last_frame) * self.direction as f64;
 
-            let current_offset = &sprite.drawing_state.offset;
+        self.scrolled_distance += addition;
 
-            return Some(SpriteMutation::new().offset(Position::new(
-                current_offset.top,
-                current_offset.left + addition,
-            )));
-        }
+        let current_offset = &sprite.drawing_state.offset;
 
-        None
+        return Some(SpriteMutation::new().offset(Position::new(
+            current_offset.top,
+            current_offset.left + addition,
+        )));
     }
 }

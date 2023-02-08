@@ -27,11 +27,14 @@ impl GameTime {
 
         // Setting current time
         self.time = self.last_timestamp + elapsed;
-        self.last_timestamp = self.time;
 
         // Reset timer for next tick
         self.timer.reset(None);
 
         self.time
+    }
+
+    pub fn stamp(&mut self) {
+        self.last_timestamp = self.time;
     }
 }

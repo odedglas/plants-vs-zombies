@@ -67,7 +67,7 @@
         "name": "Scroll",
         "callback": "ShowPlantsChooser",
         "distance": 335,
-        "rate": 18
+        "rate": 300
       }
     ],
     "order": 0
@@ -78,11 +78,11 @@
     "behaviors": [
       { "name": "Click", "callback": "CollectSun" },
       { "name": "Animate", "rate": 25,
-        "max_cycles": 10,
+        "max_cycles": 20,
         "callback": "RemoveSun",
         "callback_delay": 0
       },
-      { "name": "Walk", "velocity": {
+      { "name": "Walk", "distance": 250 ,"velocity": {
         "x": 0,
         "y": 20
       } }
