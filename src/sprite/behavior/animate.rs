@@ -10,7 +10,7 @@ use crate::sprite::{Sprite, SpriteMutation};
 pub struct Animate {
     name: BehaviorType,
     last_tick: f64,
-    duration: f64,
+    rate: f64,
     finished_cycles: usize,
     max_cycles: usize,
     callback: Option<Callback>,
@@ -19,14 +19,14 @@ pub struct Animate {
 
 impl Animate {
     pub fn new(
-        duration: f64,
+        rate: f64,
         callback: Option<Callback>,
         callback_delay: Option<f64>,
         max_cycles: Option<usize>,
     ) -> Animate {
         Animate {
             name: BehaviorType::Animate,
-            duration,
+            rate,
             callback,
             callback_delay: callback_delay.unwrap_or(1000.0),
             max_cycles: max_cycles.unwrap_or(1),
@@ -45,7 +45,10 @@ impl Behavior for Animate {
             return None;
         }
 
-        return Some(GameInteraction::AnimationCallback(self.callback.unwrap()));
+        return Some(GameInteraction::AnimationCallback(
+            self.callback.unwrap(),
+            self.sprite_id.clone(),
+        ));
     }
 
     fn execute(
@@ -57,7 +60,7 @@ impl Behavior for Animate {
         _context: &CanvasRenderingContext2d,
     ) -> Option<SpriteMutation> {
         let finished = self.finished_cycles == self.max_cycles;
-        let should_animate = now - self.last_tick >= self.duration;
+        let should_animate = now - self.last_tick >= self.rate;
 
         if finished {
             let execute_callback = now - self.last_tick > self.callback_delay;

@@ -3,13 +3,13 @@ use web_sys::{HtmlCanvasElement, MouseEvent};
 use crate::fps::Fps;
 use crate::log;
 use crate::model::{
-    BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position,
-    SpriteType,
+    BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position, SpriteType,
 };
 use crate::painter::Painter;
-use crate::resource_loader::{Resources};
+use crate::resource_loader::Resources;
 use crate::scene::{BattleScene, HomeScene, PlantsChooser};
 use crate::sprite::{BehaviorManager, Sprite};
+use crate::sun_manager::SunManager;
 use crate::timers::GameTime;
 
 pub struct Game {
@@ -47,7 +47,9 @@ impl Game {
 
     pub fn run(&mut self) {
         let current_time = self.game_time.current_time();
-        self.fps.calc(current_time);
+        let last_frame = self.game_time.last_timestamp;
+
+        self.fps.calc(current_time, last_frame);
 
         // Draw game Sprites
         self.draw();
@@ -57,9 +59,9 @@ impl Game {
 
         // TODO - Handle Game internal sprites garbage collection Game::gc()
 
-        // TODO - SunGenerator::tick()
+        SunManager::tick(self);
 
-        self.fps.set(current_time);
+        self.game_time.stamp();
     }
 
     fn draw(&mut self) {
@@ -79,6 +81,8 @@ impl Game {
 
             self.painter.draw_sprite(sprite);
         });
+
+        SunManager::update_sun_score(self);
     }
 
     // Canvas Mouse Events //
@@ -112,15 +116,15 @@ impl Game {
             .iter()
             .for_each(|interaction| match interaction {
                 GameInteraction::SpriteClick(callback, sprite_id) => {
-                    self.interaction_callback(callback, Some(sprite_id))
+                    self.interaction_callback(callback, sprite_id)
                 }
-                GameInteraction::AnimationCallback(callback) => {
-                    self.interaction_callback(callback, None)
+                GameInteraction::AnimationCallback(callback, sprite_id) => {
+                    self.interaction_callback(callback, sprite_id)
                 }
             });
     }
 
-    pub fn interaction_callback(&mut self, callback: &Callback, sprite_id: Option<&String>) {
+    pub fn interaction_callback(&mut self, callback: &Callback, sprite_id: &String) {
         match callback {
             Callback::ShowZombieHand => self.show_zombie_hand_animation(),
             Callback::SelectLevel => self.select_level(),
@@ -129,8 +133,10 @@ impl Game {
             Callback::ResetPlantsChoose => self.reset_plants_choose(),
             Callback::EnterBattleAnimation => self.enter_battle_animation(),
             Callback::StartBattle => self.start_battle(),
-            Callback::ChooserSeedSelect => self.on_chooser_seed_click(sprite_id.unwrap()),
+            Callback::ChooserSeedSelect => self.on_chooser_seed_click(sprite_id),
             Callback::PlantCardClick => log!("Plant card click!!"),
+            Callback::CollectSun => self.collect_sun(sprite_id),
+            Callback::RemoveSun => self.remove_sun(sprite_id),
         }
     }
 
@@ -141,6 +147,9 @@ impl Game {
 
     fn start_home_scene(&mut self) {
         self.reset_state();
+
+        self.state.sun_state.enable_score(false);
+        self.state.sun_state.enable_sun(false, self.game_time.time);
 
         HomeScene::start(self);
     }
@@ -158,6 +167,8 @@ impl Game {
     }
 
     pub fn show_plants_chooser(&mut self) {
+        self.state.sun_state.enable_score(true);
+
         PlantsChooser::show(self);
     }
 
@@ -172,6 +183,8 @@ impl Game {
     }
 
     pub fn start_battle(&mut self) {
+        self.state.sun_state.enable_sun(true, self.game_time.time);
+
         BattleScene::start(self);
     }
 
@@ -204,8 +217,16 @@ impl Game {
                 .selected_seeds
                 .push((clicked_sprite_id.clone(), card_id));
         }
+    }
 
-        log!("After mutation {:?}", self.state.selected_seeds);
+    pub fn collect_sun(&mut self, sprite_id: &String) {
+        self.state.sun_state.add_score(50);
+
+        self.remove_sun(sprite_id);
+    }
+
+    pub fn remove_sun(&mut self, sprite_id: &String) {
+        self.remove_sprites_by_id(vec![sprite_id]);
     }
 
     // Game State Mutations //

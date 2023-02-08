@@ -59,6 +59,7 @@ impl BattleScene {
     }
 
     pub fn start(game: &mut Game) {
+        Self::draw_sun_score(game);
         // TODO - Swap cards Callback to Plant action.
         log!("Starting Battle Scene!");
     }
@@ -90,5 +91,12 @@ impl BattleScene {
 
             count += 1;
         });
+    }
+
+    fn draw_sun_score(game: &mut Game) {
+        let sun_score =
+            Sprite::create_sprite("SunScore", &ResourceKind::Interface, &game.resources).remove(0);
+
+        game.add_sprite(sun_score);
     }
 }

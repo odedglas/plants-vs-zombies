@@ -20,7 +20,7 @@ impl PlantsChooser {
 
         let chooser_background_offset = &sprites.first().unwrap().position;
 
-        Self::build_cards_layout(game, chooser_background_offset);
+        Self::build_seeds_layout(game, chooser_background_offset);
         Self::create_bottom_sun_score(game);
 
         game.add_sprites(sprites.as_mut());
@@ -50,21 +50,19 @@ impl PlantsChooser {
 
         sun_score.position = Position::new(560.0, 98.0);
 
-        // TODO - Dynamically bound Game sun score into this Sprite TextOverlay.
-
         game.add_sprite(sun_score);
     }
 
-    fn build_cards_layout(game: &mut Game, offset: &Position) {
-        let card_scale = 0.725;
+    fn build_seeds_layout(game: &mut Game, offset: &Position) {
+        let seeds_scale = 0.725;
         let positions = LocationBuilder::create_row_layout(
             &Position::new(offset.top + 34.0, offset.left + 14.0),
             game.state.get_level().plant_cards.len(),
             6,
-            Size::new(100.0 * card_scale, 60.0 * card_scale),
+            Size::new(100.0 * seeds_scale, 60.0 * seeds_scale),
         );
 
-        let mut cards = game
+        let mut seeds = game
             .state
             .get_level()
             .plant_cards
@@ -83,6 +81,6 @@ impl PlantsChooser {
             })
             .collect::<Vec<Sprite>>();
 
-        game.add_sprites(cards.as_mut());
+        game.add_sprites(seeds.as_mut());
     }
 }

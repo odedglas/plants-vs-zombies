@@ -4,12 +4,13 @@ use serde_derive::Deserialize;
 use web_sys::{MouseEvent, TextMetrics};
 
 use crate::resource_loader::ResourceKind;
+use crate::sun_manager::SunState;
 
 pub type SelectedSeed = (String, String);
 
 #[derive(Debug, Default)]
 pub struct GameState {
-    pub sun: usize,
+    pub sun_state: SunState,
     pub current_level: Option<LevelData>,
     pub selected_seeds: Vec<SelectedSeed>,
 }
@@ -17,7 +18,7 @@ pub struct GameState {
 impl GameState {
     pub fn new() -> GameState {
         GameState {
-            sun: 600,
+            sun_state: SunState::new(),
             current_level: None,
             selected_seeds: vec![],
         }
@@ -57,6 +58,8 @@ pub enum Callback {
     StartBattle,
     ChooserSeedSelect,
     PlantCardClick,
+    RemoveSun,
+    CollectSun,
 }
 
 impl Default for Callback {
@@ -70,7 +73,7 @@ type SpriteId = String;
 #[derive(Debug)]
 pub enum GameInteraction {
     SpriteClick(Callback, SpriteId),
-    AnimationCallback(Callback),
+    AnimationCallback(Callback, SpriteId),
 }
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
@@ -137,6 +140,7 @@ pub enum BehaviorType {
     Click,
     Animate,
     Scroll,
+    Walk,
 }
 
 impl Default for BehaviorType {
@@ -152,20 +156,28 @@ impl BehaviorType {
             "Hover" => BehaviorType::Hover,
             "Animate" => BehaviorType::Animate,
             "Scroll" => BehaviorType::Scroll,
+            "Walk" => BehaviorType::Walk,
             _ => BehaviorType::default(),
         }
     }
+}
+
+#[derive(Debug, Default, Clone, Copy, Deserialize)]
+pub struct Velocity {
+    pub x: f64,
+    pub y: f64,
 }
 
 #[derive(Debug, Default, Clone, Deserialize)]
 #[serde(default)]
 pub struct BehaviorData {
     pub name: String,
-    pub duration: f64,
+    pub rate: f64,
     pub distance: f64,
     pub callback: Option<Callback>,
     pub callback_delay: Option<f64>,
     pub max_cycles: Option<usize>,
+    pub velocity: Option<Velocity>,
 }
 
 #[derive(Debug, Clone, Copy, Deserialize)]
@@ -187,6 +199,7 @@ pub struct TextOverlayData {
     pub size: usize,
     pub offset: Option<Position>,
     pub location_type: LocationType,
+    pub color: Option<String>,
 }
 
 #[derive(Debug, Default, PartialEq, Clone, Copy, Deserialize)]

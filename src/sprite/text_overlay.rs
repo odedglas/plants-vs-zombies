@@ -10,6 +10,7 @@ pub struct TextOverlay {
     pub size: usize,
     pub position: Option<Position>,
     pub location_type: LocationType,
+    pub color: Option<String>,
 }
 
 impl TextOverlay {
@@ -20,6 +21,7 @@ impl TextOverlay {
             offset: data.offset,
             position: None,
             location_type: data.location_type,
+            color: data.color.clone(),
         };
 
         overlay.calculate_text_position(source_sprite);

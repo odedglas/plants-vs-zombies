@@ -1,3 +1,5 @@
+use js_sys::Math;
+
 use crate::model::{LocationType, Position, Size};
 use crate::sprite::Sprite;
 
@@ -13,6 +15,20 @@ impl LocationBuilder {
             LocationType::Center => Self::place_at_center(sprite, item_dimensions),
             LocationType::Top => Self::place_at_top(sprite, item_dimensions),
         }
+    }
+
+    pub fn locate_sun() -> Position {
+        Position::new(
+            Self::rand_within_rand(0.0, 80.0),
+            Self::rand_within_rand(100.0, 750.0),
+        )
+    }
+
+    pub fn rand_within_rand(min: f64, max: f64) -> f64 {
+        let min = Math::ceil(min);
+        let max = Math::floor(max);
+
+        Math::floor(Math::random() * (max - min + 1.0)) + min
     }
 
     pub fn create_row_layout(

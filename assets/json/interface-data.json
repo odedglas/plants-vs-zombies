@@ -38,7 +38,7 @@
   "SelectorZombieHand": {
     "constructor": "Sprite",
     "position": [{ "left": 262, "top": 264 }],
-    "behaviors": [{ "name": "Animate", "duration": 120, "callback": "SelectLevel" }]
+    "behaviors": [{ "name": "Animate", "rate": 120, "callback": "SelectLevel" }]
   },
   "SelectorWoodSign1": {
     "constructor": "Sprite",
@@ -67,18 +67,25 @@
         "name": "Scroll",
         "callback": "ShowPlantsChooser",
         "distance": 335,
-        "duration": 18
+        "rate": 300
       }
     ],
     "order": 0
   },
   "Sun": {
     "constructor": "Sprite",
-    "position": [{ "left": 0, "top": 0 }],
+    "position": [{ "left": 100, "top": 100 }],
     "behaviors": [
-      { "name": "Cycle", "duration": 25 },
-      { "name": "Click" },
-      { "name": "Interval", "interval": 20000 }
+      { "name": "Click", "callback": "CollectSun" },
+      { "name": "Animate", "rate": 25,
+        "max_cycles": 20,
+        "callback": "RemoveSun",
+        "callback_delay": 0
+      },
+      { "name": "Walk", "distance": 250 ,"velocity": {
+        "x": 0,
+        "y": 20
+      } }
     ],
     "order": 3
   },

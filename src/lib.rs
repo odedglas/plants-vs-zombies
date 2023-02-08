@@ -12,6 +12,7 @@ mod painter;
 mod resource_loader;
 mod scene;
 mod sprite;
+mod sun_manager;
 mod timers;
 mod web_utils;
 
