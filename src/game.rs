@@ -147,7 +147,7 @@ impl Game {
         self.reset_state();
 
         self.state.sun_state.enable_score(false);
-        self.state.sun_state.enable_sun(false);
+        self.state.sun_state.enable_sun(false, self.game_time.time);
 
         HomeScene::start(self);
     }
@@ -181,7 +181,7 @@ impl Game {
     }
 
     pub fn start_battle(&mut self) {
-        self.state.sun_state.enable_sun(true);
+        self.state.sun_state.enable_sun(true, self.game_time.time);
 
         BattleScene::start(self);
     }
@@ -215,12 +215,9 @@ impl Game {
                 .selected_seeds
                 .push((clicked_sprite_id.clone(), card_id));
         }
-
-        log!("After mutation {:?}", self.state.selected_seeds);
     }
 
     pub fn collect_sun(&mut self, sprite_id: &String) {
-        log!("COLLECTING SUN");
         self.state.sun_state.add_score(50);
 
         self.remove_sun(sprite_id);

@@ -140,6 +140,7 @@ pub enum BehaviorType {
     Click,
     Animate,
     Scroll,
+    Walk,
 }
 
 impl Default for BehaviorType {
@@ -155,20 +156,28 @@ impl BehaviorType {
             "Hover" => BehaviorType::Hover,
             "Animate" => BehaviorType::Animate,
             "Scroll" => BehaviorType::Scroll,
+            "Walk" => BehaviorType::Walk,
             _ => BehaviorType::default(),
         }
     }
+}
+
+#[derive(Debug, Default, Clone, Copy, Deserialize)]
+pub struct Velocity {
+    x: f64,
+    y: f64,
 }
 
 #[derive(Debug, Default, Clone, Deserialize)]
 #[serde(default)]
 pub struct BehaviorData {
     pub name: String,
-    pub duration: f64,
+    pub rate: f64,
     pub distance: f64,
     pub callback: Option<Callback>,
     pub callback_delay: Option<f64>,
     pub max_cycles: Option<usize>,
+    pub velocity: Option<Velocity>,
 }
 
 #[derive(Debug, Clone, Copy, Deserialize)]

@@ -1,7 +1,7 @@
 use crate::game::Game;
 use crate::location_builder::LocationBuilder;
 use crate::log;
-use crate::model::{BehaviorType, Position, SpriteType, TextOverlayData};
+use crate::model::{BehaviorType, Position, TextOverlayData};
 use crate::resource_loader::ResourceKind;
 use crate::sprite::{BehaviorManager, Sprite, TextOverlay};
 
@@ -32,8 +32,9 @@ impl SunState {
         }
     }
 
-    pub fn enable_sun(&mut self, enabled: bool) {
+    pub fn enable_sun(&mut self, enabled: bool, now: f64) {
         self.features.generate_sun = enabled;
+        self.last_generated = now;
     }
 
     pub fn enable_score(&mut self, enabled: bool) {
@@ -56,8 +57,8 @@ impl SunManager {
             let should_generate = now - state.last_generated >= state.sun_interval;
 
             if should_generate {
-                log!("Generating SUN!"); // Create a random sun sprite
                 game.state.sun_state.last_generated = now;
+
                 Self::generate_random_sun(game);
             }
         }
@@ -83,7 +84,7 @@ impl SunManager {
                     size: 24,
                     offset: Some(Position::new(6.0, 14.0)),
                     location_type: Default::default(),
-                    color: Some(String::from("Black")),
+                    color: Some(String::from("black")),
                 },
                 &sun_score,
             ));
@@ -98,10 +99,9 @@ impl SunManager {
             .iter_mut()
             .for_each(|sprite| sprite.update_position(LocationBuilder::locate_sun()));
 
-        // TODO - Add `Walk` Behavior
         BehaviorManager::toggle_behaviors(
             &sun_sprite,
-            &[BehaviorType::Animate],
+            &[BehaviorType::Animate, BehaviorType::Walk],
             true,
             game.game_time.time,
         );

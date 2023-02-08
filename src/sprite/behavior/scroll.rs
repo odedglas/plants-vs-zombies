@@ -13,17 +13,17 @@ pub struct Scroll {
     name: BehaviorType,
     callback: Callback,
     distance: f64,
-    duration: f64,
+    rate: f64,
     last_tick: f64,
     scrolled_distance: f64,
     direction: i32,
 }
 
 impl Scroll {
-    pub fn new(distance: f64, duration: f64, callback: Callback) -> Scroll {
+    pub fn new(distance: f64, rate: f64, callback: Callback) -> Scroll {
         Scroll {
             callback,
-            duration,
+            rate,
             distance,
             direction: 1,
             name: BehaviorType::Click,
@@ -67,7 +67,7 @@ impl Behavior for Scroll {
         _context: &CanvasRenderingContext2d,
     ) -> Option<SpriteMutation> {
         let finished = self.scrolled_distance.abs() >= self.distance;
-        let should_scroll = now - self.last_tick >= self.duration;
+        let should_scroll = now - self.last_tick >= self.rate; // TODO - Turn into relative movement (with addition)
 
         if finished {
             self.stop(now);
@@ -76,7 +76,6 @@ impl Behavior for Scroll {
             return None;
         }
 
-        // State will be preserved so we can tell if we directed.
         if should_scroll {
             let addition = SCROLL_ADDITION * self.direction as f64;
             self.last_tick = now;

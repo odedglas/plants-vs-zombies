@@ -3,12 +3,14 @@ mod base;
 mod click;
 mod hover;
 mod scroll;
+mod walk;
 
 pub use animate::Animate;
 pub use base::Behavior;
 pub use click::Click;
 pub use hover::Hover;
 pub use scroll::Scroll;
+pub use walk::Walk;
 use web_sys::CanvasRenderingContext2d;
 
 use crate::model::{BehaviorData, BehaviorType, GameInteraction, Position};
@@ -24,7 +26,7 @@ impl BehaviorManager {
         let mut behavior: Box<dyn Behavior> = match behavior_type {
             BehaviorType::Click => Box::new(Click::new(data.callback.unwrap())),
             BehaviorType::Animate => Box::new(Animate::new(
-                data.duration,
+                data.rate,
                 data.callback,
                 data.callback_delay,
                 data.max_cycles,
@@ -32,8 +34,13 @@ impl BehaviorManager {
             BehaviorType::Hover => Box::new(Hover::new()),
             BehaviorType::Scroll => Box::new(Scroll::new(
                 data.distance,
-                data.duration,
+                data.rate,
                 data.callback.unwrap(),
+            )),
+            BehaviorType::Walk => Box::new(Walk::new(
+                data.rate,
+                data.distance,
+                data.velocity.unwrap().clone(),
             )),
         };
 
