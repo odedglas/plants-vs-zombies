@@ -34,7 +34,7 @@ impl TextOverlay {
         let text_size = Painter::measure_text(&self.text, self.size);
 
         // Placing text at the center of the given source sprite.
-        self.position = Some(LocationBuilder::locate_text_overlay(
+        self.position = Some(LocationBuilder::text_overlay_location(
             source_sprite,
             text_size,
             &self.location_type,

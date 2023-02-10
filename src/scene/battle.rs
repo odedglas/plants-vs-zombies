@@ -1,21 +1,26 @@
 use crate::game::Game;
+use crate::location_builder::LocationBuilder;
 use crate::log;
 use crate::model::{BehaviorType, Callback, Position, SelectedSeed, SpriteType};
 use crate::resource_loader::ResourceKind;
 use crate::scene::PlantsChooser;
-use crate::sprite::{BehaviorManager, Sprite};
+use crate::sprite::{BehaviorManager, DrawingState, Sprite};
 
 pub struct BattleScene;
 
 impl BattleScene {
-    pub fn prepare(game: &mut Game) {
+    fn build_background(game: &mut Game) {
         let mut sprites = Sprite::create_sprites(
-            vec!["BattleBackground", "BackButton"],
+            vec![
+                "BattleBackground",
+                "BackButton",
+                "FlagMeterEmpty",
+                "FlagMeterParts1",
+                "FlagMeterLevelProgress",
+            ],
             &ResourceKind::Interface,
             &game.resources,
         );
-
-        // TODO - Show Enemies (Zombies)
 
         // Trigger background scroll
         BehaviorManager::toggle_behaviors(
@@ -26,6 +31,40 @@ impl BattleScene {
         );
 
         game.add_sprites(sprites.as_mut());
+    }
+
+    fn build_zombies(game: &mut Game) {
+        let mut zombies = Sprite::create_sprites(
+            game.state
+                .get_level()
+                .zombies
+                .iter()
+                .map(|zombie_name| zombie_name.trim())
+                .collect(),
+            &ResourceKind::Zombie,
+            &game.resources,
+        );
+
+        BehaviorManager::toggle_behaviors(
+            &zombies,
+            &[BehaviorType::Animate],
+            true,
+            game.game_time.time,
+        );
+
+        zombies.iter_mut().enumerate().for_each(|(index, zombie)| {
+            let zombie_cell = DrawingState::get_active_cell(zombie);
+
+            zombie.update_position(LocationBuilder::zombie_location(zombie_cell, index))
+        });
+
+        game.add_sprites(zombies.as_mut());
+    }
+
+    pub fn prepare(game: &mut Game) {
+        Self::build_background(game);
+
+        Self::build_zombies(game);
     }
 
     pub fn enter(game: &mut Game) {

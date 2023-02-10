@@ -4,7 +4,9 @@ use std::rc::Weak;
 use js_sys::Math;
 use web_sys::HtmlImageElement;
 
-use crate::model::{BehaviorData, Position, SpriteCell, SpriteData, SpriteType, TextOverlayData};
+use crate::model::{
+    BehaviorData, Dimensions, Position, SpriteCell, SpriteData, SpriteType, TextOverlayData,
+};
 use crate::resource_loader::{Resource, ResourceKind, Resources};
 use crate::sprite::behavior::{Behavior, BehaviorManager};
 use crate::sprite::drawing_state::DrawingState;
@@ -69,7 +71,7 @@ impl Sprite {
         sprite
     }
 
-    pub fn dimensions(&self) -> SpriteCell {
+    pub fn dimensions(&self) -> Dimensions {
         let active_cell = DrawingState::get_active_cell(&self);
 
         return SpriteCell {

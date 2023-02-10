@@ -1,12 +1,13 @@
 use js_sys::Math;
 
-use crate::model::{LocationType, Position, Size};
+use crate::board::Board;
+use crate::model::{LocationType, Position, Size, SpriteCell};
 use crate::sprite::Sprite;
 
 pub struct LocationBuilder;
 
 impl LocationBuilder {
-    pub fn locate_text_overlay(
+    pub fn text_overlay_location(
         sprite: &Sprite,
         item_dimensions: Size,
         location_type: &LocationType,
@@ -17,11 +18,25 @@ impl LocationBuilder {
         }
     }
 
-    pub fn locate_sun() -> Position {
+    pub fn sun_location() -> Position {
         Position::new(
             Self::rand_within_rand(0.0, 80.0),
             Self::rand_within_rand(100.0, 750.0),
         )
+    }
+
+    pub fn zombie_location(zombie_cell: &SpriteCell, row: usize) -> Position {
+        let start_col = 10;
+        let start_row = ((row) % 5) + 1;
+
+        let dimensions = Board::get_cell_dimensions(start_row, start_col);
+
+        let center_x = dimensions.left + (dimensions.width - zombie_cell.width) / 2.0;
+        let bottom = dimensions.top - (zombie_cell.height - dimensions.height) - 3.5;
+
+        let x_offset = Self::random_offset(0, 30);
+
+        Position::new(bottom, center_x + x_offset)
     }
 
     pub fn rand_within_rand(min: f64, max: f64) -> f64 {
@@ -29,6 +44,17 @@ impl LocationBuilder {
         let max = Math::floor(max);
 
         Math::floor(Math::random() * (max - min + 1.0)) + min
+    }
+
+    pub fn random_offset(min: usize, max: usize) -> f64 {
+        let x_adjustment = Self::rand_within_rand(min as f64, max as f64);
+
+        let direction = match Self::rand_within_rand(0.0, 1.0) > 0.5 {
+            true => 1.0,
+            false => -1.0,
+        };
+
+        x_adjustment * direction
     }
 
     pub fn create_row_layout(

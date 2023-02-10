@@ -7,6 +7,7 @@ use crate::resource_loader::ResourceKind;
 use crate::sun_manager::SunState;
 
 pub type SelectedSeed = (String, String);
+pub type Dimensions = SpriteCell;
 
 #[derive(Debug, Default)]
 pub struct GameState {

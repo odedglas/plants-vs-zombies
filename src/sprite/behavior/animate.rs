@@ -2,6 +2,7 @@ use derives::{derive_behavior_fields, BaseBehavior};
 use web_sys::CanvasRenderingContext2d;
 
 use super::base::Behavior;
+use crate::log;
 use crate::model::{BehaviorType, Callback, GameInteraction, Position};
 use crate::sprite::{Sprite, SpriteMutation};
 
@@ -59,7 +60,9 @@ impl Behavior for Animate {
         _mouse: &Position,
         _context: &CanvasRenderingContext2d,
     ) -> Option<SpriteMutation> {
-        let finished = self.finished_cycles == self.max_cycles;
+        let infinite = self.max_cycles == 0;
+
+        let finished = !infinite && self.finished_cycles == self.max_cycles;
         let should_animate = now - self.last_tick >= self.rate;
 
         if finished {
@@ -80,7 +83,7 @@ impl Behavior for Animate {
             }
 
             // Animate Sprite cells as long as we didn't finish the desired "max_cycles" animation amount.
-            if self.finished_cycles != self.max_cycles {
+            if infinite || self.finished_cycles != self.max_cycles {
                 self.last_tick = now;
                 return Some(SpriteMutation::new().cycle());
             }
