@@ -1,7 +1,7 @@
 use web_sys::{HtmlCanvasElement, MouseEvent};
 
 use crate::board::Board;
-use crate::features::{GameFeatures};
+use crate::features::GameFeatures;
 use crate::fps::Fps;
 use crate::log;
 use crate::model::{
@@ -54,7 +54,7 @@ impl Game {
 
         self.start_battle();
 
-        GameFeatures::enable_board_lines();
+        GameFeatures::enable_board_lines(true);
     }
 
     pub fn run(&mut self) {
@@ -161,8 +161,8 @@ impl Game {
     fn start_home_scene(&mut self) {
         self.reset_state();
 
-        self.state.sun_state.enable_score(false);
-        self.state.sun_state.enable_sun(false, self.game_time.time);
+        GameFeatures::enable_update_sun_score(false);
+        GameFeatures::enable_generate_sun(false);
 
         HomeScene::start(self);
     }
@@ -180,7 +180,7 @@ impl Game {
     }
 
     pub fn show_plants_chooser(&mut self) {
-        self.state.sun_state.enable_score(true);
+        GameFeatures::enable_update_sun_score(true);
 
         PlantsChooser::show(self);
     }
@@ -196,7 +196,7 @@ impl Game {
     }
 
     pub fn start_battle(&mut self) {
-        self.state.sun_state.enable_sun(true, self.game_time.time);
+        GameFeatures::enable_generate_sun(true);
 
         BattleScene::start(self);
     }
