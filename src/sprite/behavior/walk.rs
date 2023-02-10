@@ -58,6 +58,9 @@ impl Behavior for Walk {
 
         let animation_rate = self.animation_rate(now, last_frame);
         let offset = self.calculate_offset(animation_rate);
+
+        // TODO - Calculate if movement is allowed (Not out of board)
+
         self.walked_distance += self.position_distance(&offset);
 
         Some(SpriteMutation::new().position(Position::new(

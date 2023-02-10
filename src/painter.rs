@@ -99,6 +99,23 @@ impl Painter {
         self.context.restore();
     }
 
+    pub fn draw_line(&self, start: &Position, to: &Position) {
+        self.context.save();
+        self.context.begin_path();
+
+        self.context.begin_path();
+
+        self.context.move_to(start.left, start.top);
+        self.context.line_to(to.left, to.top);
+        self.context.set_line_width(0.4);
+
+        self.context.close_path();
+
+        self.context.stroke();
+
+        self.context.restore();
+    }
+
     pub fn measure_text(text: &str, size: usize) -> Size {
         let measure_painter = Painter::get_measurements_painter(Size::new(200.0, 200.0));
 

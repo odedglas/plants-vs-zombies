@@ -1,5 +1,6 @@
 use web_sys::{HtmlCanvasElement, MouseEvent};
 
+use crate::board::Board;
 use crate::fps::Fps;
 use crate::log;
 use crate::model::{
@@ -45,6 +46,14 @@ impl Game {
         self.start_home_scene();
     }
 
+    pub fn init_debug_mode(&mut self, resource: Resources) {
+        self.init(resource);
+
+        self.select_level();
+
+        self.start_battle();
+    }
+
     pub fn run(&mut self) {
         let current_time = self.game_time.current_time();
         let last_frame = self.game_time.last_timestamp;
@@ -82,6 +91,7 @@ impl Game {
             self.painter.draw_sprite(sprite);
         });
 
+        Board::draw(self);
         SunManager::update_sun_score(self);
     }
 

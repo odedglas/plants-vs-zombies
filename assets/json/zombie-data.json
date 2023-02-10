@@ -3,7 +3,9 @@
     "constructor": "Zombie",
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
-      { "name": "Cycle", "duration": 120 },
+      { "name": "Animate", "rate": 120,
+        "max_cycles": 0
+      },
       {
         "name": "Switch",
         "switch_cells": [
@@ -17,7 +19,7 @@
           "ZombieBoomdie"
         ]
       },
-      { "name": "Walk", "velocit": { "x": -10, "y": 0 }, "duration": 1000 },
+      { "name": "Walk", "velocity": { "x": -10, "y": 0 }, "duration": 1000 },
       { "name": "ZombieCollision" }
     ],
     "collision_margin": { "left": 30, "top": 5, "right": 10, "bottom": 5 },

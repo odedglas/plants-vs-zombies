@@ -96,7 +96,7 @@ impl SunManager {
 
         sun_sprite
             .iter_mut()
-            .for_each(|sprite| sprite.update_position(LocationBuilder::locate_sun()));
+            .for_each(|sprite| sprite.update_position(LocationBuilder::sun_location()));
 
         BehaviorManager::toggle_behaviors(
             &sun_sprite,

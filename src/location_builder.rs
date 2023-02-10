@@ -1,12 +1,13 @@
 use js_sys::Math;
 
+use crate::board::Board;
 use crate::model::{LocationType, Position, Size};
 use crate::sprite::Sprite;
 
 pub struct LocationBuilder;
 
 impl LocationBuilder {
-    pub fn locate_text_overlay(
+    pub fn text_overlay_location(
         sprite: &Sprite,
         item_dimensions: Size,
         location_type: &LocationType,
@@ -17,11 +18,17 @@ impl LocationBuilder {
         }
     }
 
-    pub fn locate_sun() -> Position {
+    pub fn sun_location() -> Position {
         Position::new(
             Self::rand_within_rand(0.0, 80.0),
             Self::rand_within_rand(100.0, 750.0),
         )
+    }
+
+    pub fn zombie_location() -> Position {
+        let (row, col) = (1, 10);
+
+        Board::get_cell_position(row, col)
     }
 
     pub fn rand_within_rand(min: f64, max: f64) -> f64 {
