@@ -1,3 +1,4 @@
+use crate::features::{GameFeatures, FEATURES};
 use crate::game::Game;
 use crate::model::{Dimensions, Position, SpriteCell};
 
@@ -23,15 +24,17 @@ pub const COL_X_COORD: [f64; 17] = [
 
 impl Board {
     pub fn draw(game: &mut Game) {
-        ROW_Y_COORD.iter().for_each(|cord| {
-            game.painter
-                .draw_line(&Position::new(*cord, 0.0), &Position::new(*cord, 1400.0));
-        });
+        if GameFeatures::show_board_lines() {
+            ROW_Y_COORD.iter().for_each(|cord| {
+                game.painter
+                    .draw_line(&Position::new(*cord, 0.0), &Position::new(*cord, 1400.0));
+            });
 
-        COL_X_COORD.iter().for_each(|cord| {
-            game.painter
-                .draw_line(&Position::new(0.0, *cord), &Position::new(1000.0, *cord));
-        });
+            COL_X_COORD.iter().for_each(|cord| {
+                game.painter
+                    .draw_line(&Position::new(0.0, *cord), &Position::new(1000.0, *cord));
+            });
+        }
     }
 
     pub fn get_cell_dimensions(row: usize, col: usize) -> Dimensions {

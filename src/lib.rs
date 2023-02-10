@@ -5,6 +5,7 @@ use web_utils::bind_panic_logger;
 mod board;
 mod constants;
 mod engine;
+mod features;
 mod fps;
 mod game;
 mod location_builder;

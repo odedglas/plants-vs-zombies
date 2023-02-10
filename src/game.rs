@@ -1,6 +1,7 @@
 use web_sys::{HtmlCanvasElement, MouseEvent};
 
 use crate::board::Board;
+use crate::features::{GameFeatures};
 use crate::fps::Fps;
 use crate::log;
 use crate::model::{
@@ -52,6 +53,8 @@ impl Game {
         self.select_level();
 
         self.start_battle();
+
+        GameFeatures::enable_board_lines();
     }
 
     pub fn run(&mut self) {
