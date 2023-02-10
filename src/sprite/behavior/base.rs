@@ -32,7 +32,7 @@ pub trait Behavior: BehaviorState {
     fn reverse(&mut self, _now: f64, _callback: Callback) {}
 
     fn animation_rate(&mut self, now: f64, last_frame: f64) -> f64 {
-        ((now - last_frame) / 1000.0)
+        (now - last_frame) / 1000.0
     }
 
     fn execute(

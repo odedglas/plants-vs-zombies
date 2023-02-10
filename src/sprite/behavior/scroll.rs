@@ -2,11 +2,8 @@ use derives::{derive_behavior_fields, BaseBehavior};
 use web_sys::CanvasRenderingContext2d;
 
 use super::base::Behavior;
-use crate::log;
 use crate::model::{BehaviorType, Callback, GameInteraction, Position};
 use crate::sprite::{Sprite, SpriteMutation};
-
-const SCROLL_ADDITION: f64 = 8.5;
 
 #[derive_behavior_fields("")]
 #[derive(BaseBehavior, Default)]
