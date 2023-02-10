@@ -1,6 +1,6 @@
 use crate::game::Game;
 use crate::log;
-use crate::model::Position;
+use crate::model::{Dimensions, Position, SpriteCell};
 
 pub struct BoardLocation {
     row: usize,
@@ -35,7 +35,7 @@ impl Board {
         });
     }
 
-    pub fn get_cell_position(row: usize, col: usize) -> Position {
+    pub fn get_cell_dimensions(row: usize, col: usize) -> Dimensions {
         let right = COL_X_COORD[col];
         let left = match col > 0 {
             true => COL_X_COORD[col - 1],
@@ -48,7 +48,11 @@ impl Board {
             false => 0.0,
         };
 
-        log!("Build cell {} , {} ", bottom, right);
-        Position::new(top, left)
+        SpriteCell {
+            top,
+            left,
+            width: right - left,
+            height: bottom - top,
+        }
     }
 }

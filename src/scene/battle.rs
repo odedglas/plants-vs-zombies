@@ -4,7 +4,7 @@ use crate::log;
 use crate::model::{BehaviorType, Callback, Position, SelectedSeed, SpriteType};
 use crate::resource_loader::ResourceKind;
 use crate::scene::PlantsChooser;
-use crate::sprite::{BehaviorManager, Sprite};
+use crate::sprite::{BehaviorManager, DrawingState, Sprite};
 
 pub struct BattleScene;
 
@@ -52,10 +52,11 @@ impl BattleScene {
             game.game_time.time,
         );
 
-        // TODO - Place Zombie upon random board position
-        zombies
-            .iter_mut()
-            .for_each(|zombie| zombie.update_position(LocationBuilder::zombie_location()));
+        zombies.iter_mut().enumerate().for_each(|(index, zombie)| {
+            let zombie_cell = DrawingState::get_active_cell(zombie);
+
+            zombie.update_position(LocationBuilder::zombie_location(zombie_cell, index))
+        });
 
         game.add_sprites(zombies.as_mut());
     }
