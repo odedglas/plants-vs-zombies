@@ -107,7 +107,7 @@ impl Painter {
 
         self.context.move_to(start.left, start.top);
         self.context.line_to(to.left, to.top);
-        self.context.set_line_width(0.4);
+        self.context.set_line_width(0.3);
 
         self.context.close_path();
 

@@ -91,7 +91,7 @@ impl Game {
             self.painter.draw_sprite(sprite);
         });
 
-        Board::draw(self);
+        Board::draw(self); // TODO - Depend on GameFeatures
         SunManager::update_sun_score(self);
     }
 

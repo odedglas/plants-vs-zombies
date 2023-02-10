@@ -1,5 +1,4 @@
 use crate::game::Game;
-use crate::log;
 use crate::model::{Dimensions, Position, SpriteCell};
 
 pub struct BoardLocation {
