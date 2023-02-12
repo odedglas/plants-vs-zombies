@@ -8,6 +8,7 @@ pub fn impl_base_bevhior_derive(parsed_input: DeriveInput) -> TokenStream {
     match parsed_input.data {
         Data::Struct(_s) => {
             let tokens = quote! {
+                use std::any::Any;
                 use super::base::BehaviorState;
 
                 impl BehaviorState for #struct_name {
@@ -29,6 +30,10 @@ pub fn impl_base_bevhior_derive(parsed_input: DeriveInput) -> TokenStream {
 
                     fn set_sprite_id(&mut self, sprite_id: String) {
                         self.sprite_id = sprite_id;
+                    }
+
+                    fn as_any(&mut self) -> &mut dyn Any {
+                        self
                     }
                 }
             };

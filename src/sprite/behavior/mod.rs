@@ -1,6 +1,7 @@
 mod animate;
 mod base;
 mod click;
+mod drag;
 mod hover;
 mod scroll;
 mod walk;

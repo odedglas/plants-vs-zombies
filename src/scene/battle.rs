@@ -1,10 +1,11 @@
 use crate::game::Game;
 use crate::location_builder::LocationBuilder;
 use crate::log;
+use crate::model::Callback::PlantCardClick;
 use crate::model::{BehaviorType, Callback, Position, SelectedSeed, SpriteType};
 use crate::resource_loader::ResourceKind;
 use crate::scene::PlantsChooser;
-use crate::sprite::{BehaviorManager, DrawingState, Sprite};
+use crate::sprite::{BehaviorManager, Click, DrawingState, Scroll, Sprite};
 
 pub struct BattleScene;
 
@@ -52,6 +53,7 @@ impl BattleScene {
             game.game_time.time,
         );
 
+        // Set Zombie random start position
         zombies.iter_mut().enumerate().for_each(|(index, zombie)| {
             let zombie_cell = DrawingState::get_active_cell(zombie);
 
@@ -76,7 +78,11 @@ impl BattleScene {
         let background = game.get_sprite_by_name_and_type("BattleBackground", &SpriteType::Interface);
         let scroll = BehaviorManager::get_sprite_behavior(background, BehaviorType::Scroll);
 
-        scroll.reverse(now, Callback::StartBattle);
+        scroll
+            .as_any()
+            .downcast_mut::<Scroll>()
+            .unwrap()
+            .reverse(now, Callback::StartBattle);
     }
 
     pub fn select_seed(game: &mut Game, seed_id: &String) -> String {
@@ -99,8 +105,17 @@ impl BattleScene {
 
     pub fn start(game: &mut Game) {
         Self::draw_sun_score(game);
-        // TODO - Swap cards Callback to Plant action.
-        log!("Starting Battle Scene!");
+
+        Self::swap_plant_cards_action(game);
+    }
+
+    fn swap_plant_cards_action(game: &mut Game) {
+        let mut plant_cards = game.get_sprites_by_type(&SpriteType::Card);
+        plant_cards.iter_mut().for_each(|card| {
+            let mut click = BehaviorManager::get_sprite_behavior(card, BehaviorType::Click);
+
+            click.as_any().downcast_mut::<Click>().unwrap().callback = PlantCardClick;
+        });
     }
 
     fn add_plant_card(game: &mut Game, seed_name: &String) -> String {

@@ -52,8 +52,6 @@ impl Game {
 
         self.select_level();
 
-        self.start_battle();
-
         GameFeatures::enable_board_lines(true);
     }
 
@@ -94,7 +92,7 @@ impl Game {
             self.painter.draw_sprite(sprite);
         });
 
-        Board::draw(self); // TODO - Depend on GameFeatures
+        Board::draw(self);
         SunManager::update_sun_score(self);
     }
 
@@ -105,9 +103,22 @@ impl Game {
         self.mouse_position = current_mouse;
 
         match event_name {
-            GameMouseEvent::MouseMove => self.toggle_game_behavior(true, &[BehaviorType::Hover]),
-            GameMouseEvent::MouseDown => self.toggle_game_behavior(true, &[BehaviorType::Click]),
-            GameMouseEvent::MouseUp => self.toggle_game_behavior(false, &[BehaviorType::Click]),
+            GameMouseEvent::MouseMove => {
+                if self.state.dragging {
+                    log!("Game Mouse DRAG actions");
+                }
+                self.toggle_game_behavior(true, &[BehaviorType::Hover]);
+            }
+            GameMouseEvent::MouseDown => {
+                self.state.dragging = true;
+                self.toggle_game_behavior(true, &[BehaviorType::Click]);
+                log!("Game Mouse DOWN");
+            }
+            GameMouseEvent::MouseUp => {
+                self.state.dragging = false;
+                self.toggle_game_behavior(false, &[BehaviorType::Click]);
+                log!("Game Mouse UP");
+            }
             GameMouseEvent::MouseLeave => self.toggle_game_behavior(false, &[BehaviorType::Hover]),
         }
     }
@@ -147,7 +158,7 @@ impl Game {
             Callback::EnterBattleAnimation => self.enter_battle_animation(),
             Callback::StartBattle => self.start_battle(),
             Callback::ChooserSeedSelect => self.on_chooser_seed_click(sprite_id),
-            Callback::PlantCardClick => log!("Plant card click!!"),
+            Callback::PlantCardClick => self.on_plant_card_click(sprite_id),
             Callback::CollectSun => self.collect_sun(sprite_id),
             Callback::RemoveSun => self.remove_sun(sprite_id),
         }
@@ -230,6 +241,10 @@ impl Game {
                 .selected_seeds
                 .push((clicked_sprite_id.clone(), card_id));
         }
+    }
+
+    pub fn on_plant_card_click(&mut self, sprite_id: &String) {
+        log!("Plant card action {} ", sprite_id);
     }
 
     pub fn collect_sun(&mut self, sprite_id: &String) {

@@ -14,6 +14,7 @@ pub struct GameState {
     pub sun_state: SunState,
     pub current_level: Option<LevelData>,
     pub selected_seeds: Vec<SelectedSeed>,
+    pub dragging: bool,
 }
 
 impl GameState {
@@ -22,6 +23,7 @@ impl GameState {
             sun_state: SunState::new(),
             current_level: None,
             selected_seeds: vec![],
+            dragging: false,
         }
     }
 
@@ -33,7 +35,7 @@ impl GameState {
     }
 }
 
-/// The events being listened by our game.
+/// The HTML Canvas events being listened by our game.
 #[derive(Debug, Clone, Copy)]
 pub enum GameMouseEvent {
     MouseDown,
@@ -142,6 +144,7 @@ pub enum BehaviorType {
     Animate,
     Scroll,
     Walk,
+    Drag,
 }
 
 impl Default for BehaviorType {
