@@ -161,6 +161,7 @@ impl BehaviorType {
             "Animate" => BehaviorType::Animate,
             "Scroll" => BehaviorType::Scroll,
             "Walk" => BehaviorType::Walk,
+            "Drag" => BehaviorType::Drag,
             _ => BehaviorType::default(),
         }
     }
@@ -182,6 +183,16 @@ pub struct BehaviorData {
     pub callback_delay: Option<f64>,
     pub max_cycles: Option<usize>,
     pub velocity: Option<Velocity>,
+}
+
+impl BehaviorData {
+    pub fn new(name: String, callback: Callback) -> Self {
+        BehaviorData {
+            name,
+            callback: Some(callback),
+            ..BehaviorData::default()
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, Deserialize)]

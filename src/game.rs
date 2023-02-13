@@ -104,20 +104,13 @@ impl Game {
 
         match event_name {
             GameMouseEvent::MouseMove => {
-                if self.state.dragging {
-                    log!("Game Mouse DRAG actions");
-                }
                 self.toggle_game_behavior(true, &[BehaviorType::Hover]);
             }
             GameMouseEvent::MouseDown => {
-                self.state.dragging = true;
-                self.toggle_game_behavior(true, &[BehaviorType::Click]);
-                log!("Game Mouse DOWN");
+                self.toggle_game_behavior(true, &[BehaviorType::Click, BehaviorType::Drag]);
             }
             GameMouseEvent::MouseUp => {
-                self.state.dragging = false;
-                self.toggle_game_behavior(false, &[BehaviorType::Click]);
-                log!("Game Mouse UP");
+                self.toggle_game_behavior(false, &[BehaviorType::Click, BehaviorType::Drag]);
             }
             GameMouseEvent::MouseLeave => self.toggle_game_behavior(false, &[BehaviorType::Hover]),
         }

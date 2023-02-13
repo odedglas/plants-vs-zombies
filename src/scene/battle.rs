@@ -2,7 +2,7 @@ use crate::game::Game;
 use crate::location_builder::LocationBuilder;
 use crate::log;
 use crate::model::Callback::PlantCardClick;
-use crate::model::{BehaviorType, Callback, Position, SelectedSeed, SpriteType};
+use crate::model::{BehaviorData, BehaviorType, Callback, Position, SelectedSeed, SpriteType};
 use crate::resource_loader::ResourceKind;
 use crate::scene::PlantsChooser;
 use crate::sprite::{BehaviorManager, Click, DrawingState, Scroll, Sprite};
@@ -112,6 +112,11 @@ impl BattleScene {
     fn swap_plant_cards_action(game: &mut Game) {
         let mut plant_cards = game.get_sprites_by_type(&SpriteType::Card);
         plant_cards.iter_mut().for_each(|card| {
+            card.behaviors.borrow_mut().push(BehaviorManager::create(
+                &BehaviorData::new("Drag".to_string(), Callback::BackHome),
+                String::from(&card.id),
+            ));
+
             let mut click = BehaviorManager::get_sprite_behavior(card, BehaviorType::Click);
 
             click.as_any().downcast_mut::<Click>().unwrap().callback = PlantCardClick;
