@@ -24,7 +24,6 @@ pub struct Sprite {
     pub drawing_state: DrawingState,
     pub text_overlay: Option<TextOverlay>,
     pub sprite_type: SpriteType,
-    pub draggable: bool,
 }
 
 impl Sprite {
@@ -60,7 +59,6 @@ impl Sprite {
             behaviors: sprite_behaviors,
             text_overlay: None,
             sprite_type: SpriteType::from_kind(&kind),
-            draggable: false,
         };
 
         sprite.text_overlay = match text_overlay_data {

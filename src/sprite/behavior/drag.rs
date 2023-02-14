@@ -5,6 +5,7 @@ use web_sys::CanvasRenderingContext2d;
 use super::base::Behavior;
 use crate::log;
 use crate::model::{BehaviorType, Callback, Position};
+use crate::painter::Painter;
 use crate::sprite::{Sprite, SpriteMutation};
 
 #[derive_behavior_fields("")]
@@ -54,9 +55,11 @@ impl Behavior for Drag {
         _now: f64,
         _last_frame: f64,
         mouse: &Position,
-        _context: &CanvasRenderingContext2d,
+        context: &CanvasRenderingContext2d,
     ) -> Option<SpriteMutation> {
-        if sprite.draggable {
+        let dragged = Painter::in_path(&sprite.outlines, mouse, context);
+
+        if dragged {
             // Mouse is Top / Left, Decrease the delta of the location on the sprite.
             let drag_offset = self.calculate_mouse_offset(sprite, mouse);
 

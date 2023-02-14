@@ -6,21 +6,7 @@
       { "name": "Animate", "rate": 120,
         "max_cycles": 0
       },
-      {
-        "name": "Switch",
-        "switch_cells": [
-          "ConeheadWalk",
-          "ConeheadAttack",
-          "ZombieWalk1",
-          "ZombieAttack",
-          "ZombieLostHead",
-          "ZombieLostHeadAttack",
-          "ZombieDie",
-          "ZombieBoomdie"
-        ]
-      },
-      { "name": "Walk", "velocity": { "x": -10, "y": 0 } },
-      { "name": "ZombieCollision" }
+      { "name": "Walk", "velocity": { "x": -10, "y": 0 } }
     ],
     "collision_margin": { "left": 30, "top": 5, "right": 10, "bottom": 5 },
     "life": 200
@@ -30,21 +16,7 @@
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
       { "name": "Animate", "rate": 120, "max_cycles": 0 },
-      {
-        "name": "Switch",
-        "switch_cells": [
-          "BucketheadWalk",
-          "BucketheadAttack",
-          "ZombieWalk1",
-          "ZombieAttack",
-          "ZombieLostHead",
-          "ZombieLostHeadAttack",
-          "ZombieDie",
-          "ZombieBoomdie"
-        ]
-      },
-      { "name": "Walk", "velocity": { "x": -9, "y": 0 } },
-      { "name": "ZombieCollision" }
+      { "name": "Walk", "velocity": { "x": -9, "y": 0 } }
     ],
     "life": 200,
     "collision_margin": { "left": 30, "top": 5, "right": 10, "bottom": 5 }
@@ -54,21 +26,7 @@
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
       { "name": "Animate", "rate": 120, "max_cycles": 0 },
-      {
-        "name": "Switch",
-        "switch_cells": [
-          "FlagWalk",
-          "FlagAttack",
-          "FlagWalk",
-          "FlagAttack",
-          "FlagLostHead",
-          "FlagLostHeadattack",
-          "ZombieDie",
-          "ZombieBoomdie"
-        ]
-      },
-      { "name": "Walk", "velocity": { "x": -8, "y": 0 } },
-      { "name": "ZombieCollision" }
+      { "name": "Walk", "velocity": { "x": -8, "y": 0 } }
     ],
     "collision_margin": { "left": 40, "top": 5, "right": 10, "bottom": 5 }
   },
@@ -77,21 +35,7 @@
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
       { "name": "Animate", "rate": 120, "max_cycles": 0 },
-      {
-        "name": "Switch",
-        "switch_cells": [
-          "ScreenDoorWalk",
-          "ScreenDoorAttack",
-          "ZombieWalk1",
-          "ZombieAttack",
-          "ScreenDoorLostHeadWalk1",
-          "ScreenDoorLostHeadAttack1",
-          "ZombieDie",
-          "ZombieBoomdie"
-        ]
-      },
-      { "name": "Walk", "velocity": { "x": -12, "y": 0 } },
-      { "name": "ZombieCollision" }
+      { "name": "Walk", "velocity": { "x": -12, "y": 0 } }
     ],
     "life": 200
   },
@@ -100,21 +44,7 @@
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
       { "name": "Animate", "rate": 120, "max_cycles": 0 },
-      {
-        "name": "Switch",
-        "switch_cells": [
-          "ZombieWalk1",
-          "ZombieAttack",
-          "ZombieWalk1",
-          "ZombieAttack",
-          "ZombieLostHead",
-          "ZombieLostHeadAttack",
-          "ZombieDie",
-          "ZombieBoomdie"
-        ]
-      },
-      { "name": "Walk", "velocity": { "x": -5, "y": 0 } },
-      { "name": "ZombieCollision" }
+      { "name": "Walk", "velocity": { "x": -5, "y": 0 } }
     ]
   },
   "ZombieHead": {

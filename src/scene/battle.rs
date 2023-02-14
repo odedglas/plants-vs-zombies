@@ -133,14 +133,14 @@ impl BattleScene {
             &BehaviorData::new("Drag".to_string(), Callback::BackHome),
             String::from(sprite_id),
         );
+
         drag_behavior.toggle(true, game.game_time.time);
         plant.behaviors.borrow_mut().push(drag_behavior);
 
         plant.update_position(original_position);
         plant.order = 10;
-        plant.draggable = true;
 
-        game.add_sprite(plant);
+        game.add_sprite(plant); // Add temporary sprite?
     }
 
     fn add_plant_card(game: &mut Game, seed_name: &String) -> String {
