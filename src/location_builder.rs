@@ -1,6 +1,7 @@
 use js_sys::Math;
 
 use crate::board::Board;
+use crate::log;
 use crate::model::{LocationType, Position, Size, SpriteCell};
 use crate::sprite::Sprite;
 
@@ -25,28 +26,37 @@ impl LocationBuilder {
         )
     }
 
+    pub fn plant_location(plant_cell: &SpriteCell, mouse: &Position) -> Position {
+        let location = Board::get_board_location(mouse);
+
+        Board::get_board_placement(plant_cell, location.row, location.col)
+    }
+
     pub fn zombie_location(zombie_cell: &SpriteCell, row: usize) -> Position {
         let start_col = 10;
         let start_row = ((row) % 5) + 1;
 
-        let dimensions = Board::get_cell_dimensions(start_row, start_col);
-
-        let center_x = dimensions.left + (dimensions.width - zombie_cell.width) / 2.0;
-        let bottom = dimensions.top - (zombie_cell.height - dimensions.height) - 3.5;
+        let board_position = Board::get_board_placement(zombie_cell, start_row, start_col);
 
         let x_offset = Self::random_offset(0, 30);
 
-        Position::new(bottom, center_x + x_offset)
+        Position::new(board_position.top, board_position.left + x_offset)
     }
 
-    pub fn rand_within_rand(min: f64, max: f64) -> f64 {
+    pub fn is_active_board_location(position: &Position) -> bool {
+        let location = Board::get_board_location(position);
+
+        location.col >= 2
+    }
+
+    fn rand_within_rand(min: f64, max: f64) -> f64 {
         let min = Math::ceil(min);
         let max = Math::floor(max);
 
         Math::floor(Math::random() * (max - min + 1.0)) + min
     }
 
-    pub fn random_offset(min: usize, max: usize) -> f64 {
+    fn random_offset(min: usize, max: usize) -> f64 {
         let x_adjustment = Self::rand_within_rand(min as f64, max as f64);
 
         let direction = match Self::rand_within_rand(0.0, 1.0) > 0.5 {

@@ -61,6 +61,7 @@ pub enum Callback {
     PlantCardClick,
     RemoveSun,
     CollectSun,
+    Plant,
 }
 
 impl Default for Callback {

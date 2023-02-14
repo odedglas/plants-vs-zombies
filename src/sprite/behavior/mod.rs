@@ -75,6 +75,7 @@ impl BehaviorManager {
             sprite
                 .mutable_behaviors()
                 .iter_mut()
+                .filter(|behavior| behavior.is_running() != should_run)
                 .filter(|behavior| behavior_types.contains(&behavior.name()))
                 .for_each(|behavior| behavior.toggle(should_run, now));
         });

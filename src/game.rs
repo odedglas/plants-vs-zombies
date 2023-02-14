@@ -3,6 +3,7 @@ use web_sys::{HtmlCanvasElement, MouseEvent};
 use crate::board::Board;
 use crate::features::GameFeatures;
 use crate::fps::Fps;
+use crate::location_builder::LocationBuilder;
 use crate::log;
 use crate::model::{
     BehaviorData, BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position,
@@ -11,7 +12,7 @@ use crate::model::{
 use crate::painter::Painter;
 use crate::resource_loader::Resources;
 use crate::scene::{BattleScene, HomeScene, PlantsChooser};
-use crate::sprite::{BehaviorManager, Sprite};
+use crate::sprite::{BehaviorManager, DrawingState, Sprite};
 use crate::sun_manager::SunManager;
 use crate::timers::GameTime;
 
@@ -108,7 +109,7 @@ impl Game {
                 self.toggle_game_behavior(true, &[BehaviorType::Hover]);
             }
             GameMouseEvent::MouseDown => {
-                self.toggle_game_behavior(true, &[BehaviorType::Click, BehaviorType::Drag]);
+                self.toggle_game_behavior(true, &[BehaviorType::Click]);
             }
             GameMouseEvent::MouseUp => {
                 self.toggle_game_behavior(false, &[BehaviorType::Click, BehaviorType::Drag]);
@@ -155,6 +156,7 @@ impl Game {
             Callback::PlantCardClick => self.on_plant_card_click(sprite_id),
             Callback::CollectSun => self.collect_sun(sprite_id),
             Callback::RemoveSun => self.remove_sun(sprite_id),
+            Callback::Plant => self.plant_on_board(sprite_id),
         }
     }
 
@@ -239,6 +241,21 @@ impl Game {
 
     pub fn on_plant_card_click(&mut self, sprite_id: &String) {
         BattleScene::create_draggable_plant(self, sprite_id);
+    }
+
+    pub fn plant_on_board(&mut self, sprite_id: &String) {
+        let mouse = self.mouse_position.clone();
+        let sprite = self.get_sprite_by_id(sprite_id);
+        let plant_cell = DrawingState::get_active_cell(&sprite);
+
+        // Check if current position is "active"
+        if LocationBuilder::is_active_board_location(&mouse) {
+            // Clamp Plant sprite into closest cell bottom position.
+            sprite.update_position(LocationBuilder::plant_location(plant_cell, &mouse));
+        } else {
+            // Discarding dragged plant
+            self.remove_sprites_by_id(vec![sprite_id])
+        }
     }
 
     pub fn collect_sun(&mut self, sprite_id: &String) {

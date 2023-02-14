@@ -124,14 +124,13 @@ impl BattleScene {
         let card_sprite = game.get_sprite_by_id(sprite_id);
         let original_position = card_sprite.position.clone();
         let plant_name = card_sprite.name.clone();
-        log!("Working on {}", plant_name);
 
         let mut plant =
             Sprite::create_sprite(&plant_name, &ResourceKind::Plant, &game.resources).remove(0);
 
         let mut drag_behavior = BehaviorManager::create(
-            &BehaviorData::new("Drag".to_string(), Callback::BackHome),
-            String::from(sprite_id),
+            &BehaviorData::new("Drag".to_string(), Callback::Plant),
+            String::from(&plant.id),
         );
 
         drag_behavior.toggle(true, game.game_time.time);
@@ -140,7 +139,7 @@ impl BattleScene {
         plant.update_position(original_position);
         plant.order = 10;
 
-        game.add_sprite(plant); // Add temporary sprite?
+        game.add_sprite(plant);
     }
 
     fn add_plant_card(game: &mut Game, seed_name: &String) -> String {

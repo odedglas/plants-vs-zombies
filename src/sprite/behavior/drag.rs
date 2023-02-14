@@ -4,7 +4,7 @@ use web_sys::CanvasRenderingContext2d;
 
 use super::base::Behavior;
 use crate::log;
-use crate::model::{BehaviorType, Callback, Position};
+use crate::model::{BehaviorType, Callback, GameInteraction, Position};
 use crate::painter::Painter;
 use crate::sprite::{Sprite, SpriteMutation};
 
@@ -14,12 +14,15 @@ pub struct Drag {
     pub name: BehaviorType,
     anchor: Option<Position>,
     original_position: Position,
+    callback: Callback,
+    dragging: bool
 }
 
 impl Drag {
     pub fn new(callback: Callback) -> Drag {
         Drag {
             name: BehaviorType::Drag,
+            callback,
             ..Default::default()
         }
     }
@@ -49,6 +52,22 @@ impl Behavior for Drag {
         BehaviorType::Drag
     }
 
+    fn on_stop(&mut self) {
+        self.dragging = false;
+        self.interaction_active = true;
+    }
+
+    fn get_interaction(&self) -> Option<GameInteraction> {
+        if self.interaction_active {
+            return Some(GameInteraction::SpriteClick(
+                self.callback,
+                self.sprite_id.clone(),
+            ));
+        }
+
+        None
+    }
+
     fn execute(
         &mut self,
         sprite: &Sprite,
@@ -57,11 +76,16 @@ impl Behavior for Drag {
         mouse: &Position,
         context: &CanvasRenderingContext2d,
     ) -> Option<SpriteMutation> {
-        let dragged = Painter::in_path(&sprite.outlines, mouse, context);
+        let is_dragging = self.dragging;
 
-        if dragged {
+        // Hovers initialise the drag action, and later we flag using the is_dragging for better control (Mouse up triggers the on_stop)
+        let hovering = !is_dragging && Painter::in_path(&sprite.outlines, mouse, context);
+
+        if is_dragging || hovering {
             // Mouse is Top / Left, Decrease the delta of the location on the sprite.
             let drag_offset = self.calculate_mouse_offset(sprite, mouse);
+
+            self.dragging = true;
 
             return Some(SpriteMutation::new().position(drag_offset));
         }
