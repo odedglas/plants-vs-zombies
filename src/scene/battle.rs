@@ -107,20 +107,40 @@ impl BattleScene {
         Self::draw_sun_score(game);
 
         Self::swap_plant_cards_action(game);
+
+        // TODO - Add Shovel + LawnDrawers
     }
 
     fn swap_plant_cards_action(game: &mut Game) {
         let mut plant_cards = game.get_sprites_by_type(&SpriteType::Card);
         plant_cards.iter_mut().for_each(|card| {
-            card.behaviors.borrow_mut().push(BehaviorManager::create(
-                &BehaviorData::new("Drag".to_string(), Callback::BackHome),
-                String::from(&card.id),
-            ));
-
-            let mut click = BehaviorManager::get_sprite_behavior(card, BehaviorType::Click);
+            let click = BehaviorManager::get_sprite_behavior(card, BehaviorType::Click);
 
             click.as_any().downcast_mut::<Click>().unwrap().callback = PlantCardClick;
         });
+    }
+
+    pub fn create_draggable_plant(game: &mut Game, sprite_id: &String) {
+        let card_sprite = game.get_sprite_by_id(sprite_id);
+        let original_position = card_sprite.position.clone();
+        let plant_name = card_sprite.name.clone();
+        log!("Working on {}", plant_name);
+
+        let mut plant =
+            Sprite::create_sprite(&plant_name, &ResourceKind::Plant, &game.resources).remove(0);
+
+        let mut drag_behavior = BehaviorManager::create(
+            &BehaviorData::new("Drag".to_string(), Callback::BackHome),
+            String::from(sprite_id),
+        );
+        drag_behavior.toggle(true, game.game_time.time);
+        plant.behaviors.borrow_mut().push(drag_behavior);
+
+        plant.update_position(original_position);
+        plant.order = 10;
+        plant.draggable = true;
+
+        game.add_sprite(plant);
     }
 
     fn add_plant_card(game: &mut Game, seed_name: &String) -> String {

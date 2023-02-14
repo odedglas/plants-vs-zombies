@@ -5,7 +5,8 @@ use crate::features::GameFeatures;
 use crate::fps::Fps;
 use crate::log;
 use crate::model::{
-    BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position, SpriteType,
+    BehaviorData, BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position,
+    SpriteType,
 };
 use crate::painter::Painter;
 use crate::resource_loader::Resources;
@@ -110,6 +111,7 @@ impl Game {
                 self.toggle_game_behavior(true, &[BehaviorType::Click, BehaviorType::Drag]);
             }
             GameMouseEvent::MouseUp => {
+                self.clear_dragged_sprites();
                 self.toggle_game_behavior(false, &[BehaviorType::Click, BehaviorType::Drag]);
             }
             GameMouseEvent::MouseLeave => self.toggle_game_behavior(false, &[BehaviorType::Hover]),
@@ -237,7 +239,7 @@ impl Game {
     }
 
     pub fn on_plant_card_click(&mut self, sprite_id: &String) {
-        log!("Plant card action {} ", sprite_id);
+        BattleScene::create_draggable_plant(self, sprite_id);
     }
 
     pub fn collect_sun(&mut self, sprite_id: &String) {
@@ -255,6 +257,12 @@ impl Game {
     pub fn reset_state(&mut self) {
         self.sprites.clear();
         self.state = GameState::new();
+    }
+
+    pub fn clear_dragged_sprites(&mut self) {
+        self.sprites
+            .iter_mut()
+            .for_each(|sprite| sprite.draggable = false)
     }
 
     pub fn add_sprites(&mut self, sprites: &mut Vec<Sprite>) {

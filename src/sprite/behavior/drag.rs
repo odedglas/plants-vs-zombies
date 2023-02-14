@@ -51,16 +51,18 @@ impl Behavior for Drag {
     fn execute(
         &mut self,
         sprite: &Sprite,
-        now: f64,
+        _now: f64,
         _last_frame: f64,
         mouse: &Position,
-        context: &CanvasRenderingContext2d,
+        _context: &CanvasRenderingContext2d,
     ) -> Option<SpriteMutation> {
-        // TODO - Condition with dragged_sprite_id
+        if sprite.draggable {
+            // Mouse is Top / Left, Decrease the delta of the location on the sprite.
+            let drag_offset = self.calculate_mouse_offset(sprite, mouse);
 
-        // Mouse is Top / Left, Decrease the delta of the location on the sprite.
-        let drag_offset = self.calculate_mouse_offset(sprite, mouse);
+            return Some(SpriteMutation::new().position(drag_offset));
+        }
 
-        Some(SpriteMutation::new().position(drag_offset))
+        None
     }
 }

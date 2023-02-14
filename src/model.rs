@@ -14,7 +14,6 @@ pub struct GameState {
     pub sun_state: SunState,
     pub current_level: Option<LevelData>,
     pub selected_seeds: Vec<SelectedSeed>,
-    pub dragging: bool,
 }
 
 impl GameState {
@@ -23,7 +22,6 @@ impl GameState {
             sun_state: SunState::new(),
             current_level: None,
             selected_seeds: vec![],
-            dragging: false,
         }
     }
 
