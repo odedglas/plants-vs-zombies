@@ -81,4 +81,10 @@ impl Board {
 
         BoardLocation::new(row, col)
     }
+
+    pub fn is_active_board_location(position: &Position) -> bool {
+        let location = Self::get_board_location(position);
+
+        location.col > 1 && location.col <= 9 && location.row > 0 && location.row <= 4
+    }
 }

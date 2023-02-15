@@ -42,12 +42,6 @@ impl LocationBuilder {
         Position::new(board_position.top, board_position.left + x_offset)
     }
 
-    pub fn is_active_board_location(position: &Position) -> bool {
-        let location = Board::get_board_location(position);
-
-        location.col >= 2
-    }
-
     fn rand_within_rand(min: f64, max: f64) -> f64 {
         let min = Math::ceil(min);
         let max = Math::floor(max);

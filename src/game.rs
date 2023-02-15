@@ -243,15 +243,22 @@ impl Game {
 
     pub fn plant_on_board(&mut self, sprite_id: &String) {
         let mouse = self.mouse_position.clone();
-        let sprite = self.get_sprite_by_id(sprite_id);
-        let plant_cell = DrawingState::get_active_cell(&sprite);
 
         // Check if current position is "active"
-        if LocationBuilder::is_active_board_location(&mouse) {
+        if !Board::is_active_board_location(&mouse) {
+            self.remove_sprites_by_id(vec![sprite_id]);
+            return;
+        }
+
+        if self.is_free_board_location(&mouse) {
+            let sprite = self.get_sprite_by_id(sprite_id);
+            let plant_cell = DrawingState::get_active_cell(&sprite);
+
             // Clamp Plant sprite into closest cell bottom position.
-            sprite.update_position(LocationBuilder::plant_location(plant_cell, &mouse));
+            let plant_position = LocationBuilder::plant_location(plant_cell, &mouse);
+
+            sprite.update_position(plant_position)
         } else {
-            // Discarding dragged plant
             self.remove_sprites_by_id(vec![sprite_id])
         }
     }
@@ -327,6 +334,24 @@ impl Game {
                 "[Game Controller] Cannot find Sprite {}",
                 &sprite_id
             ))
+    }
+
+    pub fn is_free_board_location(&mut self, position: &Position) -> bool {
+        let target_location = Board::get_board_location(position);
+
+        let found = self.sprites
+            .iter()
+            .filter(|sprite| sprite.sprite_type == SpriteType::Plant)
+            .position(|sprite| {
+                let sprite_location = Board::get_board_location(&sprite.position);
+                target_location.row == sprite_location.row
+                    && target_location.col == sprite_location.col
+            });
+
+        match found {
+            None => true,
+            Some(_) => false,
+        }
     }
 
     pub fn canvas(&self) -> &HtmlCanvasElement {
