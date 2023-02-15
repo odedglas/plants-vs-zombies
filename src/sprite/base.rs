@@ -8,10 +8,10 @@ use crate::model::{
     BehaviorData, Dimensions, Position, SpriteCell, SpriteData, SpriteType, TextOverlayData,
 };
 use crate::resource_loader::{Resource, ResourceKind, Resources};
+use crate::sprite::{Outline, SpriteMutation};
 use crate::sprite::behavior::{Behavior, BehaviorManager};
 use crate::sprite::drawing_state::DrawingState;
 use crate::sprite::text_overlay::TextOverlay;
-use crate::sprite::{Outline, SpriteMutation};
 
 pub struct Sprite {
     pub id: String,

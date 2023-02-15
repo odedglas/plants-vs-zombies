@@ -1,9 +1,7 @@
 use derives::{derive_behavior_fields, BaseBehavior};
-use js_sys::Math::abs;
 use web_sys::CanvasRenderingContext2d;
 
 use super::base::Behavior;
-use crate::log;
 use crate::model::{BehaviorType, Callback, GameInteraction, Position};
 use crate::painter::Painter;
 use crate::sprite::{Sprite, SpriteMutation};
@@ -15,7 +13,7 @@ pub struct Drag {
     anchor: Option<Position>,
     original_position: Position,
     callback: Callback,
-    dragging: bool
+    dragging: bool,
 }
 
 impl Drag {

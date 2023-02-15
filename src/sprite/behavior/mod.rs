@@ -1,11 +1,3 @@
-mod animate;
-mod base;
-mod click;
-mod drag;
-mod hover;
-mod scroll;
-mod walk;
-
 pub use animate::Animate;
 pub use base::Behavior;
 pub use click::Click;
@@ -18,6 +10,14 @@ use crate::model::{BehaviorData, BehaviorType, GameInteraction, Position};
 use crate::sprite::behavior::drag::Drag;
 use crate::sprite::{Sprite, SpriteMutation};
 use crate::timers::GameTime;
+
+mod animate;
+mod base;
+mod click;
+mod drag;
+mod hover;
+mod scroll;
+mod walk;
 
 pub struct BehaviorManager;
 

@@ -2,8 +2,7 @@ use std::any::Any;
 
 use web_sys::CanvasRenderingContext2d;
 
-use crate::log;
-use crate::model::{BehaviorType, Callback, GameInteraction, Position};
+use crate::model::{BehaviorType, GameInteraction, Position};
 use crate::sprite::{Sprite, SpriteMutation};
 
 pub trait BehaviorState {

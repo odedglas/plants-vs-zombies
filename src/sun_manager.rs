@@ -32,14 +32,8 @@ impl SunManager {
     pub fn tick(game: &mut Game) {
         let now = game.game_time.time;
         let state = &game.state.sun_state;
-        let mut last_generated = state.last_generated;
 
         if GameFeatures::should_generate_sun() {
-            // Avoid first tick
-            if last_generated == 0.0 {
-                last_generated = now
-            }
-
             let should_generate = now - state.last_generated >= state.sun_interval;
 
             if should_generate {

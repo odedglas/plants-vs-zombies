@@ -1,7 +1,6 @@
 use js_sys::Math;
 
 use crate::board::Board;
-use crate::log;
 use crate::model::{LocationType, Position, Size, SpriteCell};
 use crate::sprite::Sprite;
 

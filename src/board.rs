@@ -1,6 +1,5 @@
-use crate::features::{GameFeatures, FEATURES};
+use crate::features::GameFeatures;
 use crate::game::Game;
-use crate::log;
 use crate::model::{Dimensions, Position, SpriteCell};
 
 #[derive(Debug)]

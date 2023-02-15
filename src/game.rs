@@ -4,10 +4,8 @@ use crate::board::Board;
 use crate::features::GameFeatures;
 use crate::fps::Fps;
 use crate::location_builder::LocationBuilder;
-use crate::log;
 use crate::model::{
-    BehaviorData, BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position,
-    SpriteType,
+    BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position, SpriteType,
 };
 use crate::painter::Painter;
 use crate::resource_loader::Resources;
