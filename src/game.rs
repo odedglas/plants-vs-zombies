@@ -249,6 +249,19 @@ impl Game {
     }
 
     pub fn on_shovel_drag_end(&mut self) {
+        self.reset_shovel();
+        let dropped_location = Board::get_board_location(&self.mouse_position);
+        let plant = self.get_sprite_by_location(&dropped_location);
+
+        if let Some(plant) = plant {
+            let id = plant.id.clone();
+            self.remove_sprites_by_id(vec![&id]);
+        }
+    }
+
+    pub fn test(&mut self) {}
+
+    pub fn reset_shovel(&mut self) {
         let shovel_sprite = self.get_sprite_by_name_and_type("Shovel", &SpriteType::Interface);
 
         // Restore Shovel into it's original position.
@@ -359,7 +372,12 @@ impl Game {
             .iter()
             .filter(|sprite| sprite.sprite_type == SpriteType::Plant)
             .find(|sprite| {
-                let sprite_location = Board::get_board_location(&sprite.position);
+                let sprite_cell = DrawingState::get_active_cell(sprite);
+                let sprite_center = Position::new(
+                    sprite.position.top + sprite_cell.height / 2.0,
+                    sprite.position.left + sprite_cell.width / 2.0,
+                );
+                let sprite_location = Board::get_board_location(&sprite_center);
                 location.row == sprite_location.row && location.col == sprite_location.col
             });
 
