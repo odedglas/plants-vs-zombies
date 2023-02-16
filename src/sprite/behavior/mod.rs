@@ -1,10 +1,3 @@
-mod animate;
-mod base;
-mod click;
-mod hover;
-mod scroll;
-mod walk;
-
 pub use animate::Animate;
 pub use base::Behavior;
 pub use click::Click;
@@ -14,8 +7,17 @@ pub use walk::Walk;
 use web_sys::CanvasRenderingContext2d;
 
 use crate::model::{BehaviorData, BehaviorType, GameInteraction, Position};
+use crate::sprite::behavior::drag::Drag;
 use crate::sprite::{Sprite, SpriteMutation};
 use crate::timers::GameTime;
+
+mod animate;
+mod base;
+mod click;
+mod drag;
+mod hover;
+mod scroll;
+mod walk;
 
 pub struct BehaviorManager;
 
@@ -38,6 +40,7 @@ impl BehaviorManager {
                 data.callback.unwrap(),
             )),
             BehaviorType::Walk => Box::new(Walk::new(data.distance, data.velocity.unwrap().clone())),
+            BehaviorType::Drag => Box::new(Drag::new(data.callback.unwrap())),
         };
 
         behavior.set_sprite_id(sprite_id);
@@ -72,6 +75,7 @@ impl BehaviorManager {
             sprite
                 .mutable_behaviors()
                 .iter_mut()
+                .filter(|behavior| behavior.is_running() != should_run)
                 .filter(|behavior| behavior_types.contains(&behavior.name()))
                 .for_each(|behavior| behavior.toggle(should_run, now));
         });

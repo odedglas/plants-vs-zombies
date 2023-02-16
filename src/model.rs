@@ -33,7 +33,7 @@ impl GameState {
     }
 }
 
-/// The events being listened by our game.
+/// The HTML Canvas events being listened by our game.
 #[derive(Debug, Clone, Copy)]
 pub enum GameMouseEvent {
     MouseDown,
@@ -61,6 +61,9 @@ pub enum Callback {
     PlantCardClick,
     RemoveSun,
     CollectSun,
+    Plant,
+    AllowShovelDrag,
+    ShovelDragEnd,
 }
 
 impl Default for Callback {
@@ -142,6 +145,7 @@ pub enum BehaviorType {
     Animate,
     Scroll,
     Walk,
+    Drag,
 }
 
 impl Default for BehaviorType {
@@ -158,6 +162,7 @@ impl BehaviorType {
             "Animate" => BehaviorType::Animate,
             "Scroll" => BehaviorType::Scroll,
             "Walk" => BehaviorType::Walk,
+            "Drag" => BehaviorType::Drag,
             _ => BehaviorType::default(),
         }
     }
@@ -179,6 +184,16 @@ pub struct BehaviorData {
     pub callback_delay: Option<f64>,
     pub max_cycles: Option<usize>,
     pub velocity: Option<Velocity>,
+}
+
+impl BehaviorData {
+    pub fn new(name: String, callback: Callback) -> Self {
+        BehaviorData {
+            name,
+            callback: Some(callback),
+            ..BehaviorData::default()
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, Deserialize)]

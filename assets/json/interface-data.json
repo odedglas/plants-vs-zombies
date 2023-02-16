@@ -111,8 +111,11 @@
   "Shovel": {
     "constructor": "Sprite",
     "position": [{ "left": 240, "top": 0 }],
-    "behaviors": [{ "name": "Click" }, { "name": "Drag" }],
-    "order": 4
+    "behaviors": [
+      { "name": "Click", "callback": "AllowShovelDrag"},
+      { "name": "Drag", "callback": "ShovelDragEnd" }
+    ],
+    "order": 5
   },
   "LawnCleaner": {
     "constructor": "PlantSprite",
@@ -124,7 +127,7 @@
       { "left": 65, "top": 508 }
     ],
     "behaviors": [
-      { "name": "Walk", "velocit": { "x": 1000, "y": 0 }, "duration": 1000 }
+      { "name": "Walk", "velocity": { "x": 1000, "y": 0 }, "duration": 1000 }
     ],
     "collision_margin": { "left": 0, "top": 0, "right": 0, "bottom": 0 },
     "order": 2,

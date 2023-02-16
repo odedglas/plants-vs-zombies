@@ -1,8 +1,9 @@
 use web_sys::{HtmlCanvasElement, MouseEvent};
 
-use crate::board::Board;
+use crate::board::{Board, BoardLocation};
 use crate::features::GameFeatures;
 use crate::fps::Fps;
+use crate::location_builder::LocationBuilder;
 use crate::log;
 use crate::model::{
     BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position, SpriteType,
@@ -10,7 +11,7 @@ use crate::model::{
 use crate::painter::Painter;
 use crate::resource_loader::Resources;
 use crate::scene::{BattleScene, HomeScene, PlantsChooser};
-use crate::sprite::{BehaviorManager, Sprite};
+use crate::sprite::{BehaviorManager, DrawingState, Sprite};
 use crate::sun_manager::SunManager;
 use crate::timers::GameTime;
 
@@ -52,8 +53,6 @@ impl Game {
 
         self.select_level();
 
-        self.start_battle();
-
         GameFeatures::enable_board_lines(true);
     }
 
@@ -94,7 +93,7 @@ impl Game {
             self.painter.draw_sprite(sprite);
         });
 
-        Board::draw(self); // TODO - Depend on GameFeatures
+        Board::draw(self);
         SunManager::update_sun_score(self);
     }
 
@@ -105,9 +104,15 @@ impl Game {
         self.mouse_position = current_mouse;
 
         match event_name {
-            GameMouseEvent::MouseMove => self.toggle_game_behavior(true, &[BehaviorType::Hover]),
-            GameMouseEvent::MouseDown => self.toggle_game_behavior(true, &[BehaviorType::Click]),
-            GameMouseEvent::MouseUp => self.toggle_game_behavior(false, &[BehaviorType::Click]),
+            GameMouseEvent::MouseMove => {
+                self.toggle_game_behavior(true, &[BehaviorType::Hover]);
+            }
+            GameMouseEvent::MouseDown => {
+                self.toggle_game_behavior(true, &[BehaviorType::Click]);
+            }
+            GameMouseEvent::MouseUp => {
+                self.toggle_game_behavior(false, &[BehaviorType::Click, BehaviorType::Drag]);
+            }
             GameMouseEvent::MouseLeave => self.toggle_game_behavior(false, &[BehaviorType::Hover]),
         }
     }
@@ -147,9 +152,12 @@ impl Game {
             Callback::EnterBattleAnimation => self.enter_battle_animation(),
             Callback::StartBattle => self.start_battle(),
             Callback::ChooserSeedSelect => self.on_chooser_seed_click(sprite_id),
-            Callback::PlantCardClick => log!("Plant card click!!"),
+            Callback::PlantCardClick => self.on_plant_card_click(sprite_id),
             Callback::CollectSun => self.collect_sun(sprite_id),
             Callback::RemoveSun => self.remove_sun(sprite_id),
+            Callback::Plant => self.plant_on_board(sprite_id),
+            Callback::AllowShovelDrag => self.allow_shovel_drag(),
+            Callback::ShovelDragEnd => self.on_shovel_drag_end(),
         }
     }
 
@@ -232,6 +240,61 @@ impl Game {
         }
     }
 
+    pub fn on_plant_card_click(&mut self, sprite_id: &String) {
+        BattleScene::create_draggable_plant(self, sprite_id);
+    }
+
+    pub fn allow_shovel_drag(&mut self) {
+        BattleScene::allow_shovel_drag(self);
+    }
+
+    pub fn on_shovel_drag_end(&mut self) {
+        self.reset_shovel();
+        let dropped_location = Board::get_board_location(&self.mouse_position);
+        let plant = self.get_sprite_by_location(&dropped_location);
+
+        if let Some(plant) = plant {
+            let id = plant.id.clone();
+            self.remove_sprites_by_id(vec![&id]);
+        }
+    }
+
+    pub fn test(&mut self) {}
+
+    pub fn reset_shovel(&mut self) {
+        let shovel_sprite = self.get_sprite_by_name_and_type("Shovel", &SpriteType::Interface);
+
+        // Restore Shovel into it's original position.
+        shovel_sprite.update_position(shovel_sprite.origin_position);
+    }
+
+    pub fn plant_on_board(&mut self, sprite_id: &String) {
+        let mouse = self.mouse_position.clone();
+
+        // Check if current position is "active" board cell
+        if !Board::is_active_board_location(&mouse) {
+            self.remove_sprites_by_id(vec![sprite_id]);
+            return;
+        }
+
+        let target_location = Board::get_board_location(&mouse);
+        if self.is_free_board_location(sprite_id, &target_location) {
+            let sprite = self.get_sprite_by_id(sprite_id);
+            let plant_cell = DrawingState::get_active_cell(&sprite);
+
+            // Clamp Plant sprite into closest cell bottom position.
+            let plant_position = LocationBuilder::plant_location(plant_cell, &mouse);
+            sprite.update_position(plant_position);
+
+            // Resets drag top drawing order
+            sprite.order = 3; // TODO, Drag order based on behavior?
+        } else {
+            self.remove_sprites_by_id(vec![sprite_id])
+        }
+
+        self.sort_sprites();
+    }
+
     pub fn collect_sun(&mut self, sprite_id: &String) {
         self.state.sun_state.add_score(50);
 
@@ -252,7 +315,7 @@ impl Game {
     pub fn add_sprites(&mut self, sprites: &mut Vec<Sprite>) {
         self.sprites.append(sprites);
 
-        self.sprites.sort_by(|a, b| a.order.cmp(&b.order));
+        self.sort_sprites();
     }
 
     pub fn add_sprite(&mut self, sprite: Sprite) {
@@ -276,6 +339,9 @@ impl Game {
             .retain(|sprite| !sprites.contains(&sprite.id.trim()))
     }
 
+    fn sort_sprites(&mut self) {
+        self.sprites.sort_by(|a, b| a.order.cmp(&b.order));
+    }
     // Getters //
     pub fn get_sprites_by_type(&mut self, sprite_type: &SpriteType) -> Vec<&mut Sprite> {
         self.sprites
@@ -303,6 +369,34 @@ impl Game {
                 "[Game Controller] Cannot find Sprite {}",
                 &sprite_id
             ))
+    }
+
+    pub fn get_sprite_by_location(&mut self, location: &BoardLocation) -> Option<&Sprite> {
+        let found = self
+            .sprites
+            .iter()
+            .filter(|sprite| sprite.sprite_type == SpriteType::Plant)
+            .find(|sprite| {
+                let sprite_cell = DrawingState::get_active_cell(sprite);
+                let sprite_center = Position::new(
+                    sprite.position.top + sprite_cell.height / 2.0,
+                    sprite.position.left + sprite_cell.width / 2.0,
+                );
+                let sprite_location = Board::get_board_location(&sprite_center);
+                location.row == sprite_location.row && location.col == sprite_location.col
+            });
+
+        found
+    }
+
+    pub fn is_free_board_location(&mut self, sprite_id: &String, location: &BoardLocation) -> bool {
+        let found = self.get_sprite_by_location(&location);
+
+        match found {
+            None => true,
+            Some(sprite) if &sprite.id == sprite_id => true,
+            Some(_) => false,
+        }
     }
 
     pub fn canvas(&self) -> &HtmlCanvasElement {

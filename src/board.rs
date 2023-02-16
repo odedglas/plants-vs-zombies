@@ -1,10 +1,11 @@
-use crate::features::{GameFeatures, FEATURES};
+use crate::features::GameFeatures;
 use crate::game::Game;
 use crate::model::{Dimensions, Position, SpriteCell};
 
+#[derive(Debug)]
 pub struct BoardLocation {
-    row: usize,
-    col: usize,
+    pub row: usize,
+    pub col: usize,
 }
 
 impl BoardLocation {
@@ -56,5 +57,34 @@ impl Board {
             width: right - left,
             height: bottom - top,
         }
+    }
+
+    pub fn get_board_placement(cell: &SpriteCell, row: usize, col: usize) -> Position {
+        let dimensions = Self::get_cell_dimensions(row, col);
+
+        let center_x = dimensions.left + (dimensions.width - cell.width) / 2.0;
+        let bottom = dimensions.top - (cell.height - dimensions.height) - 3.5;
+
+        Position::new(bottom, center_x)
+    }
+
+    pub fn get_board_location(position: &Position) -> BoardLocation {
+        let row = ROW_Y_COORD
+            .into_iter()
+            .position(|row_cord| position.top <= row_cord)
+            .unwrap_or(0);
+
+        let col = COL_X_COORD
+            .into_iter()
+            .position(|col_cord| position.left <= col_cord)
+            .unwrap_or(0);
+
+        BoardLocation::new(row, col)
+    }
+
+    pub fn is_active_board_location(position: &Position) -> bool {
+        let location = Self::get_board_location(position);
+
+        location.col > 1 && location.col <= 9 && location.row > 0 && location.row <= 5
     }
 }

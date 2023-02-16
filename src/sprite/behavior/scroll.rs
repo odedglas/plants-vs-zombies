@@ -27,6 +27,16 @@ impl Scroll {
             ..Default::default()
         }
     }
+
+    pub fn reverse(&mut self, now: f64, callback: Callback) {
+        self.direction *= -1;
+        self.scrolled_distance = 0.0;
+        self.callback = callback;
+
+        if !self.is_running() {
+            self.start(now);
+        }
+    }
 }
 
 impl Behavior for Scroll {
@@ -43,16 +53,6 @@ impl Behavior for Scroll {
         }
 
         None
-    }
-
-    fn reverse(&mut self, now: f64, callback: Callback) {
-        self.direction *= -1;
-        self.scrolled_distance = 0.0;
-        self.callback = callback;
-
-        if !self.is_running() {
-            self.start(now);
-        }
     }
 
     fn execute(
