@@ -291,6 +291,8 @@ impl Game {
         } else {
             self.remove_sprites_by_id(vec![sprite_id])
         }
+
+        self.sort_sprites();
     }
 
     pub fn collect_sun(&mut self, sprite_id: &String) {
@@ -313,7 +315,7 @@ impl Game {
     pub fn add_sprites(&mut self, sprites: &mut Vec<Sprite>) {
         self.sprites.append(sprites);
 
-        self.sprites.sort_by(|a, b| a.order.cmp(&b.order));
+        self.sort_sprites();
     }
 
     pub fn add_sprite(&mut self, sprite: Sprite) {
@@ -337,6 +339,9 @@ impl Game {
             .retain(|sprite| !sprites.contains(&sprite.id.trim()))
     }
 
+    fn sort_sprites(&mut self) {
+        self.sprites.sort_by(|a, b| a.order.cmp(&b.order));
+    }
     // Getters //
     pub fn get_sprites_by_type(&mut self, sprite_type: &SpriteType) -> Vec<&mut Sprite> {
         self.sprites
