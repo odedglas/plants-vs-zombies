@@ -62,6 +62,8 @@ pub enum Callback {
     RemoveSun,
     CollectSun,
     Plant,
+    AllowShovelDrag,
+    ShovelDragEnd,
 }
 
 impl Default for Callback {

@@ -1,9 +1,10 @@
 use web_sys::{HtmlCanvasElement, MouseEvent};
 
-use crate::board::Board;
+use crate::board::{Board, BoardLocation};
 use crate::features::GameFeatures;
 use crate::fps::Fps;
 use crate::location_builder::LocationBuilder;
+use crate::log;
 use crate::model::{
     BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position, SpriteType,
 };
@@ -155,6 +156,8 @@ impl Game {
             Callback::CollectSun => self.collect_sun(sprite_id),
             Callback::RemoveSun => self.remove_sun(sprite_id),
             Callback::Plant => self.plant_on_board(sprite_id),
+            Callback::AllowShovelDrag => self.allow_shovel_drag(),
+            Callback::ShovelDragEnd => self.on_shovel_drag_end(),
         }
     }
 
@@ -241,23 +244,37 @@ impl Game {
         BattleScene::create_draggable_plant(self, sprite_id);
     }
 
+    pub fn allow_shovel_drag(&mut self) {
+        BattleScene::allow_shovel_drag(self);
+    }
+
+    pub fn on_shovel_drag_end(&mut self) {
+        let shovel_sprite = self.get_sprite_by_name_and_type("Shovel", &SpriteType::Interface);
+
+        // Restore Shovel into it's original position.
+        shovel_sprite.update_position(shovel_sprite.origin_position);
+    }
+
     pub fn plant_on_board(&mut self, sprite_id: &String) {
         let mouse = self.mouse_position.clone();
 
-        // Check if current position is "active"
+        // Check if current position is "active" board cell
         if !Board::is_active_board_location(&mouse) {
             self.remove_sprites_by_id(vec![sprite_id]);
             return;
         }
 
-        if self.is_free_board_location(&mouse) {
+        let target_location = Board::get_board_location(&mouse);
+        if self.is_free_board_location(sprite_id, &target_location) {
             let sprite = self.get_sprite_by_id(sprite_id);
             let plant_cell = DrawingState::get_active_cell(&sprite);
 
             // Clamp Plant sprite into closest cell bottom position.
             let plant_position = LocationBuilder::plant_location(plant_cell, &mouse);
+            sprite.update_position(plant_position);
 
-            sprite.update_position(plant_position)
+            // Resets drag top drawing order
+            sprite.order = 3; // TODO, Drag order based on behavior?
         } else {
             self.remove_sprites_by_id(vec![sprite_id])
         }
@@ -336,20 +353,25 @@ impl Game {
             ))
     }
 
-    pub fn is_free_board_location(&mut self, position: &Position) -> bool {
-        let target_location = Board::get_board_location(position);
-
-        let found = self.sprites
+    pub fn get_sprite_by_location(&mut self, location: &BoardLocation) -> Option<&Sprite> {
+        let found = self
+            .sprites
             .iter()
             .filter(|sprite| sprite.sprite_type == SpriteType::Plant)
-            .position(|sprite| {
+            .find(|sprite| {
                 let sprite_location = Board::get_board_location(&sprite.position);
-                target_location.row == sprite_location.row
-                    && target_location.col == sprite_location.col
+                location.row == sprite_location.row && location.col == sprite_location.col
             });
+
+        found
+    }
+
+    pub fn is_free_board_location(&mut self, sprite_id: &String, location: &BoardLocation) -> bool {
+        let found = self.get_sprite_by_location(&location);
 
         match found {
             None => true,
+            Some(sprite) if &sprite.id == sprite_id => true,
             Some(_) => false,
         }
     }

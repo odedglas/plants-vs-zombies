@@ -11,7 +11,6 @@ use crate::sprite::{Sprite, SpriteMutation};
 pub struct Drag {
     pub name: BehaviorType,
     anchor: Option<Position>,
-    original_position: Position,
     callback: Callback,
     dragging: bool,
 }
@@ -52,6 +51,7 @@ impl Behavior for Drag {
 
     fn on_stop(&mut self) {
         self.dragging = false;
+        self.anchor = None;
         self.interaction_active = true;
     }
 
