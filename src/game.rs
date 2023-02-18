@@ -3,7 +3,6 @@ use web_sys::{HtmlCanvasElement, MouseEvent};
 use crate::board::{Board, BoardLocation};
 use crate::features::GameFeatures;
 use crate::fps::Fps;
-use crate::location_builder::LocationBuilder;
 use crate::log;
 use crate::model::{
     BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position, SpriteType,
@@ -79,7 +78,7 @@ impl Game {
         self.painter.clear();
 
         self.sprites.iter_mut().for_each(|sprite| {
-            // Collect mutations
+            // Collect behaviors mutations
             let mutations = BehaviorManager::run(
                 sprite,
                 &self.game_time,
@@ -154,10 +153,12 @@ impl Game {
             Callback::ChooserSeedSelect => self.on_chooser_seed_click(sprite_id),
             Callback::PlantCardClick => self.on_plant_card_click(sprite_id),
             Callback::CollectSun => self.collect_sun(sprite_id),
-            Callback::RemoveSun => self.remove_sun(sprite_id),
+            Callback::RemoveSun => self.remove_sprites_by_id(vec![sprite_id]),
             Callback::Plant => self.plant_on_board(sprite_id),
             Callback::AllowShovelDrag => self.allow_shovel_drag(),
             Callback::ShovelDragEnd => self.on_shovel_drag_end(),
+            Callback::Shoot => log!("Trigger Plant shoot {} ", sprite_id),
+            Callback::GenerateSunFlowSun => log!("Trigger SunFlow Sun Generation")
         }
     }
 
@@ -259,8 +260,6 @@ impl Game {
         }
     }
 
-    pub fn test(&mut self) {}
-
     pub fn reset_shovel(&mut self) {
         let shovel_sprite = self.get_sprite_by_name_and_type("Shovel", &SpriteType::Interface);
 
@@ -278,16 +277,9 @@ impl Game {
         }
 
         let target_location = Board::get_board_location(&mouse);
+
         if self.is_free_board_location(sprite_id, &target_location) {
-            let sprite = self.get_sprite_by_id(sprite_id);
-            let plant_cell = DrawingState::get_active_cell(&sprite);
-
-            // Clamp Plant sprite into closest cell bottom position.
-            let plant_position = LocationBuilder::plant_location(plant_cell, &mouse);
-            sprite.update_position(plant_position);
-
-            // Resets drag top drawing order
-            sprite.order = 3; // TODO, Drag order based on behavior?
+            BattleScene::create_plant(self, sprite_id);
         } else {
             self.remove_sprites_by_id(vec![sprite_id])
         }
@@ -298,10 +290,6 @@ impl Game {
     pub fn collect_sun(&mut self, sprite_id: &String) {
         self.state.sun_state.add_score(50);
 
-        self.remove_sun(sprite_id);
-    }
-
-    pub fn remove_sun(&mut self, sprite_id: &String) {
         self.remove_sprites_by_id(vec![sprite_id]);
     }
 

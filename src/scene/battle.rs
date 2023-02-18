@@ -149,6 +149,27 @@ impl BattleScene {
         game.add_sprite(plant);
     }
 
+    pub fn create_plant(game: &mut Game, sprite_id: &String) {
+        let now = game.game_time.time;
+        let mouse = game.mouse_position.clone();
+        let sprite = game.get_sprite_by_id(sprite_id);
+        let plant_cell = DrawingState::get_active_cell(&sprite);
+
+        // Clamp Plant sprite into closest cell bottom position.
+        let plant_position = LocationBuilder::plant_location(plant_cell, &mouse);
+        sprite.update_position(plant_position);
+
+        BehaviorManager::toggle_sprite_behaviors(
+            &sprite,
+            &[BehaviorType::Animate, BehaviorType::Interval],
+            true,
+            now,
+        );
+
+        // Resets drag top drawing order
+        sprite.order = 3; // TODO, Drag order based on behavior?
+    }
+
     pub fn allow_shovel_drag(game: &mut Game) {
         let now = game.game_time.time;
         let shovel_sprite = game.get_sprite_by_name_and_type("Shovel", &SpriteType::Interface);

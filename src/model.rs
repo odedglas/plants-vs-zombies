@@ -64,6 +64,8 @@ pub enum Callback {
     Plant,
     AllowShovelDrag,
     ShovelDragEnd,
+    Shoot,
+    GenerateSunFlowSun,
 }
 
 impl Default for Callback {
@@ -146,6 +148,7 @@ pub enum BehaviorType {
     Scroll,
     Walk,
     Drag,
+    Interval,
 }
 
 impl Default for BehaviorType {
@@ -163,6 +166,7 @@ impl BehaviorType {
             "Scroll" => BehaviorType::Scroll,
             "Walk" => BehaviorType::Walk,
             "Drag" => BehaviorType::Drag,
+            "Interval" => BehaviorType::Interval,
             _ => BehaviorType::default(),
         }
     }
@@ -184,6 +188,7 @@ pub struct BehaviorData {
     pub callback_delay: Option<f64>,
     pub max_cycles: Option<usize>,
     pub velocity: Option<Velocity>,
+    pub interval: Option<f64>,
 }
 
 impl BehaviorData {

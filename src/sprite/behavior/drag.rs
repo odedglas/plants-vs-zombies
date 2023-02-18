@@ -49,7 +49,7 @@ impl Behavior for Drag {
         BehaviorType::Drag
     }
 
-    fn on_stop(&mut self) {
+    fn on_stop(&mut self, _now: f64) {
         self.dragging = false;
         self.anchor = None;
         self.interaction_active = true;

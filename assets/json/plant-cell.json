@@ -470,14 +470,13 @@
     { "left": 2303, "top": 1206, "width": 79, "height": 58 },
     { "left": 2220, "top": 1273, "width": 79, "height": 58 }
   ],
-  "PB100": [{ "left": 2469, "top": 1816, "width": 56, "height": 34 }],
-  "PB00": [{ "left": 2299, "top": 3121, "width": 56, "height": 34 }],
-  "PB01": [{ "left": 2302, "top": 2999, "width": 56, "height": 34 }],
-  "PB10": [
+  "SnowBullet": [{ "left": 2469, "top": 1816, "width": 56, "height": 34 }],
+  "NormalBullet": [{ "left": 2299, "top": 3121, "width": 56, "height": 34 }],
+  "FireBullet": [
     { "left": 1050, "top": 1556, "width": 56, "height": 34 },
     { "left": 1175, "top": 754, "width": 56, "height": 34 }
   ],
-  "PB11": [
+  "ReverseFireBullet": [
     { "left": 1495, "top": 678, "width": 56, "height": 34 },
     { "left": 1293, "top": 718, "width": 56, "height": 34 }
   ],

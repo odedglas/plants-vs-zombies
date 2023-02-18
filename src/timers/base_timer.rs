@@ -1,3 +1,4 @@
+use crate::log;
 use crate::web_utils::window_time;
 
 #[derive(Debug, Default)]
@@ -37,5 +38,9 @@ impl Timer {
             true => now - self.start_time,
             false => self.elapsed,
         }
+    }
+
+    pub fn expired(&self, now: f64) -> bool {
+        self.get_elapsed_time(now) >= self.elapsed
     }
 }
