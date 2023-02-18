@@ -12,7 +12,7 @@ pub struct Interval {
     pub name: BehaviorType,
     pub callback: Option<Callback>,
     pub interval: f64,
-    timer: Timer
+    timer: Timer,
 }
 
 impl Interval {
@@ -62,7 +62,7 @@ impl Behavior for Interval {
         if self.timer.expired(now) {
             match self.callback {
                 None => {}
-                Some(_) => self.interaction_active = true
+                Some(_) => self.interaction_active = true,
             }
 
             self.timer.reset(Some(now));

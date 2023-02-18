@@ -1,6 +1,8 @@
+use crate::constants::{CANVAS_HEIGHT_F64, CANVAS_WIDTH_F64};
 use crate::features::GameFeatures;
 use crate::game::Game;
 use crate::model::{Dimensions, Position, SpriteCell};
+use crate::sprite::{DrawingState, Sprite};
 
 #[derive(Debug, Clone, Copy)]
 pub struct BoardLocation {
@@ -86,5 +88,14 @@ impl Board {
         let location = Self::get_board_location(position);
 
         location.col > 1 && location.col <= 9 && location.row > 0 && location.row <= 5
+    }
+
+    pub fn is_out_of_board(sprite: &Sprite, position: &Position) -> bool {
+        let cell = DrawingState::get_active_cell(sprite);
+
+        position.top < 0.0
+            || position.left < 0.0
+            || position.left + cell.width > CANVAS_WIDTH_F64
+            || position.top + cell.height > CANVAS_HEIGHT_F64
     }
 }

@@ -3,8 +3,9 @@ use std::rc::Weak;
 
 use js_sys::Math;
 use web_sys::HtmlImageElement;
-use crate::board::{Board, BoardLocation};
 
+use crate::board::{Board, BoardLocation};
+use crate::log;
 use crate::model::{
     BehaviorData, Dimensions, Position, SpriteCell, SpriteData, SpriteType, TextOverlayData,
 };
@@ -27,6 +28,7 @@ pub struct Sprite {
     pub drawing_state: DrawingState,
     pub text_overlay: Option<TextOverlay>,
     pub sprite_type: SpriteType,
+    pub visible: bool,
 }
 
 impl Sprite {
@@ -64,6 +66,7 @@ impl Sprite {
             behaviors: sprite_behaviors,
             text_overlay: None,
             sprite_type: SpriteType::from_kind(&kind),
+            visible: true,
         };
 
         sprite.text_overlay = match text_overlay_data {
@@ -178,6 +181,10 @@ impl Sprite {
 
             if let Some(position) = mutation.position {
                 self.update_position(position);
+            }
+
+            if let Some(visible) = mutation.visible {
+                self.visible = visible;
             }
         });
     }

@@ -2,6 +2,7 @@ use engine::Engine;
 use wasm_bindgen::prelude::*;
 use web_utils::bind_panic_logger;
 
+mod battle_manage;
 mod board;
 mod constants;
 mod engine;
@@ -17,7 +18,6 @@ mod sprite;
 mod sun_manager;
 mod timers;
 mod web_utils;
-mod battle_manage;
 
 #[wasm_bindgen(start)]
 pub fn run() -> Result<(), JsValue> {

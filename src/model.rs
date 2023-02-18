@@ -85,7 +85,7 @@ pub enum GameInteraction {
 #[derive(Debug)]
 pub enum Plant {
     PeaShooter,
-    SnowPea
+    SnowPea,
 }
 
 impl Plant {
@@ -93,14 +93,14 @@ impl Plant {
         match name {
             "PeaShooter" => Plant::PeaShooter,
             "SnowPea" => Plant::SnowPea,
-            _ => Plant::PeaShooter
+            _ => Plant::PeaShooter,
         }
     }
 
     pub fn bullet_type(plant: &Plant) -> &str {
         match plant {
             Plant::PeaShooter => "NormalBullet",
-            Plant::SnowPea => "SnowBullet"
+            Plant::SnowPea => "SnowBullet",
         }
     }
 }
@@ -112,6 +112,7 @@ pub enum SpriteType {
     Interface,
     Card,
     Seed,
+    Bullet,
     Meta,
 }
 

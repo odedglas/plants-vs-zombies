@@ -5,6 +5,7 @@ pub struct SpriteMutation {
     pub offset: Option<Position>,
     pub hovered: Option<bool>,
     pub cycle_cells: Option<bool>,
+    pub visible: Option<bool>,
 }
 
 impl SpriteMutation {
@@ -14,6 +15,7 @@ impl SpriteMutation {
             offset: None,
             hovered: None,
             cycle_cells: None,
+            visible: None,
         }
     }
 
@@ -37,6 +39,12 @@ impl SpriteMutation {
 
     pub fn cycle(mut self) -> Self {
         self.cycle_cells = Some(true);
+
+        self
+    }
+
+    pub fn hide(mut self) -> Self {
+        self.visible = Some(false);
 
         self
     }

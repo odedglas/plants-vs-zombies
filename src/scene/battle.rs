@@ -98,7 +98,7 @@ impl BattleScene {
         let seed_sprite = game.get_sprite_by_id(&selected_seed.0);
         seed_sprite.drawing_state.hover(false);
 
-        game.remove_sprites_by_id(vec![&selected_seed.1]);
+        game.remove_sprite_by_id(&selected_seed.1);
 
         Self::update_selected_cards_layout(game);
     }
@@ -170,7 +170,7 @@ impl BattleScene {
         sprite.order = 3; // TODO, Drag order based on behavior?
     }
 
-    pub fn create_bullet(game: &mut Game, sprite_id : &String) {
+    pub fn create_bullet(game: &mut Game, sprite_id: &String) {
         let now = game.game_time.time;
         let shooting_plant = game.get_sprite_by_id(sprite_id);
         let position = shooting_plant.position.clone();
@@ -178,16 +178,12 @@ impl BattleScene {
         let plant_name = &Plant::from_name(&shooting_plant.name.clone());
         let bullet_type = Plant::bullet_type(plant_name);
 
-        let mut bullet = Sprite::create_sprite(
-            bullet_type,
-            &ResourceKind::Plant,
-            &game.resources
-        ).remove(0);
+        let mut bullet =
+            Sprite::create_sprite(bullet_type, &ResourceKind::Plant, &game.resources).remove(0);
 
-        bullet.update_position(Position::new(
-            position.top + 6.0,
-            position.left + 20.0
-        ));
+        bullet.sprite_type = SpriteType::Bullet;
+
+        bullet.update_position(Position::new(position.top + 6.0, position.left + 20.0));
 
         BehaviorManager::toggle_sprite_behaviors(
             &bullet,

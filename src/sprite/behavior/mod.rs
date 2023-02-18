@@ -2,10 +2,9 @@ pub use animate::Animate;
 pub use base::Behavior;
 pub use click::Click;
 pub use hover::Hover;
+pub use interval::Interval;
 pub use scroll::Scroll;
 pub use walk::Walk;
-pub use interval::Interval;
-
 use web_sys::CanvasRenderingContext2d;
 
 use crate::model::{BehaviorData, BehaviorType, GameInteraction, Position};
@@ -18,9 +17,9 @@ mod base;
 mod click;
 mod drag;
 mod hover;
+mod interval;
 mod scroll;
 mod walk;
-mod interval;
 
 pub struct BehaviorManager;
 
@@ -44,10 +43,7 @@ impl BehaviorManager {
             )),
             BehaviorType::Walk => Box::new(Walk::new(data.distance, data.velocity.unwrap().clone())),
             BehaviorType::Drag => Box::new(Drag::new(data.callback.unwrap())),
-            BehaviorType::Interval => Box::new(Interval::new(
-                data.interval.unwrap(),
-                data.callback
-            ))
+            BehaviorType::Interval => Box::new(Interval::new(data.interval.unwrap(), data.callback)),
         };
 
         behavior.set_sprite_id(sprite_id);
