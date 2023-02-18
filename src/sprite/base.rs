@@ -3,6 +3,7 @@ use std::rc::Weak;
 
 use js_sys::Math;
 use web_sys::HtmlImageElement;
+use crate::board::{Board, BoardLocation};
 
 use crate::model::{
     BehaviorData, Dimensions, Position, SpriteCell, SpriteData, SpriteType, TextOverlayData,
@@ -19,6 +20,7 @@ pub struct Sprite {
     pub order: usize,
     pub position: Position,
     pub origin_position: Position,
+    pub board_location: BoardLocation,
     pub outlines: Vec<Position>,
     pub behaviors: RefCell<Vec<Box<dyn Behavior>>>,
     pub image: Option<Weak<HtmlImageElement>>,
@@ -55,6 +57,7 @@ impl Sprite {
             order,
             position,
             origin_position: position,
+            board_location: BoardLocation::new(0, 0),
             image,
             drawing_state: DrawingState::new(cells, scale, draw_offset),
             outlines: vec![],
@@ -68,6 +71,7 @@ impl Sprite {
             None => None,
         };
 
+        sprite.update_board_location();
         sprite.update_outlines(exact_outlines);
 
         sprite
@@ -86,11 +90,24 @@ impl Sprite {
 
     pub fn update_position(&mut self, position: Position) {
         self.position = position;
+
+        self.update_board_location();
         self.update_outlines(false);
     }
 
     pub fn update_outlines(&mut self, exact_outlines: bool) {
         self.outlines = Outline::get_outlines(&self, exact_outlines);
+    }
+
+    pub fn update_board_location(&mut self) {
+        let sprite_cell = DrawingState::get_active_cell(self);
+
+        let sprite_center = Position::new(
+            self.position.top + sprite_cell.height / 2.0,
+            self.position.left + sprite_cell.width / 2.0,
+        );
+
+        self.board_location = Board::get_board_location(&sprite_center);
     }
 
     pub fn create_sprites(

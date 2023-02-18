@@ -82,6 +82,29 @@ pub enum GameInteraction {
     AnimationCallback(Callback, SpriteId),
 }
 
+#[derive(Debug)]
+pub enum Plant {
+    PeaShooter,
+    SnowPea
+}
+
+impl Plant {
+    pub fn from_name(name: &str) -> Plant {
+        match name {
+            "PeaShooter" => Plant::PeaShooter,
+            "SnowPea" => Plant::SnowPea,
+            _ => Plant::PeaShooter
+        }
+    }
+
+    pub fn bullet_type(plant: &Plant) -> &str {
+        match plant {
+            Plant::PeaShooter => "NormalBullet",
+            Plant::SnowPea => "SnowBullet"
+        }
+    }
+}
+
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub enum SpriteType {
     Zombie,

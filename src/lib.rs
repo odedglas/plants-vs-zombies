@@ -17,6 +17,7 @@ mod sprite;
 mod sun_manager;
 mod timers;
 mod web_utils;
+mod battle_manage;
 
 #[wasm_bindgen(start)]
 pub fn run() -> Result<(), JsValue> {

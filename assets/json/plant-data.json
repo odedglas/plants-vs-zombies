@@ -39,7 +39,8 @@
     "constructor": "PlantSprite",
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
-      { "name": "Animate", "rate": 120, "max_cycles": 0 }
+      { "name": "Animate", "rate": 120, "max_cycles": 0 },
+      { "name": "Interval", "interval": 2000, "callback": "Shoot" }
     ]
   },
   "SnowBullet": {
@@ -47,11 +48,6 @@
     "position": [{ "left": 100, "top": 150 }],
     "behaviors": [
       { "name": "Animate", "rate": 120, "max_cycles": 0 },
-      {
-        "name": "Switch",
-        "switch_cells": ["PeaBulletHit", "FireBullet"],
-        "duration": 80
-      },
       { "name": "Walk", "velocity": { "x": 250, "y": 0 }}
     ],
     "collision_margin": { "left": 25, "top": 2, "right": 2, "bottom": 5 }
@@ -61,11 +57,6 @@
     "position": [{ "left": 100, "top": 250 }],
     "behaviors": [
       { "name": "Animate", "rate": 120, "max_cycles": 0 },
-      {
-        "name": "Switch",
-        "switch_cells": ["PeaBulletHit", "FireBullet"],
-        "duration": 80
-      },
       { "name": "Walk", "velocity": { "x": 200, "y": 0 }}
     ],
     "collision_margin": { "left": 25, "top": 2, "right": 2, "bottom": 5 }

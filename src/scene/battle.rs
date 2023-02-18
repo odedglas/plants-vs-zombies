@@ -2,7 +2,7 @@ use crate::game::Game;
 use crate::location_builder::LocationBuilder;
 use crate::log;
 use crate::model::Callback::PlantCardClick;
-use crate::model::{BehaviorData, BehaviorType, Callback, Position, SelectedSeed, SpriteType};
+use crate::model::{BehaviorData, BehaviorType, Callback, Plant, Position, SelectedSeed, SpriteType};
 use crate::resource_loader::ResourceKind;
 use crate::scene::PlantsChooser;
 use crate::sprite::{BehaviorManager, Click, DrawingState, Scroll, Sprite};
@@ -168,6 +168,35 @@ impl BattleScene {
 
         // Resets drag top drawing order
         sprite.order = 3; // TODO, Drag order based on behavior?
+    }
+
+    pub fn create_bullet(game: &mut Game, sprite_id : &String) {
+        let now = game.game_time.time;
+        let shooting_plant = game.get_sprite_by_id(sprite_id);
+        let position = shooting_plant.position.clone();
+
+        let plant_name = &Plant::from_name(&shooting_plant.name.clone());
+        let bullet_type = Plant::bullet_type(plant_name);
+
+        let mut bullet = Sprite::create_sprite(
+            bullet_type,
+            &ResourceKind::Plant,
+            &game.resources
+        ).remove(0);
+
+        bullet.update_position(Position::new(
+            position.top + 6.0,
+            position.left + 20.0
+        ));
+
+        BehaviorManager::toggle_sprite_behaviors(
+            &bullet,
+            &[BehaviorType::Animate, BehaviorType::Walk],
+            true,
+            now,
+        );
+
+        game.add_sprite(bullet);
     }
 
     pub fn allow_shovel_drag(game: &mut Game) {

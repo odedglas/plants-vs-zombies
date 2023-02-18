@@ -1,4 +1,6 @@
+use itertools::Itertools;
 use web_sys::{HtmlCanvasElement, MouseEvent};
+use crate::battle_manage::BattleManager;
 
 use crate::board::{Board, BoardLocation};
 use crate::features::GameFeatures;
@@ -33,7 +35,7 @@ impl Game {
             state: GameState::new(),
             fps: Fps::new(),
             mouse_position: Position::new(0.0, 0.0),
-            sprites: vec![],
+            sprites: vec![]
         }
     }
 
@@ -60,6 +62,9 @@ impl Game {
         let last_frame = self.game_time.last_timestamp;
 
         self.fps.calc(current_time, last_frame);
+
+        // Game fight
+        BattleManager::manage_fight(self);
 
         // Draw game Sprites
         self.draw();
@@ -157,8 +162,8 @@ impl Game {
             Callback::Plant => self.plant_on_board(sprite_id),
             Callback::AllowShovelDrag => self.allow_shovel_drag(),
             Callback::ShovelDragEnd => self.on_shovel_drag_end(),
-            Callback::Shoot => log!("Trigger Plant shoot {} ", sprite_id),
-            Callback::GenerateSunFlowSun => log!("Trigger SunFlow Sun Generation")
+            Callback::Shoot => self.on_plant_shoot(sprite_id),
+            Callback::GenerateSunFlowSun => log!("Trigger SunFlow Sun Generation") // TODO - Call SunManager with sprite
         }
     }
 
@@ -254,9 +259,12 @@ impl Game {
         let dropped_location = Board::get_board_location(&self.mouse_position);
         let plant = self.get_sprite_by_location(&dropped_location);
 
-        if let Some(plant) = plant {
-            let id = plant.id.clone();
-            self.remove_sprites_by_id(vec![&id]);
+        match plant {
+            Some(plant) if plant.sprite_type == SpriteType::Plant => {
+                let id = plant.id.clone();
+                self.remove_sprites_by_id(vec![&id]);
+            }
+            _ => {}
         }
     }
 
@@ -285,6 +293,21 @@ impl Game {
         }
 
         self.sort_sprites();
+    }
+
+    pub fn on_plant_shoot(&mut self, sprite_id: &String) {
+        let shooting_plant_location = &self.get_sprite_by_id(sprite_id)
+            .board_location.clone();
+
+        // Check if row contains an enemy
+        let has_enemy_in_row = self.sprites
+            .iter_mut()
+            .find(|sprite| sprite.sprite_type == SpriteType::Zombie &&
+                sprite.board_location.row == shooting_plant_location.row);
+
+        if has_enemy_in_row.is_some() {
+            BattleScene::create_bullet(self, sprite_id)
+        }
     }
 
     pub fn collect_sun(&mut self, sprite_id: &String) {
@@ -365,13 +388,7 @@ impl Game {
             .iter()
             .filter(|sprite| sprite.sprite_type == SpriteType::Plant)
             .find(|sprite| {
-                let sprite_cell = DrawingState::get_active_cell(sprite);
-                let sprite_center = Position::new(
-                    sprite.position.top + sprite_cell.height / 2.0,
-                    sprite.position.left + sprite_cell.width / 2.0,
-                );
-                let sprite_location = Board::get_board_location(&sprite_center);
-                location.row == sprite_location.row && location.col == sprite_location.col
+                location.row == sprite.board_location.row && location.col == sprite.board_location.col
             });
 
         found

@@ -2,7 +2,7 @@ use crate::features::GameFeatures;
 use crate::game::Game;
 use crate::model::{Dimensions, Position, SpriteCell};
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct BoardLocation {
     pub row: usize,
     pub col: usize,
