@@ -3,7 +3,7 @@
     "constructor": "Zombie",
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
-      { "name": "Animate", "rate": 120,
+      { "name": "Animate", "rate": 160,
         "max_cycles": 0
       },
       { "name": "Walk", "velocity": { "x": -10, "y": 0 } },
@@ -15,7 +15,7 @@
     "constructor": "Zombie",
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
-      { "name": "Animate", "rate": 120, "max_cycles": 0 },
+      { "name": "Animate", "rate": 160, "max_cycles": 0 },
       { "name": "Walk", "velocity": { "x": -9, "y": 0 } },
       { "name": "Collision", "collision_margin": { "left": 30, "top": 5, "right": 10, "bottom": 5 }}
     ],
@@ -25,7 +25,7 @@
     "constructor": "Zombie",
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
-      { "name": "Animate", "rate": 120, "max_cycles": 0 },
+      { "name": "Animate", "rate": 160, "max_cycles": 0 },
       { "name": "Walk", "velocity": { "x": -8, "y": 0 } },
       { "name": "Collision", "collision_margin": { "left": 40, "top": 5, "right": 10, "bottom": 5 }}
     ]
@@ -34,7 +34,7 @@
     "constructor": "Zombie",
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
-      { "name": "Animate", "rate": 120, "max_cycles": 0 },
+      { "name": "Animate", "rate": 160, "max_cycles": 0 },
       { "name": "Walk", "velocity": { "x": -12, "y": 0 } },
       { "name": "Collision" }
     ],
@@ -44,7 +44,7 @@
     "constructor": "Zombie",
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
-      { "name": "Animate", "rate": 120, "max_cycles": 0 },
+      { "name": "Animate", "rate": 160, "max_cycles": 0 },
       { "name": "Walk", "velocity": { "x": -5, "y": 0 } },
       { "name": "Collision" }
     ]
@@ -67,7 +67,7 @@
     "constructor": "Zombie",
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
-      { "name": "Animate", "rate": 120, "max_cycles": 0 },
+      { "name": "Animate", "rate": 160, "max_cycles": 0 },
       { "name": "Collision" }
     ],
     "life": 0.0

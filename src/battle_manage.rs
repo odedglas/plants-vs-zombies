@@ -7,11 +7,45 @@ use crate::sprite::Sprite;
 
 pub struct BattleManager;
 
+struct CollisionMutation {
+    target_id: String,
+    life_deduction: Option<usize>,
+}
+
+impl CollisionMutation {
+    pub fn new(id: &String) -> Self {
+        CollisionMutation {
+            target_id: String::from(id),
+            life_deduction: None,
+        }
+    }
+}
+
 // Activate their `on_collision` hook
 // Manage fight life
 
 impl BattleManager {
     pub fn manage_fight(game: &mut Game) {
+        let mut mutations = Self::collect_collision_mutations(game);
+
+        game.sprites.iter_mut().for_each(|sprite| {
+            let mutation = mutations
+                .iter()
+                .find(|mutation| mutation.target_id == sprite.id);
+
+            if let Some(mutation) = mutation {
+                log!("Activation mutation! on {}", mutation.target_id)
+
+                // Apply sprite mutation
+
+                // Trigger on_collide?
+            }
+        });
+    }
+
+    fn collect_collision_mutations(game: &mut Game) -> Vec<CollisionMutation> {
+        let mut mutations: Vec<CollisionMutation> = vec![];
+
         game.sprites
             .iter()
             .sorted_by(|a, b| a.board_location.row.cmp(&b.board_location.row))
@@ -24,22 +58,23 @@ impl BattleManager {
 
                 group.into_iter().for_each(|sprite| {
                     // For each given sprite within the group, finding respective collision candidates
-                    let candidates = others.iter()
+                    let candidates = others
+                        .iter()
                         .filter(|other| Self::can_collide(sprite, other))
                         .collect::<Vec<&&Sprite>>();
 
                     // For each candidate, Check if collided
-                    let collided_candidate = candidates.iter()
+                    let collided_candidate = candidates
+                        .iter()
                         .find(|candidate| Self::has_collision(sprite, candidate));
 
-
-                    log!("Procssing {} / {} ", sprite.id, candidates.len());
-
                     if let Some(collided_sprite) = collided_candidate {
-                        log!("Found collided Sprite {}", collided_sprite.id)
+                        mutations.push(CollisionMutation::new(&collided_sprite.id));
                     }
                 });
             });
+
+        mutations
     }
 
     fn has_collision_behavior(sprite: &&Sprite) -> bool {
@@ -57,14 +92,14 @@ impl BattleManager {
         let target_type = match source_type {
             SpriteType::Zombie => SpriteType::Plant,
             SpriteType::Bullet => SpriteType::Zombie,
-            _ => SpriteType::Meta
+            _ => SpriteType::Meta,
         };
 
         &target_type == &other.sprite_type
     }
 
     fn has_collision(sprite: &Sprite, other: &Sprite) -> bool {
-        false
+        // TODO - Make it real
+        sprite.position.left > other.position.left
     }
-
 }
