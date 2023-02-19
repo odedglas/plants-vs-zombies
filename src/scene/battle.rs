@@ -1,3 +1,4 @@
+use crate::board::Board;
 use crate::game::Game;
 use crate::location_builder::LocationBuilder;
 use crate::log;
@@ -183,7 +184,7 @@ impl BattleScene {
 
         bullet.sprite_type = SpriteType::Bullet;
 
-        bullet.update_position(Position::new(position.top + 6.0, position.left + 20.0));
+        bullet.update_position(LocationBuilder::bullet_location(&position));
 
         BehaviorManager::toggle_sprite_behaviors(
             &bullet,

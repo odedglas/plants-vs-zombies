@@ -31,6 +31,10 @@ impl LocationBuilder {
         Board::get_board_placement(plant_cell, location.row, location.col)
     }
 
+    pub fn bullet_location(plant_position: &Position) -> Position {
+        Position::new(plant_position.top + 6.0, plant_position.left + 20.0)
+    }
+
     pub fn zombie_location(zombie_cell: &SpriteCell, row: usize) -> Position {
         let start_col = 10;
         let start_row = ((row) % 5) + 1;

@@ -173,6 +173,7 @@ pub enum BehaviorType {
     Walk,
     Drag,
     Interval,
+    Collision,
 }
 
 impl Default for BehaviorType {
@@ -191,6 +192,7 @@ impl BehaviorType {
             "Walk" => BehaviorType::Walk,
             "Drag" => BehaviorType::Drag,
             "Interval" => BehaviorType::Interval,
+            "Collision" => BehaviorType::Collision,
             _ => BehaviorType::default(),
         }
     }
@@ -200,6 +202,14 @@ impl BehaviorType {
 pub struct Velocity {
     pub x: f64,
     pub y: f64,
+}
+
+#[derive(Debug, Default, Clone, Copy, Deserialize)]
+pub struct CollisionMargin {
+    pub left: usize,
+    pub right: usize,
+    pub top: usize,
+    pub bottom: usize,
 }
 
 #[derive(Debug, Default, Clone, Deserialize)]
@@ -213,6 +223,7 @@ pub struct BehaviorData {
     pub max_cycles: Option<usize>,
     pub velocity: Option<Velocity>,
     pub interval: Option<f64>,
+    pub collision_margin: Option<CollisionMargin>,
 }
 
 impl BehaviorData {

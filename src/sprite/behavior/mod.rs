@@ -8,6 +8,7 @@ pub use walk::Walk;
 use web_sys::CanvasRenderingContext2d;
 
 use crate::model::{BehaviorData, BehaviorType, GameInteraction, Position};
+use crate::sprite::behavior::collision::Collision;
 use crate::sprite::behavior::drag::Drag;
 use crate::sprite::{Sprite, SpriteMutation};
 use crate::timers::GameTime;
@@ -15,6 +16,7 @@ use crate::timers::GameTime;
 mod animate;
 mod base;
 mod click;
+mod collision;
 mod drag;
 mod hover;
 mod interval;
@@ -44,6 +46,7 @@ impl BehaviorManager {
             BehaviorType::Walk => Box::new(Walk::new(data.distance, data.velocity.unwrap().clone())),
             BehaviorType::Drag => Box::new(Drag::new(data.callback.unwrap())),
             BehaviorType::Interval => Box::new(Interval::new(data.interval.unwrap(), data.callback)),
+            BehaviorType::Collision => Box::new(Collision::new(data.collision_margin.unwrap())),
         };
 
         behavior.set_sprite_id(sprite_id);
@@ -97,17 +100,21 @@ impl BehaviorManager {
         sprite: &mut Sprite,
         behavior: BehaviorType,
     ) -> &mut Box<dyn Behavior> {
-        let behavior = sprite
+        Self::find_sprite_behavior(sprite, behavior).expect(&format!(
+            "[BehaviorManager] Cannot find Sprite behavior: {:?}",
+            behavior
+        ))
+    }
+
+    pub fn find_sprite_behavior(
+        sprite: &mut Sprite,
+        behavior: BehaviorType,
+    ) -> Option<&mut Box<dyn Behavior>> {
+        sprite
             .behaviors
             .get_mut()
             .iter_mut()
             .find(|sprite_behavior| behavior == sprite_behavior.name())
-            .expect(&format!(
-                "[BehaviorManager] Cannot find Sprite behavior: {:?}",
-                behavior
-            ));
-
-        behavior
     }
 
     pub fn collect_interactions(sprite: &Sprite) -> Vec<GameInteraction> {
