@@ -145,7 +145,10 @@ pub struct SpriteData {
     pub order: usize,
     pub scale: f64,
     pub exact_outlines: bool,
+    pub life: f64,
+    pub damage: f64,
     pub draw_offset: Position,
+    pub swap_cells: Vec<String>,
     pub behaviors: Vec<BehaviorData>,
     pub text_overlay: Option<TextOverlayData>,
 }
@@ -157,8 +160,11 @@ impl Default for SpriteData {
             draw_offset: Position::default(),
             order: 1,
             scale: 1.0,
+            life: 100.0,
+            damage: 0.0,
             exact_outlines: false,
             behaviors: vec![],
+            swap_cells: vec![],
             text_overlay: None,
         }
     }

@@ -6,6 +6,7 @@ pub struct SpriteMutation {
     pub hovered: Option<bool>,
     pub cycle_cells: Option<bool>,
     pub visible: Option<bool>,
+    pub damage: Option<f64>,
 }
 
 impl SpriteMutation {
@@ -16,6 +17,7 @@ impl SpriteMutation {
             hovered: None,
             cycle_cells: None,
             visible: None,
+            damage: None,
         }
     }
 
@@ -45,6 +47,12 @@ impl SpriteMutation {
 
     pub fn hide(mut self) -> Self {
         self.visible = Some(false);
+
+        self
+    }
+
+    pub fn damage(mut self, damage: f64) -> Self {
+        self.damage = Some(damage);
 
         self
     }

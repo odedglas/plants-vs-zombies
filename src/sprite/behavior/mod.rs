@@ -1,6 +1,7 @@
 pub use animate::Animate;
 pub use base::Behavior;
 pub use click::Click;
+pub use collision::{Collision, CollisionState};
 pub use hover::Hover;
 pub use interval::Interval;
 pub use scroll::Scroll;
@@ -8,7 +9,6 @@ pub use walk::Walk;
 use web_sys::CanvasRenderingContext2d;
 
 use crate::model::{BehaviorData, BehaviorType, GameInteraction, Position};
-use crate::sprite::behavior::collision::Collision;
 use crate::sprite::behavior::drag::Drag;
 use crate::sprite::{Sprite, SpriteMutation};
 use crate::timers::GameTime;
@@ -100,9 +100,10 @@ impl BehaviorManager {
         sprite: &mut Sprite,
         behavior: BehaviorType,
     ) -> &mut Box<dyn Behavior> {
+        let sprite_id = sprite.id.clone();
         Self::find_sprite_behavior(sprite, behavior).expect(&format!(
-            "[BehaviorManager] Cannot find Sprite behavior: {:?}",
-            behavior
+            "[BehaviorManager] Cannot GET Sprite behavior: {:?} / {}",
+            behavior, sprite_id
         ))
     }
 

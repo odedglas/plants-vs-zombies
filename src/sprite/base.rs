@@ -7,10 +7,12 @@ use web_sys::HtmlImageElement;
 use crate::board::{Board, BoardLocation};
 use crate::log;
 use crate::model::{
-    BehaviorData, Dimensions, Position, SpriteCell, SpriteData, SpriteType, TextOverlayData,
+    BehaviorData, BehaviorType, CollisionMargin, Dimensions, Position, SpriteCell, SpriteData,
+    SpriteType, TextOverlayData,
 };
 use crate::resource_loader::{Resource, ResourceKind, Resources};
-use crate::sprite::behavior::{Behavior, BehaviorManager};
+use crate::sprite::attack_state::AttackState;
+use crate::sprite::behavior::{Behavior, BehaviorManager, Collision};
 use crate::sprite::drawing_state::DrawingState;
 use crate::sprite::text_overlay::TextOverlay;
 use crate::sprite::{Outline, SpriteMutation};
@@ -26,6 +28,7 @@ pub struct Sprite {
     pub behaviors: RefCell<Vec<Box<dyn Behavior>>>,
     pub image: Option<Weak<HtmlImageElement>>,
     pub drawing_state: DrawingState,
+    pub attack_state: AttackState,
     pub text_overlay: Option<TextOverlay>,
     pub sprite_type: SpriteType,
     pub visible: bool,
@@ -44,6 +47,8 @@ impl Sprite {
         exact_outlines: bool,
         text_overlay_data: &Option<TextOverlayData>,
         kind: ResourceKind,
+        life: f64,
+        damage: f64,
     ) -> Sprite {
         let id = uid(name);
         let sprite_behaviors = RefCell::new(
@@ -62,6 +67,7 @@ impl Sprite {
             board_location: BoardLocation::new(0, 0),
             image,
             drawing_state: DrawingState::new(cells, scale, draw_offset),
+            attack_state: AttackState::new(life, damage),
             outlines: vec![],
             behaviors: sprite_behaviors,
             text_overlay: None,
@@ -140,6 +146,9 @@ impl Sprite {
             behaviors,
             exact_outlines,
             text_overlay,
+            life,
+            damage,
+            swap_cells,
             ..
         } = data;
 
@@ -148,6 +157,7 @@ impl Sprite {
             .iter()
             .map(|position| {
                 let resource = resources.get_resource(sprite_name, kind);
+
                 Sprite::new(
                     sprite_name,
                     order,
@@ -160,6 +170,8 @@ impl Sprite {
                     exact_outlines,
                     &text_overlay,
                     kind.clone(),
+                    life,
+                    damage,
                 )
             })
             .collect()
@@ -186,11 +198,35 @@ impl Sprite {
             if let Some(visible) = mutation.visible {
                 self.visible = visible;
             }
+
+            if let Some(damage) = mutation.damage {
+                self.attack_state.take_damage(damage);
+                self.visible = !self.attack_state.is_dead();
+            }
         });
     }
 
     pub fn mutable_behaviors(&self) -> RefMut<'_, Vec<Box<dyn Behavior>>> {
         self.behaviors.borrow_mut()
+    }
+
+    pub fn get_collision(&self) -> Option<CollisionMargin> {
+        let mut behaviors = self.behaviors.borrow_mut();
+
+        let collision = behaviors
+            .iter_mut()
+            .find(|behavior| behavior.name() == BehaviorType::Collision);
+
+        match collision {
+            None => None,
+            Some(collision) => Some(
+                collision
+                    .as_any()
+                    .downcast_mut::<Collision>()
+                    .unwrap()
+                    .margin,
+            ),
+        }
     }
 }
 

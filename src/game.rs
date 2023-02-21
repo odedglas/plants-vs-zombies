@@ -219,7 +219,6 @@ impl Game {
 
     pub fn start_battle(&mut self) {
         GameFeatures::enable_generate_sun(true);
-
         BattleScene::start(self);
     }
 

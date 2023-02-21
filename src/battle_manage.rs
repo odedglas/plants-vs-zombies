@@ -1,46 +1,57 @@
 use itertools::Itertools;
 
 use crate::game::Game;
-use crate::log;
-use crate::model::{BehaviorType, SpriteType};
-use crate::sprite::Sprite;
-
-pub struct BattleManager;
+use crate::model::{BehaviorType, CollisionMargin, SpriteType};
+use crate::sprite::{BehaviorManager, Collision, CollisionState, DrawingState, Sprite};
 
 struct CollisionMutation {
+    attacking_id: String,
     target_id: String,
-    life_deduction: Option<usize>,
+    damage: f64,
 }
 
 impl CollisionMutation {
-    pub fn new(id: &String) -> Self {
+    pub fn new(attacking_id: &String, target_id: &String, damage: f64) -> Self {
         CollisionMutation {
-            target_id: String::from(id),
-            life_deduction: None,
+            attacking_id: String::from(attacking_id),
+            target_id: String::from(target_id),
+            damage,
         }
     }
 }
 
-// Activate their `on_collision` hook
-// Manage fight life
+pub struct BattleManager;
 
 impl BattleManager {
     pub fn manage_fight(game: &mut Game) {
+        /// TODO - Game features flag
         let mut mutations = Self::collect_collision_mutations(game);
 
-        game.sprites.iter_mut().for_each(|sprite| {
-            let mutation = mutations
-                .iter()
-                .find(|mutation| mutation.target_id == sprite.id);
+        game.sprites
+            .iter_mut()
+            .filter(|sprite| sprite.get_collision().is_some())
+            .for_each(|sprite| {
+                let sprite_id = sprite.id.clone();
+                let mutation = mutations.iter().find(|mutation| {
+                    mutation.target_id == sprite.id || mutation.attacking_id == sprite.id
+                });
 
-            if let Some(mutation) = mutation {
-                log!("Activation mutation! on {}", mutation.target_id)
+                let collision = BehaviorManager::get_sprite_behavior(sprite, BehaviorType::Collision)
+                    .as_any()
+                    .downcast_mut::<Collision>()
+                    .unwrap();
 
-                // Apply sprite mutation
-
-                // Trigger on_collide?
-            }
-        });
+                match mutation {
+                    Some(mutation) if mutation.attacking_id == sprite_id => {
+                        collision.state = CollisionState::Attacking;
+                    }
+                    Some(mutation) if mutation.target_id == sprite_id => {
+                        collision.state = CollisionState::TakingDamage(mutation.damage);
+                    }
+                    Some(_) => {}
+                    None => {}
+                }
+            });
     }
 
     fn collect_collision_mutations(game: &mut Game) -> Vec<CollisionMutation> {
@@ -49,7 +60,7 @@ impl BattleManager {
         game.sprites
             .iter()
             .sorted_by(|a, b| a.board_location.row.cmp(&b.board_location.row))
-            .filter(|sprite| Self::has_collision_behavior(sprite))
+            .filter(|sprite| sprite.visible && sprite.get_collision().is_some())
             .group_by(|sprite| sprite.board_location.row)
             .into_iter()
             .map(|(_, items)| items.collect::<Vec<&Sprite>>())
@@ -69,7 +80,11 @@ impl BattleManager {
                         .find(|candidate| Self::has_collision(sprite, candidate));
 
                     if let Some(collided_sprite) = collided_candidate {
-                        mutations.push(CollisionMutation::new(&collided_sprite.id));
+                        mutations.push(CollisionMutation::new(
+                            &sprite.id,
+                            &collided_sprite.id,
+                            sprite.attack_state.damage,
+                        ));
                     }
                 });
             });
@@ -77,17 +92,8 @@ impl BattleManager {
         mutations
     }
 
-    fn has_collision_behavior(sprite: &&Sprite) -> bool {
-        let behaviors = sprite.behaviors.borrow();
-
-        behaviors
-            .iter()
-            .find(|sprite_behavior| BehaviorType::Collision == sprite_behavior.name())
-            .is_some()
-    }
-
     fn can_collide(sprite: &Sprite, other: &Sprite) -> bool {
-        let source_type = &sprite.sprite_type;
+        let source_type = &sprite.sprite_type; // TODO - Should be deriven from CollisionBehavior.
 
         let target_type = match source_type {
             SpriteType::Zombie => SpriteType::Plant,
@@ -98,8 +104,14 @@ impl BattleManager {
         &target_type == &other.sprite_type
     }
 
-    fn has_collision(sprite: &Sprite, other: &Sprite) -> bool {
-        // TODO - Make it real
-        sprite.position.left > other.position.left
+    fn has_collision(sprite: &Sprite, target: &Sprite) -> bool {
+        let collision = sprite.get_collision().unwrap_or(CollisionMargin::default());
+
+        let collision_left = sprite.position.left + collision.left as f64;
+
+        let target_cell = DrawingState::get_active_cell(target);
+
+        collision_left >= target.position.left
+            && collision_left <= target.position.left + target_cell.width
     }
 }

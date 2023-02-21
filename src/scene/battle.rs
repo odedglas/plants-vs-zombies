@@ -113,6 +113,8 @@ impl BattleScene {
 
         Self::swap_plant_cards_action(game);
 
+        game.toggle_game_behavior(true, &[BehaviorType::Collision]);
+
         game.add_sprites(scene_sprites.as_mut());
     }
 
@@ -162,7 +164,11 @@ impl BattleScene {
 
         BehaviorManager::toggle_sprite_behaviors(
             &sprite,
-            &[BehaviorType::Animate, BehaviorType::Interval],
+            &[
+                BehaviorType::Animate,
+                BehaviorType::Interval,
+                BehaviorType::Collision,
+            ],
             true,
             now,
         );
@@ -188,7 +194,11 @@ impl BattleScene {
 
         BehaviorManager::toggle_sprite_behaviors(
             &bullet,
-            &[BehaviorType::Animate, BehaviorType::Walk],
+            &[
+                BehaviorType::Animate,
+                BehaviorType::Walk,
+                BehaviorType::Collision,
+            ],
             true,
             now,
         );
