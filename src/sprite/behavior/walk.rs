@@ -67,7 +67,7 @@ impl Behavior for Walk {
 
         if Board::is_out_of_board(sprite, &new_position) {
             self.stop(now);
-            return Some(SpriteMutation::new().hide());
+            return Some(SpriteMutation::new().hide(true));
         }
 
         self.walked_distance += self.position_distance(&offset);

@@ -12,7 +12,13 @@
       "TallNut"
     ],
     "zombies": [
-      "Buckethead"
+      "Buckethead",
+      "Conehead",
+      "ScreenDoor",
+      "Conehead",
+      "Conehead",
+      "Zombie1",
+      "Flag"
     ]
   }
 }

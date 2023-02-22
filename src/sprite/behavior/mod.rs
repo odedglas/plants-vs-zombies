@@ -8,7 +8,7 @@ pub use scroll::Scroll;
 pub use walk::Walk;
 use web_sys::CanvasRenderingContext2d;
 
-use crate::model::{BehaviorData, BehaviorType, GameInteraction, Position};
+use crate::model::{BehaviorData, BehaviorType, CollisionMargin, GameInteraction, Position};
 use crate::sprite::behavior::drag::Drag;
 use crate::sprite::{Sprite, SpriteMutation};
 use crate::timers::GameTime;
@@ -46,7 +46,9 @@ impl BehaviorManager {
             BehaviorType::Walk => Box::new(Walk::new(data.distance, data.velocity.unwrap().clone())),
             BehaviorType::Drag => Box::new(Drag::new(data.callback.unwrap())),
             BehaviorType::Interval => Box::new(Interval::new(data.interval.unwrap(), data.callback)),
-            BehaviorType::Collision => Box::new(Collision::new(data.collision_margin.unwrap())),
+            BehaviorType::Collision => Box::new(Collision::new(
+                data.collision_margin.unwrap_or(CollisionMargin::default()),
+            )),
         };
 
         behavior.set_sprite_id(sprite_id);

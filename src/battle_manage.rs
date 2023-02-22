@@ -24,9 +24,12 @@ pub struct BattleManager;
 
 impl BattleManager {
     pub fn manage_fight(game: &mut Game) {
-        /// TODO - Game features flag
-        let mut mutations = Self::collect_collision_mutations(game);
+        let mutations = Self::collect_collision_mutations(game);
 
+        Self::flag_collision_state(game, mutations);
+    }
+
+    fn flag_collision_state(game: &mut Game, mutations: Vec<CollisionMutation>) {
         game.sprites
             .iter_mut()
             .filter(|sprite| sprite.get_collision().is_some())
@@ -48,8 +51,9 @@ impl BattleManager {
                     Some(mutation) if mutation.target_id == sprite_id => {
                         collision.state = CollisionState::TakingDamage(mutation.damage);
                     }
-                    Some(_) => {}
-                    None => {}
+                    _ => {
+                        collision.state = CollisionState::None;
+                    }
                 }
             });
     }
@@ -60,7 +64,7 @@ impl BattleManager {
         game.sprites
             .iter()
             .sorted_by(|a, b| a.board_location.row.cmp(&b.board_location.row))
-            .filter(|sprite| sprite.visible && sprite.get_collision().is_some())
+            .filter(|sprite| sprite.visible && Self::has_collision_behavior(sprite))
             .group_by(|sprite| sprite.board_location.row)
             .into_iter()
             .map(|(_, items)| items.collect::<Vec<&Sprite>>())
@@ -90,6 +94,17 @@ impl BattleManager {
             });
 
         mutations
+    }
+
+    pub fn has_collision_behavior(sprite: &Sprite) -> bool {
+        sprite
+            .behaviors
+            .borrow()
+            .iter()
+            .find(|behavior| {
+                behavior.name() == BehaviorType::Collision && behavior.is_running() == true
+            })
+            .is_some()
     }
 
     fn can_collide(sprite: &Sprite, other: &Sprite) -> bool {

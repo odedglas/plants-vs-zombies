@@ -16,6 +16,7 @@ use crate::sprite::behavior::{Behavior, BehaviorManager, Collision};
 use crate::sprite::drawing_state::DrawingState;
 use crate::sprite::text_overlay::TextOverlay;
 use crate::sprite::{Outline, SpriteMutation};
+use crate::web_utils::window_time;
 
 pub struct Sprite {
     pub id: String,
@@ -41,6 +42,7 @@ impl Sprite {
         position: Position,
         draw_offset: Position,
         cells: Vec<SpriteCell>,
+        swap_cells: Vec<Vec<SpriteCell>>,
         image: Option<Weak<HtmlImageElement>>,
         scale: f64,
         behaviors: &Vec<BehaviorData>,
@@ -66,7 +68,7 @@ impl Sprite {
             origin_position: position,
             board_location: BoardLocation::new(0, 0),
             image,
-            drawing_state: DrawingState::new(cells, scale, draw_offset),
+            drawing_state: DrawingState::new(cells, swap_cells, scale, draw_offset),
             attack_state: AttackState::new(life, damage),
             outlines: vec![],
             behaviors: sprite_behaviors,
@@ -158,12 +160,18 @@ impl Sprite {
             .map(|position| {
                 let resource = resources.get_resource(sprite_name, kind);
 
+                let swap_cells = swap_cells
+                    .iter()
+                    .map(|cell_name| resources.get_cell(cell_name, kind))
+                    .collect::<Vec<Vec<SpriteCell>>>();
+
                 Sprite::new(
                     sprite_name,
                     order,
                     *position,
                     draw_offset,
                     resource.cell,
+                    swap_cells,
                     resource.image,
                     scale,
                     &behaviors,
@@ -199,9 +207,31 @@ impl Sprite {
                 self.visible = visible;
             }
 
+            if let Some(alpha) = mutation.alpha {
+                self.drawing_state.alpha = alpha;
+            }
+
             if let Some(damage) = mutation.damage {
                 self.attack_state.take_damage(damage);
                 self.visible = !self.attack_state.is_dead();
+            }
+
+            if let Some(swap_index) = mutation.swap {
+                if swap_index >= 0 {
+                    self.drawing_state.swap(swap_index as usize);
+                } else {
+                    self.drawing_state.reset_swap();
+                }
+            }
+
+            if let Some(_) = mutation.mute {
+                self.attack_state.mute();
+                BehaviorManager::toggle_sprite_behaviors(
+                    self,
+                    &[BehaviorType::Walk],
+                    false,
+                    window_time(),
+                )
             }
         });
     }

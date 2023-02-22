@@ -40,6 +40,7 @@ impl Painter {
                 &sprite.drawing_state.offset,
                 cell,
                 sprite.drawing_state.scale,
+                sprite.drawing_state.alpha,
             );
         }
 
@@ -55,9 +56,11 @@ impl Painter {
         offset: &Position,
         cell: &SpriteCell,
         scale: f64,
+        alpha: f64,
     ) {
         // Setting translate if defined, which will cause a "partial image" view.
         self.context.translate(-offset.left, -offset.top).unwrap();
+        self.context.set_global_alpha(alpha);
 
         self.context
             .draw_image_with_html_image_element_and_sw_and_sh_and_dx_and_dy_and_dw_and_dh(

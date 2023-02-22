@@ -1,7 +1,5 @@
-use crate::board::Board;
 use crate::game::Game;
 use crate::location_builder::LocationBuilder;
-use crate::log;
 use crate::model::Callback::PlantCardClick;
 use crate::model::{BehaviorData, BehaviorType, Callback, Plant, Position, SelectedSeed, SpriteType};
 use crate::resource_loader::ResourceKind;

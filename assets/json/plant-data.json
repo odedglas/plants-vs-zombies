@@ -46,6 +46,7 @@
   "SnowBullet": {
     "constructor": "PlantSprite",
     "position": [{ "left": 100, "top": 150 }],
+    "swap_cells": ["PeaBulletHit"],
     "damage": 25.0,
     "behaviors": [
       { "name": "Animate", "rate": 120, "max_cycles": 0 },
@@ -55,6 +56,7 @@
   },
   "NormalBullet": {
     "constructor": "PlantSprite",
+    "swap_cells": ["PeaBulletHit"],
     "damage": 25.0,
     "position": [{ "left": 100, "top": 250 }],
     "behaviors": [

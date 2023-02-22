@@ -1,12 +1,16 @@
 use crate::model::Position;
 
+#[derive(Debug, Clone)]
 pub struct SpriteMutation {
     pub position: Option<Position>,
     pub offset: Option<Position>,
     pub hovered: Option<bool>,
+    pub swap: Option<i32>,
     pub cycle_cells: Option<bool>,
     pub visible: Option<bool>,
+    pub mute: Option<bool>,
     pub damage: Option<f64>,
+    pub alpha: Option<f64>,
 }
 
 impl SpriteMutation {
@@ -18,6 +22,9 @@ impl SpriteMutation {
             cycle_cells: None,
             visible: None,
             damage: None,
+            swap: None,
+            mute: None,
+            alpha: None,
         }
     }
 
@@ -45,14 +52,32 @@ impl SpriteMutation {
         self
     }
 
-    pub fn hide(mut self) -> Self {
-        self.visible = Some(false);
+    pub fn hide(mut self, hide: bool) -> Self {
+        self.visible = Some(!hide);
 
         self
     }
 
     pub fn damage(mut self, damage: f64) -> Self {
         self.damage = Some(damage);
+
+        self
+    }
+
+    pub fn swap(mut self, swap_index: i32) -> Self {
+        self.swap = Some(swap_index);
+
+        self
+    }
+
+    pub fn mute(mut self) -> Self {
+        self.mute = Some(true);
+
+        self
+    }
+
+    pub fn alpha(mut self, alpha: f64) -> Self {
+        self.alpha = Some(alpha);
 
         self
     }
