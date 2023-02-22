@@ -22,9 +22,9 @@ pub trait BehaviorState {
 pub trait Behavior: BehaviorState {
     fn name(&self) -> BehaviorType;
 
-    fn on_stop(&mut self) {}
+    fn on_stop(&mut self, _now: f64) {}
 
-    fn on_start(&mut self) {}
+    fn on_start(&mut self, _now: f64) {}
 
     fn get_interaction(&self) -> Option<GameInteraction> {
         return None;
@@ -37,11 +37,11 @@ pub trait Behavior: BehaviorState {
     fn toggle(&mut self, run: bool, now: f64) {
         match run {
             true => {
-                self.on_start();
+                self.on_start(now);
                 self.start(now);
             }
             false => {
-                self.on_stop();
+                self.on_stop(now);
                 self.stop(now);
             }
         }

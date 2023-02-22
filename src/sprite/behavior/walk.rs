@@ -2,6 +2,7 @@ use derives::{derive_behavior_fields, BaseBehavior};
 use web_sys::CanvasRenderingContext2d;
 
 use super::base::Behavior;
+use crate::board::Board;
 use crate::model::{BehaviorType, Position, Velocity};
 use crate::sprite::{Sprite, SpriteMutation};
 
@@ -59,13 +60,18 @@ impl Behavior for Walk {
         let animation_rate = self.animation_rate(now, last_frame);
         let offset = self.calculate_offset(animation_rate);
 
-        // TODO - Calculate if movement is allowed (Not out of board)
+        let new_position = Position::new(
+            sprite.position.top + offset.top,
+            sprite.position.left + offset.left,
+        );
+
+        if Board::is_out_of_board(sprite, &new_position) {
+            self.stop(now);
+            return Some(SpriteMutation::new().hide(true));
+        }
 
         self.walked_distance += self.position_distance(&offset);
 
-        Some(SpriteMutation::new().position(Position::new(
-            sprite.position.top + offset.top,
-            sprite.position.left + offset.left,
-        )))
+        Some(SpriteMutation::new().position(new_position))
     }
 }

@@ -64,6 +64,8 @@ pub enum Callback {
     Plant,
     AllowShovelDrag,
     ShovelDragEnd,
+    Shoot,
+    GenerateSunFlowSun,
 }
 
 impl Default for Callback {
@@ -80,6 +82,29 @@ pub enum GameInteraction {
     AnimationCallback(Callback, SpriteId),
 }
 
+#[derive(Debug)]
+pub enum Plant {
+    PeaShooter,
+    SnowPea,
+}
+
+impl Plant {
+    pub fn from_name(name: &str) -> Plant {
+        match name {
+            "PeaShooter" => Plant::PeaShooter,
+            "SnowPea" => Plant::SnowPea,
+            _ => Plant::PeaShooter,
+        }
+    }
+
+    pub fn bullet_type(plant: &Plant) -> &str {
+        match plant {
+            Plant::PeaShooter => "NormalBullet",
+            Plant::SnowPea => "SnowBullet",
+        }
+    }
+}
+
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub enum SpriteType {
     Zombie,
@@ -87,6 +112,7 @@ pub enum SpriteType {
     Interface,
     Card,
     Seed,
+    Bullet,
     Meta,
 }
 
@@ -119,7 +145,10 @@ pub struct SpriteData {
     pub order: usize,
     pub scale: f64,
     pub exact_outlines: bool,
+    pub life: f64,
+    pub damage: f64,
     pub draw_offset: Position,
+    pub swap_cells: Vec<String>,
     pub behaviors: Vec<BehaviorData>,
     pub text_overlay: Option<TextOverlayData>,
 }
@@ -131,8 +160,11 @@ impl Default for SpriteData {
             draw_offset: Position::default(),
             order: 1,
             scale: 1.0,
+            life: 100.0,
+            damage: 0.0,
             exact_outlines: false,
             behaviors: vec![],
+            swap_cells: vec![],
             text_overlay: None,
         }
     }
@@ -146,6 +178,8 @@ pub enum BehaviorType {
     Scroll,
     Walk,
     Drag,
+    Interval,
+    Collision,
 }
 
 impl Default for BehaviorType {
@@ -163,6 +197,8 @@ impl BehaviorType {
             "Scroll" => BehaviorType::Scroll,
             "Walk" => BehaviorType::Walk,
             "Drag" => BehaviorType::Drag,
+            "Interval" => BehaviorType::Interval,
+            "Collision" => BehaviorType::Collision,
             _ => BehaviorType::default(),
         }
     }
@@ -172,6 +208,14 @@ impl BehaviorType {
 pub struct Velocity {
     pub x: f64,
     pub y: f64,
+}
+
+#[derive(Debug, Default, Clone, Copy, Deserialize)]
+pub struct CollisionMargin {
+    pub left: usize,
+    pub right: usize,
+    pub top: usize,
+    pub bottom: usize,
 }
 
 #[derive(Debug, Default, Clone, Deserialize)]
@@ -184,6 +228,8 @@ pub struct BehaviorData {
     pub callback_delay: Option<f64>,
     pub max_cycles: Option<usize>,
     pub velocity: Option<Velocity>,
+    pub interval: Option<f64>,
+    pub collision_margin: Option<CollisionMargin>,
 }
 
 impl BehaviorData {

@@ -2,6 +2,7 @@ use engine::Engine;
 use wasm_bindgen::prelude::*;
 use web_utils::bind_panic_logger;
 
+mod battle_manage;
 mod board;
 mod constants;
 mod engine;

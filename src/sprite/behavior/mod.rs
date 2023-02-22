@@ -1,12 +1,14 @@
 pub use animate::Animate;
 pub use base::Behavior;
 pub use click::Click;
+pub use collision::{Collision, CollisionState};
 pub use hover::Hover;
+pub use interval::Interval;
 pub use scroll::Scroll;
 pub use walk::Walk;
 use web_sys::CanvasRenderingContext2d;
 
-use crate::model::{BehaviorData, BehaviorType, GameInteraction, Position};
+use crate::model::{BehaviorData, BehaviorType, CollisionMargin, GameInteraction, Position};
 use crate::sprite::behavior::drag::Drag;
 use crate::sprite::{Sprite, SpriteMutation};
 use crate::timers::GameTime;
@@ -14,8 +16,10 @@ use crate::timers::GameTime;
 mod animate;
 mod base;
 mod click;
+mod collision;
 mod drag;
 mod hover;
+mod interval;
 mod scroll;
 mod walk;
 
@@ -41,6 +45,10 @@ impl BehaviorManager {
             )),
             BehaviorType::Walk => Box::new(Walk::new(data.distance, data.velocity.unwrap().clone())),
             BehaviorType::Drag => Box::new(Drag::new(data.callback.unwrap())),
+            BehaviorType::Interval => Box::new(Interval::new(data.interval.unwrap(), data.callback)),
+            BehaviorType::Collision => Box::new(Collision::new(
+                data.collision_margin.unwrap_or(CollisionMargin::default()),
+            )),
         };
 
         behavior.set_sprite_id(sprite_id);
@@ -72,30 +80,44 @@ impl BehaviorManager {
         now: f64,
     ) {
         sprites.iter().for_each(|sprite| {
-            sprite
-                .mutable_behaviors()
-                .iter_mut()
-                .filter(|behavior| behavior.is_running() != should_run)
-                .filter(|behavior| behavior_types.contains(&behavior.name()))
-                .for_each(|behavior| behavior.toggle(should_run, now));
+            Self::toggle_sprite_behaviors(sprite, behavior_types, should_run, now)
         });
+    }
+
+    pub fn toggle_sprite_behaviors(
+        sprite: &Sprite,
+        behavior_types: &[BehaviorType],
+        should_run: bool,
+        now: f64,
+    ) {
+        sprite
+            .mutable_behaviors()
+            .iter_mut()
+            .filter(|behavior| behavior.is_running() != should_run)
+            .filter(|behavior| behavior_types.contains(&behavior.name()))
+            .for_each(|behavior| behavior.toggle(should_run, now));
     }
 
     pub fn get_sprite_behavior(
         sprite: &mut Sprite,
         behavior: BehaviorType,
     ) -> &mut Box<dyn Behavior> {
-        let behavior = sprite
+        let sprite_id = sprite.id.clone();
+        Self::find_sprite_behavior(sprite, behavior).expect(&format!(
+            "[BehaviorManager] Cannot GET Sprite behavior: {:?} / {}",
+            behavior, sprite_id
+        ))
+    }
+
+    pub fn find_sprite_behavior(
+        sprite: &mut Sprite,
+        behavior: BehaviorType,
+    ) -> Option<&mut Box<dyn Behavior>> {
+        sprite
             .behaviors
             .get_mut()
             .iter_mut()
             .find(|sprite_behavior| behavior == sprite_behavior.name())
-            .expect(&format!(
-                "[BehaviorManager] Cannot find Sprite behavior: {:?}",
-                behavior
-            ));
-
-        behavior
     }
 
     pub fn collect_interactions(sprite: &Sprite) -> Vec<GameInteraction> {

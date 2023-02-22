@@ -4,14 +4,19 @@ use std::rc::Weak;
 use js_sys::Math;
 use web_sys::HtmlImageElement;
 
+use crate::board::{Board, BoardLocation};
+use crate::log;
 use crate::model::{
-    BehaviorData, Dimensions, Position, SpriteCell, SpriteData, SpriteType, TextOverlayData,
+    BehaviorData, BehaviorType, CollisionMargin, Dimensions, Position, SpriteCell, SpriteData,
+    SpriteType, TextOverlayData,
 };
 use crate::resource_loader::{Resource, ResourceKind, Resources};
-use crate::sprite::behavior::{Behavior, BehaviorManager};
+use crate::sprite::attack_state::AttackState;
+use crate::sprite::behavior::{Behavior, BehaviorManager, Collision};
 use crate::sprite::drawing_state::DrawingState;
 use crate::sprite::text_overlay::TextOverlay;
 use crate::sprite::{Outline, SpriteMutation};
+use crate::web_utils::window_time;
 
 pub struct Sprite {
     pub id: String,
@@ -19,12 +24,15 @@ pub struct Sprite {
     pub order: usize,
     pub position: Position,
     pub origin_position: Position,
+    pub board_location: BoardLocation,
     pub outlines: Vec<Position>,
     pub behaviors: RefCell<Vec<Box<dyn Behavior>>>,
     pub image: Option<Weak<HtmlImageElement>>,
     pub drawing_state: DrawingState,
+    pub attack_state: AttackState,
     pub text_overlay: Option<TextOverlay>,
     pub sprite_type: SpriteType,
+    pub visible: bool,
 }
 
 impl Sprite {
@@ -34,12 +42,15 @@ impl Sprite {
         position: Position,
         draw_offset: Position,
         cells: Vec<SpriteCell>,
+        swap_cells: Vec<Vec<SpriteCell>>,
         image: Option<Weak<HtmlImageElement>>,
         scale: f64,
         behaviors: &Vec<BehaviorData>,
         exact_outlines: bool,
         text_overlay_data: &Option<TextOverlayData>,
         kind: ResourceKind,
+        life: f64,
+        damage: f64,
     ) -> Sprite {
         let id = uid(name);
         let sprite_behaviors = RefCell::new(
@@ -55,12 +66,15 @@ impl Sprite {
             order,
             position,
             origin_position: position,
+            board_location: BoardLocation::new(0, 0),
             image,
-            drawing_state: DrawingState::new(cells, scale, draw_offset),
+            drawing_state: DrawingState::new(cells, swap_cells, scale, draw_offset),
+            attack_state: AttackState::new(life, damage),
             outlines: vec![],
             behaviors: sprite_behaviors,
             text_overlay: None,
             sprite_type: SpriteType::from_kind(&kind),
+            visible: true,
         };
 
         sprite.text_overlay = match text_overlay_data {
@@ -68,6 +82,7 @@ impl Sprite {
             None => None,
         };
 
+        sprite.update_board_location();
         sprite.update_outlines(exact_outlines);
 
         sprite
@@ -86,11 +101,24 @@ impl Sprite {
 
     pub fn update_position(&mut self, position: Position) {
         self.position = position;
+
+        self.update_board_location();
         self.update_outlines(false);
     }
 
     pub fn update_outlines(&mut self, exact_outlines: bool) {
         self.outlines = Outline::get_outlines(&self, exact_outlines);
+    }
+
+    pub fn update_board_location(&mut self) {
+        let sprite_cell = DrawingState::get_active_cell(self);
+
+        let sprite_center = Position::new(
+            self.position.top + sprite_cell.height / 2.0,
+            self.position.left + sprite_cell.width / 2.0,
+        );
+
+        self.board_location = Board::get_board_location(&sprite_center);
     }
 
     pub fn create_sprites(
@@ -120,6 +148,9 @@ impl Sprite {
             behaviors,
             exact_outlines,
             text_overlay,
+            life,
+            damage,
+            swap_cells,
             ..
         } = data;
 
@@ -128,18 +159,27 @@ impl Sprite {
             .iter()
             .map(|position| {
                 let resource = resources.get_resource(sprite_name, kind);
+
+                let swap_cells = swap_cells
+                    .iter()
+                    .map(|cell_name| resources.get_cell(cell_name, kind))
+                    .collect::<Vec<Vec<SpriteCell>>>();
+
                 Sprite::new(
                     sprite_name,
                     order,
                     *position,
                     draw_offset,
                     resource.cell,
+                    swap_cells,
                     resource.image,
                     scale,
                     &behaviors,
                     exact_outlines,
                     &text_overlay,
                     kind.clone(),
+                    life,
+                    damage,
                 )
             })
             .collect()
@@ -162,11 +202,61 @@ impl Sprite {
             if let Some(position) = mutation.position {
                 self.update_position(position);
             }
+
+            if let Some(visible) = mutation.visible {
+                self.visible = visible;
+            }
+
+            if let Some(alpha) = mutation.alpha {
+                self.drawing_state.alpha = alpha;
+            }
+
+            if let Some(damage) = mutation.damage {
+                self.attack_state.take_damage(damage);
+                self.visible = !self.attack_state.is_dead();
+            }
+
+            if let Some(swap_index) = mutation.swap {
+                if swap_index >= 0 {
+                    self.drawing_state.swap(swap_index as usize);
+                } else {
+                    self.drawing_state.reset_swap();
+                }
+            }
+
+            if let Some(_) = mutation.mute {
+                self.attack_state.mute();
+                BehaviorManager::toggle_sprite_behaviors(
+                    self,
+                    &[BehaviorType::Walk],
+                    false,
+                    window_time(),
+                )
+            }
         });
     }
 
     pub fn mutable_behaviors(&self) -> RefMut<'_, Vec<Box<dyn Behavior>>> {
         self.behaviors.borrow_mut()
+    }
+
+    pub fn get_collision(&self) -> Option<CollisionMargin> {
+        let mut behaviors = self.behaviors.borrow_mut();
+
+        let collision = behaviors
+            .iter_mut()
+            .find(|behavior| behavior.name() == BehaviorType::Collision);
+
+        match collision {
+            None => None,
+            Some(collision) => Some(
+                collision
+                    .as_any()
+                    .downcast_mut::<Collision>()
+                    .unwrap()
+                    .margin,
+            ),
+        }
     }
 }
 

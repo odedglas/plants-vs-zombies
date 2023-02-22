@@ -1,9 +1,9 @@
 use web_sys::{HtmlCanvasElement, MouseEvent};
 
+use crate::battle_manage::BattleManager;
 use crate::board::{Board, BoardLocation};
 use crate::features::GameFeatures;
 use crate::fps::Fps;
-use crate::location_builder::LocationBuilder;
 use crate::log;
 use crate::model::{
     BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position, SpriteType,
@@ -11,7 +11,7 @@ use crate::model::{
 use crate::painter::Painter;
 use crate::resource_loader::Resources;
 use crate::scene::{BattleScene, HomeScene, PlantsChooser};
-use crate::sprite::{BehaviorManager, DrawingState, Sprite};
+use crate::sprite::{BehaviorManager, Sprite};
 use crate::sun_manager::SunManager;
 use crate::timers::GameTime;
 
@@ -23,6 +23,9 @@ pub struct Game {
     pub sprites: Vec<Sprite>,
     pub state: GameState,
     fps: Fps,
+
+    last_gc: f64,
+    internal_once: bool,
 }
 
 impl Game {
@@ -35,6 +38,8 @@ impl Game {
             fps: Fps::new(),
             mouse_position: Position::new(0.0, 0.0),
             sprites: vec![],
+            last_gc: 0.0,
+            internal_once: false,
         }
     }
 
@@ -46,6 +51,8 @@ impl Game {
 
         // Paint home scene
         self.start_home_scene();
+
+        self.last_gc = self.game_time.time;
     }
 
     pub fn init_debug_mode(&mut self, resource: Resources) {
@@ -62,13 +69,17 @@ impl Game {
 
         self.fps.calc(current_time, last_frame);
 
+        // Game fight
+        BattleManager::manage_fight(self);
+
         // Draw game Sprites
         self.draw();
 
         // Handle Sprites interactions
         self.handle_game_interactions();
 
-        // TODO - Handle Game internal sprites garbage collection Game::gc()
+        // Internal garbage collector
+        self.sprites_garbage_collector();
 
         SunManager::tick(self);
 
@@ -78,20 +89,23 @@ impl Game {
     fn draw(&mut self) {
         self.painter.clear();
 
-        self.sprites.iter_mut().for_each(|sprite| {
-            // Collect mutations
-            let mutations = BehaviorManager::run(
-                sprite,
-                &self.game_time,
-                &self.mouse_position,
-                &self.painter.context,
-            );
+        self.sprites
+            .iter_mut()
+            .filter(|sprite| sprite.visible)
+            .for_each(|sprite| {
+                // Collect behaviors mutations
+                let mutations = BehaviorManager::run(
+                    sprite,
+                    &self.game_time,
+                    &self.mouse_position,
+                    &self.painter.context,
+                );
 
-            // Apply on Sprite
-            sprite.apply_mutation(mutations);
+                // Apply on Sprite
+                sprite.apply_mutation(mutations);
 
-            self.painter.draw_sprite(sprite);
-        });
+                self.painter.draw_sprite(sprite);
+            });
 
         Board::draw(self);
         SunManager::update_sun_score(self);
@@ -154,10 +168,12 @@ impl Game {
             Callback::ChooserSeedSelect => self.on_chooser_seed_click(sprite_id),
             Callback::PlantCardClick => self.on_plant_card_click(sprite_id),
             Callback::CollectSun => self.collect_sun(sprite_id),
-            Callback::RemoveSun => self.remove_sun(sprite_id),
+            Callback::RemoveSun => self.remove_sprite_by_id(sprite_id),
             Callback::Plant => self.plant_on_board(sprite_id),
             Callback::AllowShovelDrag => self.allow_shovel_drag(),
             Callback::ShovelDragEnd => self.on_shovel_drag_end(),
+            Callback::Shoot => self.on_plant_shoot(sprite_id),
+            Callback::GenerateSunFlowSun => log!("Trigger SunFlow Sun Generation"), // TODO - Call SunManager with sprite
         }
     }
 
@@ -167,6 +183,8 @@ impl Game {
     }
 
     fn start_home_scene(&mut self) {
+        self.toggle_game_behavior(false, &[BehaviorType::Collision]);
+
         self.reset_state();
 
         GameFeatures::enable_update_sun_score(false);
@@ -205,7 +223,6 @@ impl Game {
 
     pub fn start_battle(&mut self) {
         GameFeatures::enable_generate_sun(true);
-
         BattleScene::start(self);
     }
 
@@ -253,13 +270,14 @@ impl Game {
         let dropped_location = Board::get_board_location(&self.mouse_position);
         let plant = self.get_sprite_by_location(&dropped_location);
 
-        if let Some(plant) = plant {
-            let id = plant.id.clone();
-            self.remove_sprites_by_id(vec![&id]);
+        match plant {
+            Some(plant) if plant.sprite_type == SpriteType::Plant => {
+                let id = plant.id.clone();
+                self.remove_sprite_by_id(&id);
+            }
+            _ => {}
         }
     }
-
-    pub fn test(&mut self) {}
 
     pub fn reset_shovel(&mut self) {
         let shovel_sprite = self.get_sprite_by_name_and_type("Shovel", &SpriteType::Interface);
@@ -273,36 +291,57 @@ impl Game {
 
         // Check if current position is "active" board cell
         if !Board::is_active_board_location(&mouse) {
-            self.remove_sprites_by_id(vec![sprite_id]);
+            self.remove_sprite_by_id(sprite_id);
             return;
         }
 
         let target_location = Board::get_board_location(&mouse);
+
         if self.is_free_board_location(sprite_id, &target_location) {
-            let sprite = self.get_sprite_by_id(sprite_id);
-            let plant_cell = DrawingState::get_active_cell(&sprite);
-
-            // Clamp Plant sprite into closest cell bottom position.
-            let plant_position = LocationBuilder::plant_location(plant_cell, &mouse);
-            sprite.update_position(plant_position);
-
-            // Resets drag top drawing order
-            sprite.order = 3; // TODO, Drag order based on behavior?
+            BattleScene::create_plant(self, sprite_id);
         } else {
-            self.remove_sprites_by_id(vec![sprite_id])
+            self.remove_sprite_by_id(sprite_id)
         }
 
         self.sort_sprites();
     }
 
+    pub fn on_plant_shoot(&mut self, sprite_id: &String) {
+        if self.internal_once {
+            return;
+        }
+
+        let shooting_plant_location = &self.get_sprite_by_id(sprite_id).board_location.clone();
+
+        // Check if row contains an enemy
+        let has_enemy_in_row = self.sprites.iter_mut().find(|sprite| {
+            sprite.sprite_type == SpriteType::Zombie
+                && sprite.board_location.row == shooting_plant_location.row
+        });
+
+        if has_enemy_in_row.is_some() {
+            BattleScene::create_bullet(self, sprite_id)
+        }
+    }
+
     pub fn collect_sun(&mut self, sprite_id: &String) {
         self.state.sun_state.add_score(50);
 
-        self.remove_sun(sprite_id);
+        self.remove_sprite_by_id(sprite_id);
     }
 
-    pub fn remove_sun(&mut self, sprite_id: &String) {
-        self.remove_sprites_by_id(vec![sprite_id]);
+    fn sprites_garbage_collector(&mut self) {
+        if self.game_time.time - self.last_gc > 1000.0 {
+            self.last_gc = self.game_time.time;
+            let invisible_sprites_ids = self
+                .sprites
+                .iter_mut()
+                .filter(|sprite| !sprite.visible)
+                .map(|sprite| sprite.id.clone())
+                .collect::<Vec<String>>();
+
+            self.remove_sprites_by_id(invisible_sprites_ids);
+        }
     }
 
     // Game State Mutations //
@@ -334,14 +373,19 @@ impl Game {
             .retain(|sprite| &sprite.sprite_type != sprite_type)
     }
 
-    pub fn remove_sprites_by_id(&mut self, sprites: Vec<&str>) {
+    pub fn remove_sprites_by_id(&mut self, sprite_ids: Vec<String>) {
         self.sprites
-            .retain(|sprite| !sprites.contains(&sprite.id.trim()))
+            .retain(|sprite| !sprite_ids.contains(&sprite.id.clone()))
+    }
+
+    pub fn remove_sprite_by_id(&mut self, sprite_id: &String) {
+        self.sprites.retain(|sprite| !sprite.id.eq(sprite_id))
     }
 
     fn sort_sprites(&mut self) {
         self.sprites.sort_by(|a, b| a.order.cmp(&b.order));
     }
+
     // Getters //
     pub fn get_sprites_by_type(&mut self, sprite_type: &SpriteType) -> Vec<&mut Sprite> {
         self.sprites
@@ -377,13 +421,7 @@ impl Game {
             .iter()
             .filter(|sprite| sprite.sprite_type == SpriteType::Plant)
             .find(|sprite| {
-                let sprite_cell = DrawingState::get_active_cell(sprite);
-                let sprite_center = Position::new(
-                    sprite.position.top + sprite_cell.height / 2.0,
-                    sprite.position.left + sprite_cell.width / 2.0,
-                );
-                let sprite_location = Board::get_board_location(&sprite_center);
-                location.row == sprite_location.row && location.col == sprite_location.col
+                location.row == sprite.board_location.row && location.col == sprite.board_location.col
             });
 
         found

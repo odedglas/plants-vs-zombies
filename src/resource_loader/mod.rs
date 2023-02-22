@@ -42,7 +42,6 @@ impl Resources {
         }
     }
 
-    // TODO - Consider cases which don't have the full data - Move to unwrap_or_else?
     pub fn get_resource(&self, name: &str, kind: &ResourceKind) -> Resource {
         let resource_key = format!("{}/{}", kind.value(), name);
 
@@ -61,10 +60,23 @@ impl Resources {
         }
     }
 
+    pub fn get_cell(&self, name: &str, kind: &ResourceKind) -> Vec<SpriteCell> {
+        let resource_key = format!("{}/{}", kind.value(), name);
+        let cells = self.cells.get(&resource_key);
+
+        match cells {
+            None => vec![],
+            Some(cells) => cells.to_vec(),
+        }
+    }
+
     pub fn get_level_data(&self, level_id: &str) -> LevelData {
         let resource_key = format!("{}/{}", ResourceKind::Level.value(), level_id);
 
-        let level_data = self.level_data.get(&resource_key).unwrap();
+        let level_data = self.level_data.get(&resource_key).expect(&format!(
+            "Level data is expected to be preset {}",
+            resource_key
+        ));
 
         level_data.clone()
     }

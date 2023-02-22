@@ -1,8 +1,7 @@
 use crate::game::Game;
 use crate::location_builder::LocationBuilder;
-use crate::log;
 use crate::model::Callback::PlantCardClick;
-use crate::model::{BehaviorData, BehaviorType, Callback, Position, SelectedSeed, SpriteType};
+use crate::model::{BehaviorData, BehaviorType, Callback, Plant, Position, SelectedSeed, SpriteType};
 use crate::resource_loader::ResourceKind;
 use crate::scene::PlantsChooser;
 use crate::sprite::{BehaviorManager, Click, DrawingState, Scroll, Sprite};
@@ -98,7 +97,7 @@ impl BattleScene {
         let seed_sprite = game.get_sprite_by_id(&selected_seed.0);
         seed_sprite.drawing_state.hover(false);
 
-        game.remove_sprites_by_id(vec![&selected_seed.1]);
+        game.remove_sprite_by_id(&selected_seed.1);
 
         Self::update_selected_cards_layout(game);
     }
@@ -111,6 +110,8 @@ impl BattleScene {
         );
 
         Self::swap_plant_cards_action(game);
+
+        game.toggle_game_behavior(true, &[BehaviorType::Collision]);
 
         game.add_sprites(scene_sprites.as_mut());
     }
@@ -147,6 +148,60 @@ impl BattleScene {
         plant.order = 10; // TODO, Drag order based on behavior?
 
         game.add_sprite(plant);
+    }
+
+    pub fn create_plant(game: &mut Game, sprite_id: &String) {
+        let now = game.game_time.time;
+        let mouse = game.mouse_position.clone();
+        let sprite = game.get_sprite_by_id(sprite_id);
+        let plant_cell = DrawingState::get_active_cell(&sprite);
+
+        // Clamp Plant sprite into closest cell bottom position.
+        let plant_position = LocationBuilder::plant_location(plant_cell, &mouse);
+        sprite.update_position(plant_position);
+
+        BehaviorManager::toggle_sprite_behaviors(
+            &sprite,
+            &[
+                BehaviorType::Animate,
+                BehaviorType::Interval,
+                BehaviorType::Collision,
+            ],
+            true,
+            now,
+        );
+
+        // Resets drag top drawing order
+        sprite.order = 3; // TODO, Drag order based on behavior?
+    }
+
+    pub fn create_bullet(game: &mut Game, sprite_id: &String) {
+        let now = game.game_time.time;
+        let shooting_plant = game.get_sprite_by_id(sprite_id);
+        let position = shooting_plant.position.clone();
+
+        let plant_name = &Plant::from_name(&shooting_plant.name.clone());
+        let bullet_type = Plant::bullet_type(plant_name);
+
+        let mut bullet =
+            Sprite::create_sprite(bullet_type, &ResourceKind::Plant, &game.resources).remove(0);
+
+        bullet.sprite_type = SpriteType::Bullet;
+
+        bullet.update_position(LocationBuilder::bullet_location(&position));
+
+        BehaviorManager::toggle_sprite_behaviors(
+            &bullet,
+            &[
+                BehaviorType::Animate,
+                BehaviorType::Walk,
+                BehaviorType::Collision,
+            ],
+            true,
+            now,
+        );
+
+        game.add_sprite(bullet);
     }
 
     pub fn allow_shovel_drag(game: &mut Game) {

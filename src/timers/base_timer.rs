@@ -3,7 +3,7 @@ use crate::web_utils::window_time;
 #[derive(Debug, Default)]
 pub struct Timer {
     elapsed: f64,
-    running: bool,
+    pub running: bool,
     start_time: f64,
 }
 
@@ -14,6 +14,10 @@ impl Timer {
             running: false,
             start_time: 0.0,
         }
+    }
+
+    pub fn set_elapsed(&mut self, elapsed: f64) {
+        self.elapsed = elapsed;
     }
 
     pub fn get_current_time(&self) -> f64 {
@@ -37,5 +41,13 @@ impl Timer {
             true => now - self.start_time,
             false => self.elapsed,
         }
+    }
+
+    pub fn expired(&self, now: f64) -> bool {
+        if !self.running {
+            return false;
+        }
+
+        self.get_elapsed_time(now) >= self.elapsed
     }
 }

@@ -57,7 +57,14 @@ impl Outline {
         let painter = Painter::get_measurements_painter(size);
 
         let starting_point = Position::new(0.0, 0.0);
-        painter.draw_image(&image_ref, &starting_point, &starting_point, cell, scale);
+        painter.draw_image(
+            &image_ref,
+            &starting_point,
+            &starting_point,
+            cell,
+            scale,
+            1.0,
+        );
 
         let image_data = painter
             .context
