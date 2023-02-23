@@ -108,11 +108,12 @@ impl BattleManager {
     }
 
     fn can_collide(sprite: &Sprite, other: &Sprite) -> bool {
-        let source_type = &sprite.sprite_type; // TODO - Should be deriven from CollisionBehavior.
+        let source_type = &sprite.sprite_type;
 
         let target_type = match source_type {
             SpriteType::Zombie => SpriteType::Plant,
             SpriteType::Bullet => SpriteType::Zombie,
+            SpriteType::Plant => SpriteType::Bullet,
             _ => SpriteType::Meta,
         };
 
