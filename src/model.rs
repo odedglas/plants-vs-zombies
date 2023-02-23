@@ -56,6 +56,7 @@ pub enum Callback {
     ShowPlantsChooser,
     ResetPlantsChoose,
     EnterBattleAnimation,
+    StartBattleCallout,
     StartBattle,
     ChooserSeedSelect,
     PlantCardClick,

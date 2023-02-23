@@ -4,35 +4,37 @@
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
       { "name": "Animate", "rate": 120, "max_cycles": 0 },
-      { "name": "Interval", "interval": 3000, "callback": "Shoot" }
+      { "name": "Interval", "interval": 3000, "callback": "Shoot" },
+      { "name": "Collision" }
     ]
   },
   "Torchwood": {
     "constructor": "PlantSprite",
     "position": [{ "left": 0, "top": 0 }],
-    "behaviors": [{ "name": "Animate", "rate": 120, "max_cycles": 0 }]
+    "behaviors": [{ "name": "Animate", "rate": 120, "max_cycles": 0 }, { "name": "Collision" }]
   },
   "WallNut": {
     "constructor": "PlantSprite",
     "position": [{ "left": 0, "top": 0 }],
-    "behaviors": [{ "name": "Animate", "rate": 120, "max_cycles": 0 }]
+    "behaviors": [{ "name": "Animate", "rate": 120, "max_cycles": 0 }, { "name": "Collision" }]
   },
   "TallNut": {
     "constructor": "PlantSprite",
     "position": [{ "left": 0, "top": 0 }],
-    "behaviors": [{ "name": "Animate", "rate": 120, "max_cycles": 0 }]
+    "behaviors": [{ "name": "Animate", "rate": 120, "max_cycles": 0 }, { "name": "Collision" }]
   },
   "PumpkinHead": {
     "constructor": "PlantSprite",
     "position": [{ "left": 0, "top": 0 }],
-    "behaviors": [{ "name": "Animate", "rate": 120, "max_cycles": 0 }]
+    "behaviors": [{ "name": "Animate", "rate": 120, "max_cycles": 0 }, { "name": "Collision" }]
   },
   "SunFlower": {
     "constructor": "PlantSprite",
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
       { "name": "Animate", "rate": 120, "max_cycles": 0 },
-      { "name": "Interval", "interval": 7200, "callback": "GenerateSunFlowSun" }
+      { "name": "Interval", "interval": 7200, "callback": "GenerateSunFlowSun" },
+      { "name": "Collision" }
     ]
   },
   "SnowPea": {
@@ -40,7 +42,8 @@
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
       { "name": "Animate", "rate": 120, "max_cycles": 0 },
-      { "name": "Interval", "interval": 3000, "callback": "Shoot" }
+      { "name": "Interval", "interval": 3000, "callback": "Shoot" },
+      { "name": "Collision" }
     ]
   },
   "SnowBullet": {

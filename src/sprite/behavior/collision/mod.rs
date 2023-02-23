@@ -13,7 +13,7 @@ use crate::sprite::behavior::collision::base::{
 use crate::sprite::{Sprite, SpriteMutation};
 use crate::timers::Timer;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum CollisionState {
     None,
     Attacking,
@@ -32,6 +32,7 @@ pub struct Collision {
     pub name: BehaviorType,
     pub margin: CollisionMargin,
     pub state: CollisionState,
+    pub prev_state: CollisionState,
     pub last_collided: f64,
 
     delayed_mutation_timer: Timer,
@@ -45,6 +46,7 @@ impl Collision {
             margin,
             name: BehaviorType::Collision,
             state: CollisionState::None,
+            prev_state: CollisionState::None,
             delayed_mutation: None,
             delayed_mutation_timer: Timer::new(10000.0),
             ..Default::default()
@@ -57,7 +59,7 @@ impl Collision {
         }
 
         let handler: Box<dyn CollisionHandler> = match sprite_type {
-            SpriteType::Zombie => Box::new(ZombieCollisionHandler {}),
+            SpriteType::Zombie => Box::new(ZombieCollisionHandler::new()),
             SpriteType::Plant => Box::new(PlantCollisionHandler {}),
             SpriteType::Bullet => Box::new(BulletCollisionHandler {}),
             _ => {
@@ -108,6 +110,7 @@ impl Behavior for Collision {
         self.set_collision_handler(&sprite.sprite_type);
         let collision_handler = self.handler.as_mut().unwrap();
 
+        // Handles delayed mutation set by the handler if any
         if self.delayed_mutation.is_some() && self.delayed_mutation_timer.expired(current_timer_time)
         {
             let mutation = self.delayed_mutation.clone();
@@ -116,6 +119,22 @@ impl Behavior for Collision {
             return mutation;
         }
 
+        // Handles handler `tick` phase mutation if set
+        let tick_mutation = collision_handler.tick();
+        if tick_mutation.is_some() {
+            return tick_mutation;
+        }
+
+        if self.prev_state != self.state {
+            log!(
+                "State CHJANGE! {:?} / {:?} -- {}",
+                self.state,
+                self.prev_state,
+                sprite.id
+            );
+        }
+
+        // Handle Collision state hooks
         match self.state {
             CollisionState::None => {}
             CollisionState::Attacking => {
@@ -139,6 +158,8 @@ impl Behavior for Collision {
                 }
             }
         }
+
+        self.prev_state = self.state.clone();
 
         mutation
     }

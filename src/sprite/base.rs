@@ -5,6 +5,7 @@ use js_sys::Math;
 use web_sys::HtmlImageElement;
 
 use crate::board::{Board, BoardLocation};
+use crate::log;
 use crate::model::{
     BehaviorData, BehaviorType, CollisionMargin, Dimensions, Position, SpriteCell, SpriteData,
     SpriteType, TextOverlayData,
@@ -225,14 +226,14 @@ impl Sprite {
                 }
             }
 
-            if let Some(_) = mutation.mute {
-                self.attack_state.mute();
-                BehaviorManager::toggle_sprite_behaviors(
-                    self,
-                    &[BehaviorType::Walk],
-                    false,
-                    window_time(),
-                )
+            if let Some(walking) = mutation.walking {
+                self.toggle_walking(walking);
+            }
+
+            if let Some(mute) = mutation.mute {
+                log!("Setting mute mutation {} ", mute);
+                self.attack_state.mute(!mute);
+                self.toggle_walking(!mute);
             }
         });
     }
@@ -258,6 +259,10 @@ impl Sprite {
                     .margin,
             ),
         }
+    }
+
+    pub fn toggle_walking(&mut self, walking: bool) {
+        BehaviorManager::toggle_sprite_behaviors(self, &[BehaviorType::Walk], walking, window_time())
     }
 }
 

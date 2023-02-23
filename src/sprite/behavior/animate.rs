@@ -71,6 +71,7 @@ impl Behavior for Animate {
             if execute_callback {
                 self.stop(now);
                 self.interaction_active = true;
+                return Some(SpriteMutation::new().hide(true));
             }
 
             return None;

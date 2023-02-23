@@ -164,6 +164,7 @@ impl Game {
             Callback::ShowPlantsChooser => self.show_plants_chooser(),
             Callback::ResetPlantsChoose => self.reset_plants_choose(),
             Callback::EnterBattleAnimation => self.enter_battle_animation(),
+            Callback::StartBattleCallout => self.start_battle_callout(),
             Callback::StartBattle => self.start_battle(),
             Callback::ChooserSeedSelect => self.on_chooser_seed_click(sprite_id),
             Callback::PlantCardClick => self.on_plant_card_click(sprite_id),
@@ -219,6 +220,10 @@ impl Game {
 
     pub fn enter_battle_animation(&mut self) {
         BattleScene::enter(self)
+    }
+
+    pub fn start_battle_callout(&mut self) {
+        BattleScene::battle_callout(self);
     }
 
     pub fn start_battle(&mut self) {
