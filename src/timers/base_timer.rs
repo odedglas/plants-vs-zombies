@@ -25,6 +25,7 @@ impl Timer {
     }
 
     pub fn start(&mut self) {
+        // TODO - Add Start time as optional
         self.running = true;
         self.start_time = self.get_current_time();
     }

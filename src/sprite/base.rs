@@ -5,7 +5,6 @@ use js_sys::Math;
 use web_sys::HtmlImageElement;
 
 use crate::board::{Board, BoardLocation};
-use crate::log;
 use crate::model::{
     BehaviorData, BehaviorType, CollisionMargin, Dimensions, Position, SpriteCell, SpriteData,
     SpriteType, TextOverlayData,
@@ -53,6 +52,8 @@ impl Sprite {
         damage: f64,
     ) -> Sprite {
         let id = uid(name);
+        let sprite_type = SpriteType::from_kind(&kind);
+
         let sprite_behaviors = RefCell::new(
             behaviors
                 .iter()
@@ -73,7 +74,7 @@ impl Sprite {
             outlines: vec![],
             behaviors: sprite_behaviors,
             text_overlay: None,
-            sprite_type: SpriteType::from_kind(&kind),
+            sprite_type,
             visible: true,
         };
 
