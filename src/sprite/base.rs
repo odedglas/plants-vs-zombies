@@ -231,7 +231,6 @@ impl Sprite {
             }
 
             if let Some(mute) = mutation.mute {
-                log!("Setting mute mutation {} ", mute);
                 self.attack_state.mute(!mute);
                 self.toggle_walking(!mute);
             }

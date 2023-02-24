@@ -54,12 +54,10 @@ impl BattleManager {
                 if mutations.len() > 0 {
                     mutations.iter().for_each(|mutation| {
                         if mutation.attacking_id == sprite_id {
-                            log!("Processing attack mutation1 {}", mutation.attacking_id);
                             collision.state = CollisionState::Attacking;
                         }
 
                         if mutation.target_id == sprite_id {
-                            log!("Processing damage{}", mutation.target_id);
                             collision.state = CollisionState::TakingDamage(mutation.damage);
                         }
                     })
@@ -84,10 +82,6 @@ impl BattleManager {
 
                 group.into_iter().for_each(|sprite| {
                     // For each given sprite within the group, finding respective collision candidates
-                    if !sprite.attack_state.attack_enabled {
-                        return;
-                    }
-
                     let candidates = others
                         .iter()
                         .filter(|other| Self::can_collide(sprite, other))
@@ -102,7 +96,7 @@ impl BattleManager {
                         mutations.push(CollisionMutation::new(
                             &sprite.id,
                             &collided_sprite.id,
-                            sprite.attack_state.damage,
+                            sprite.attack_state.get_damage(),
                         ));
                     }
                 });

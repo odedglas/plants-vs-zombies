@@ -51,33 +51,21 @@ pub struct PlantCollisionHandler;
 impl CollisionHandler for PlantCollisionHandler {}
 
 pub struct ZombieCollisionHandler {
-    timer: Timer,
+    attack_timer: Timer,
 }
 
 impl ZombieCollisionHandler {
     pub fn new() -> Self {
         ZombieCollisionHandler {
-            timer: Timer::new(2000.0),
+            attack_timer: Timer::new(2000.0),
         }
     }
 }
 
 impl CollisionHandler for ZombieCollisionHandler {
     fn tick(&mut self) -> Option<SpriteMutation> {
-        if self.timer.expired(window_time()) {
-            self.timer.reset(None);
-            return Some(SpriteMutation::new().mute(false));
-        }
-
-        None
-    }
-
-    fn on_collision_state_change(
-        &mut self,
-        _state: &CollisionState,
-        prev_state: &CollisionState,
-    ) -> Option<SpriteMutation> {
-        if prev_state == &CollisionState::Attacking {
+        if self.attack_timer.expired(window_time()) {
+            self.attack_timer.stop(None);
             return Some(SpriteMutation::new().mute(false));
         }
 
@@ -85,7 +73,11 @@ impl CollisionHandler for ZombieCollisionHandler {
     }
 
     fn on_attack(&mut self) -> SpriteMutation {
-        self.timer.start();
+        if self.attack_timer.running {
+            return SpriteMutation::new();
+        }
+
+        self.attack_timer.start();
 
         SpriteMutation::new().mute(true)
     }
@@ -96,5 +88,18 @@ impl CollisionHandler for ZombieCollisionHandler {
 
     fn on_after_hit(&mut self) -> DelayedMutation {
         (Some(SpriteMutation::new().alpha(1.0)), 50.0)
+    }
+
+    fn on_collision_state_change(
+        &mut self,
+        state: &CollisionState,
+        prev_state: &CollisionState,
+    ) -> Option<SpriteMutation> {
+        if state == &CollisionState::None && prev_state == &CollisionState::Attacking {
+            self.attack_timer.stop(None);
+            return Some(SpriteMutation::new().mute(false));
+        }
+
+        None
     }
 }

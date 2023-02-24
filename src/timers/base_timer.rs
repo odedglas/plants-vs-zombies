@@ -30,6 +30,11 @@ impl Timer {
         self.start_time = self.get_current_time();
     }
 
+    pub fn stop(&mut self, now: Option<f64>) {
+        self.reset(now);
+        self.running = false;
+    }
+
     pub fn reset(&mut self, now: Option<f64>) {
         self.start_time = match now {
             Some(now) => now,
