@@ -147,12 +147,6 @@ impl Behavior for Collision {
                 if damage > 0.0 {
                     mutation = Some(collision_handler.on_hit(damage));
 
-                    log!(
-                        "Taking damage {}, Remaining life / {}",
-                        damage,
-                        sprite.attack_state.life,
-                    );
-
                     let delayed_mutation = collision_handler.on_after_hit();
                     self.set_delayed_mutation(delayed_mutation);
                 }

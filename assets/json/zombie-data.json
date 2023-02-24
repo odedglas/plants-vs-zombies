@@ -15,11 +15,11 @@
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
       { "name": "Animate", "rate": 160, "max_cycles": 0 },
-      { "name": "Walk", "velocity": { "x": -20, "y": 0 } },
+      { "name": "Walk", "velocity": { "x": -9, "y": 0 } },
       { "name": "Collision", "collision_margin": { "left": 30, "top": 5, "right": 10, "bottom": 5 }}
     ],
     "life": 200,
-    "damage": 70.0
+    "damage": 15.0
   },
   "Flag": {
     "constructor": "Zombie",

@@ -133,7 +133,7 @@
     "order": 2,
     "hurt": 99999
   },
-  "PrepareGrowPlants": {
+  "BattleCallout": {
     "constructor": "Sprite",
     "position": [{ "left": 322.5, "top": 246 }],
     "behaviors": [{ "name": "Animate", "rate": 1250, "callback": "StartBattle" }]

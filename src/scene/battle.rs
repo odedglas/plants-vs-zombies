@@ -115,7 +115,7 @@ impl BattleScene {
         );
 
         let mut battle_callout = Sprite::create_sprite(
-            "PrepareGrowPlants",
+            "BattleCallout",
             &ResourceKind::Interface,
             &game.resources,
         );
