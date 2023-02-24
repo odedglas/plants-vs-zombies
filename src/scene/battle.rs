@@ -114,11 +114,8 @@ impl BattleScene {
             &game.resources,
         );
 
-        let mut battle_callout = Sprite::create_sprite(
-            "BattleCallout",
-            &ResourceKind::Interface,
-            &game.resources,
-        );
+        let mut battle_callout =
+            Sprite::create_sprite("BattleCallout", &ResourceKind::Interface, &game.resources);
 
         // Activates zombie hand animation Cycle.
         BehaviorManager::toggle_behaviors(
@@ -133,6 +130,10 @@ impl BattleScene {
     }
 
     pub fn start(game: &mut Game) {
+        game.get_sprites_by_type(&SpriteType::Zombie)
+            .iter_mut()
+            .for_each(|zombie| zombie.drawing_state.swap(0));
+
         game.toggle_game_behavior(true, &[BehaviorType::Collision, Walk]);
     }
 

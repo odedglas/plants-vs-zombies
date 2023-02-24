@@ -1,3 +1,4 @@
+use crate::log;
 use crate::model::{Position, SpriteCell};
 use crate::sprite::Sprite;
 
@@ -46,13 +47,19 @@ impl DrawingState {
     }
 
     pub fn swap(&mut self, swap_index: usize) {
-        self.active_cell = 0;
-        self.swap_index = Some(swap_index);
+        if self.swap_index != Some(swap_index) {
+            log!("Swapping index!");
+            self.active_cell = 0;
+            self.swap_index = Some(swap_index);
+        }
     }
 
     pub fn reset_swap(&mut self) {
-        self.active_cell = 0;
-        self.swap_index = None;
+        if self.swap_index.is_some() {
+            log!("Reset index!");
+            self.active_cell = 0;
+            self.swap_index = None;
+        }
     }
 
     pub fn hover(&mut self, hover: bool) {

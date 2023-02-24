@@ -79,7 +79,7 @@ impl CollisionHandler for ZombieCollisionHandler {
 
         self.attack_timer.start();
 
-        SpriteMutation::new().mute(true)
+        SpriteMutation::new().mute(true).swap(-1)
     }
 
     fn on_hit(&mut self, damage: f64) -> SpriteMutation {
@@ -97,7 +97,7 @@ impl CollisionHandler for ZombieCollisionHandler {
     ) -> Option<SpriteMutation> {
         if state == &CollisionState::None && prev_state == &CollisionState::Attacking {
             self.attack_timer.stop(None);
-            return Some(SpriteMutation::new().mute(false));
+            return Some(SpriteMutation::new().mute(false).swap(0));
         }
 
         None
