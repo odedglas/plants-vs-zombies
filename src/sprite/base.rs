@@ -220,7 +220,8 @@ impl Sprite {
 
             if let Some(swap_index) = mutation.swap {
                 if swap_index >= 0 {
-                    self.drawing_state.swap(swap_index as usize);
+                    self.drawing_state
+                        .swap(swap_index as usize);
                 } else {
                     self.drawing_state.reset_swap();
                 }

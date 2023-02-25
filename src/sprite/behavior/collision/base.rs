@@ -1,3 +1,4 @@
+use crate::log;
 use crate::sprite::{CollisionState, SpriteMutation};
 use crate::timers::Timer;
 use crate::web_utils::window_time;
@@ -14,7 +15,7 @@ pub trait CollisionHandler {
     }
 
     fn on_after_attack(&mut self) -> DelayedMutation {
-        (Some(SpriteMutation::new()), 0.0)
+        (None, 0.0)
     }
 
     fn on_hit(&mut self, damage: f64) -> SpriteMutation {
@@ -22,7 +23,7 @@ pub trait CollisionHandler {
     }
 
     fn on_after_hit(&mut self) -> DelayedMutation {
-        (Some(SpriteMutation::new()), 0.0)
+        (None, 0.0)
     }
 
     fn on_collision_state_change(
@@ -50,14 +51,42 @@ pub struct PlantCollisionHandler;
 
 impl CollisionHandler for PlantCollisionHandler {}
 
+#[derive(Debug, Copy, Clone)]
+enum ZombieState {
+    Stale = 0,
+    ArmoredAttack,
+    ArmoredWalk,
+    Walk,
+    Attack,
+    LostHead,
+    Die,
+}
+
+impl ZombieState {
+    pub fn index(&self) -> usize {
+        *self as usize
+    }
+}
+
 pub struct ZombieCollisionHandler {
     attack_timer: Timer,
+    zombie_state: ZombieState
 }
 
 impl ZombieCollisionHandler {
     pub fn new() -> Self {
         ZombieCollisionHandler {
             attack_timer: Timer::new(2000.0),
+            zombie_state: ZombieState::Stale
+        }
+    }
+
+    fn get_zombie_state(&mut self, state: &CollisionState) -> ZombieState {
+        // needs life access
+        match state {
+            CollisionState::None => ZombieState::Walk, // TODO - Or Armored Walk
+            CollisionState::Attacking => ZombieState::Attack, // Or ArmoredAttack
+            CollisionState::TakingDamage(_) => self.zombie_state.clone(), // Passive or Dead
         }
     }
 }
@@ -95,7 +124,17 @@ impl CollisionHandler for ZombieCollisionHandler {
         state: &CollisionState,
         prev_state: &CollisionState,
     ) -> Option<SpriteMutation> {
-        if state == &CollisionState::None && prev_state == &CollisionState::Attacking {
+        let zombie_state = self.get_zombie_state(state);
+        log!(
+            "Zombie state is: {:?} / {:?} / {:?}",
+            zombie_state,
+            state,
+            prev_state
+        );
+        if state == &CollisionState::None
+            && prev_state == &CollisionState::Attacking
+            && self.attack_timer.running
+        {
             self.attack_timer.stop(None);
             return Some(SpriteMutation::new().mute(false).swap(0));
         }

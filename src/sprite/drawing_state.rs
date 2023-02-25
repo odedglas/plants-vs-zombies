@@ -48,7 +48,7 @@ impl DrawingState {
 
     pub fn swap(&mut self, swap_index: usize) {
         if self.swap_index != Some(swap_index) {
-            log!("Swapping index!");
+            log!("Swapping index! {}/ {}", swap_index);
             self.active_cell = 0;
             self.swap_index = Some(swap_index);
         }
