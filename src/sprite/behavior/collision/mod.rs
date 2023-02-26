@@ -127,7 +127,7 @@ impl Behavior for Collision {
 
         if self.prev_state != self.state {
             let state_change_mutation =
-                collision_handler.on_collision_state_change(&self.state, &self.prev_state);
+                collision_handler.on_collision_state_change(sprite, &self.state, &self.prev_state);
 
             if state_change_mutation.is_some() {
                 return state_change_mutation;

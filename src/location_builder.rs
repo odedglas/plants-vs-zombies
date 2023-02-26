@@ -46,6 +46,15 @@ impl LocationBuilder {
         Position::new(board_position.top, board_position.left + x_offset)
     }
 
+    pub fn align_sprite_to_cell(sprite: &Sprite, cell: &SpriteCell) -> Position {
+        let current_position = &sprite.position;
+
+        let board_position =
+            Board::get_board_placement(cell, sprite.board_location.row, sprite.board_location.col);
+
+        Position::new(board_position.top, current_position.left)
+    }
+
     fn rand_within_rand(min: f64, max: f64) -> f64 {
         let min = Math::ceil(min);
         let max = Math::floor(max);

@@ -132,7 +132,9 @@ impl BattleScene {
     pub fn start(game: &mut Game) {
         game.get_sprites_by_type(&SpriteType::Zombie)
             .iter_mut()
-            .for_each(|zombie| zombie.drawing_state.swap(0));
+            .for_each(|zombie| {
+                zombie.update_swap_cell(0);
+            });
 
         game.toggle_game_behavior(true, &[BehaviorType::Collision, Walk]);
     }
@@ -166,7 +168,7 @@ impl BattleScene {
             original_position.top,
             original_position.left + drag_adjustment,
         ));
-        plant.order = 10; // TODO, Drag order based on behavior?
+        plant.order = 10; // TODO, Drag order based on behavior
 
         game.add_sprite(plant);
     }

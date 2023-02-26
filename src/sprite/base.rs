@@ -5,6 +5,7 @@ use js_sys::Math;
 use web_sys::HtmlImageElement;
 
 use crate::board::{Board, BoardLocation};
+use crate::location_builder::LocationBuilder;
 use crate::log;
 use crate::model::{
     BehaviorData, BehaviorType, CollisionMargin, Dimensions, Position, SpriteCell, SpriteData,
@@ -123,6 +124,18 @@ impl Sprite {
         self.board_location = Board::get_board_location(&sprite_center);
     }
 
+    pub fn update_swap_cell(&mut self, swap_index: i32) {
+        if swap_index >= 0 {
+            self.drawing_state.swap(swap_index as usize);
+        } else {
+            self.drawing_state.reset_swap();
+        }
+
+        // After swap, We need to re-place the sprite over the cell
+        let cell = DrawingState::get_active_cell(self);
+        self.update_position(LocationBuilder::align_sprite_to_cell(&self, cell));
+    }
+
     pub fn create_sprites(
         sprite_names: Vec<&str>,
         kind: &ResourceKind,
@@ -219,12 +232,7 @@ impl Sprite {
             }
 
             if let Some(swap_index) = mutation.swap {
-                if swap_index >= 0 {
-                    self.drawing_state
-                        .swap(swap_index as usize);
-                } else {
-                    self.drawing_state.reset_swap();
-                }
+                self.update_swap_cell(swap_index);
             }
 
             if let Some(walking) = mutation.walking {
