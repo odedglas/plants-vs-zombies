@@ -1,10 +1,9 @@
 use itertools::Itertools;
 
 use crate::game::Game;
-use crate::log;
 use crate::model::{BehaviorType, CollisionMargin, SpriteType};
 use crate::sprite::{
-    BehaviorManager, Collision, CollisionState, DrawingState, Sprite, SpriteMutation,
+    BehaviorManager, Collision, CollisionState, DrawingState, Sprite,
 };
 
 struct CollisionMutation {

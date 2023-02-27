@@ -9,7 +9,7 @@ pub use walk::Walk;
 use web_sys::CanvasRenderingContext2d;
 
 use crate::model::{
-    BehaviorData, BehaviorType, CollisionMargin, GameInteraction, Position, SpriteType,
+    BehaviorData, BehaviorType, CollisionMargin, GameInteraction, Position,
 };
 use crate::sprite::behavior::drag::Drag;
 use crate::sprite::{Sprite, SpriteMutation};

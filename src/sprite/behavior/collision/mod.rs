@@ -4,7 +4,6 @@ use derives::{derive_behavior_fields, BaseBehavior};
 use web_sys::CanvasRenderingContext2d;
 
 use super::base::Behavior;
-use crate::log;
 use crate::model::{BehaviorType, CollisionMargin, Position, SpriteType};
 use crate::sprite::behavior::collision::base::{
     BulletCollisionHandler, CollisionHandler, DelayedMutation, PlantCollisionHandler,

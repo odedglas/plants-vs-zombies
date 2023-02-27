@@ -1,4 +1,3 @@
-use crate::log;
 use crate::model::{Position, SpriteCell};
 use crate::sprite::Sprite;
 
