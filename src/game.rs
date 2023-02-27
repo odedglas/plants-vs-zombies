@@ -25,7 +25,6 @@ pub struct Game {
     fps: Fps,
 
     last_gc: f64,
-    internal_once: bool,
 }
 
 impl Game {
@@ -39,7 +38,6 @@ impl Game {
             mouse_position: Position::new(0.0, 0.0),
             sprites: vec![],
             last_gc: 0.0,
-            internal_once: false,
         }
     }
 
@@ -312,15 +310,13 @@ impl Game {
     }
 
     pub fn on_plant_shoot(&mut self, sprite_id: &String) {
-        if self.internal_once {
-            return;
-        }
-
         let shooting_plant_location = &self.get_sprite_by_id(sprite_id).board_location.clone();
 
         // Check if row contains an enemy
         let has_enemy_in_row = self.sprites.iter_mut().find(|sprite| {
-            sprite.sprite_type == SpriteType::Zombie
+            sprite.visible
+                && !sprite.attack_state.is_dead()
+                && sprite.sprite_type == SpriteType::Zombie
                 && sprite.board_location.row == shooting_plant_location.row
         });
 

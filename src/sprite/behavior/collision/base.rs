@@ -26,6 +26,10 @@ pub trait CollisionHandler {
         (None, 0.0)
     }
 
+    fn on_die(&mut self, _damage: f64) -> SpriteMutation {
+        SpriteMutation::new().hide(true)
+    }
+
     fn on_collision_state_change(
         &mut self,
         _sprite: &Sprite,
@@ -52,14 +56,13 @@ pub struct PlantCollisionHandler;
 
 impl CollisionHandler for PlantCollisionHandler {}
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 enum ZombieState {
     Stale = 0,
     ArmoredWalk,
     ArmoredAttack,
     Walk,
     Attack,
-    LostHead,
     Die,
 }
 
@@ -84,11 +87,11 @@ impl ZombieCollisionHandler {
 
     fn get_zombie_state(&mut self, state: &CollisionState, life: f64) -> ZombieState {
         match state {
-            CollisionState::None => match life < 100.0 {
+            CollisionState::None => match life <= 100.0 {
                 true => ZombieState::Walk,
                 false => ZombieState::ArmoredWalk,
             },
-            CollisionState::Attacking => match life < 100.0 {
+            CollisionState::Attacking => match life <= 100.0 {
                 true => ZombieState::Attack,
                 false => ZombieState::ArmoredAttack,
             },
@@ -135,6 +138,17 @@ impl CollisionHandler for ZombieCollisionHandler {
         (Some(SpriteMutation::new().alpha(1.0)), 50.0)
     }
 
+    fn on_die(&mut self, damage: f64) -> SpriteMutation {
+        self.zombie_state = ZombieState::Die;
+
+        SpriteMutation::new()
+            .damage(damage)
+            .alpha(0.9) // TODO - Can be replaced with fadeout effect
+            .mute(true)
+            .swap(self.get_swap_index())
+            .stop_animate()
+    }
+
     fn on_collision_state_change(
         &mut self,
         sprite: &Sprite,
@@ -142,23 +156,31 @@ impl CollisionHandler for ZombieCollisionHandler {
         prev_state: &CollisionState,
     ) -> Option<SpriteMutation> {
         let life = sprite.attack_state.life;
+        let prev_zombie_state = self.zombie_state.clone();
         self.zombie_state = self.get_zombie_state(state, life);
-        log!(
-            "Zombie state is: {:?} / {:?} / {:?}",
-            self.zombie_state,
-            state,
-            prev_state
-        );
+
+        // Once Zombie Stop attacking.
         if state == &CollisionState::None
             && prev_state == &CollisionState::Attacking
             && self.attack_timer.running
         {
             self.attack_timer.stop(None);
+            log!("Zombie Stop Attack.");
             return Some(
                 SpriteMutation::new()
                     .mute(false)
                     .swap(self.get_swap_index()),
             );
+        }
+
+        // Internal Zombie state changes.
+        if prev_zombie_state != self.zombie_state {
+            log!(
+                "Zombie Internal state change {:?} / {:?} ",
+                self.zombie_state,
+                prev_zombie_state
+            );
+            return Some(SpriteMutation::new().swap(self.get_swap_index()));
         }
 
         None

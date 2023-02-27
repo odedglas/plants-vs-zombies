@@ -2139,16 +2139,16 @@
     { "left": 4963, "top": 0, "width": 79, "height": 113 }
   ],
   "ZombieDie": [
-    { "left": 695, "top": 918, "width": 165, "height": 85 },
-    { "left": 1335, "top": 2532, "width": 165, "height": 85 },
-    { "left": 1335, "top": 2617, "width": 165, "height": 85 },
-    { "left": 739, "top": 5272, "width": 165, "height": 85 },
-    { "left": 574, "top": 5272, "width": 165, "height": 85 },
-    { "left": 1335, "top": 2447, "width": 165, "height": 85 },
-    { "left": 1290, "top": 1596, "width": 165, "height": 85 },
-    { "left": 955, "top": 2320, "width": 165, "height": 85 },
-    { "left": 1147, "top": 3832, "width": 165, "height": 85 },
-    { "left": 1335, "top": 2702, "width": 165, "height": 85 }
+    { "left": 695, "top": 918, "width": 163, "height": 85 },
+    { "left": 1335, "top": 2532, "width": 163, "height": 85 },
+    { "left": 1335, "top": 2617, "width": 163, "height": 85 },
+    { "left": 739, "top": 5272, "width": 163, "height": 85 },
+    { "left": 574, "top": 5272, "width": 163, "height": 85 },
+    { "left": 1335, "top": 2447, "width": 163, "height": 85 },
+    { "left": 1290, "top": 1596, "width": 163, "height": 85 },
+    { "left": 955, "top": 2320, "width": 163, "height": 85 },
+    { "left": 1147, "top": 3832, "width": 163, "height": 85 },
+    { "left": 1335, "top": 2702, "width": 163, "height": 85 }
   ],
   "ZombieHead": [
     { "left": 1944, "top": 3256, "width": 140, "height": 185 },

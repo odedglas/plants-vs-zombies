@@ -33,6 +33,11 @@ impl Animate {
             ..Default::default()
         }
     }
+
+    pub fn set_max_cycles(&mut self, max_cycles: usize) {
+        self.finished_cycles = 0;
+        self.max_cycles = max_cycles;
+    }
 }
 
 impl Behavior for Animate {

@@ -119,12 +119,13 @@ impl Behavior for Collision {
             return mutation;
         }
 
-        // Handles handler `tick` phase mutation if set
+        // Handles `tick` phase mutation if set
         let tick_mutation = collision_handler.tick();
         if tick_mutation.is_some() {
             return tick_mutation;
         }
 
+        // Handle Collision state changes hooks
         if self.prev_state != self.state {
             let state_change_mutation =
                 collision_handler.on_collision_state_change(sprite, &self.state, &self.prev_state);
@@ -134,7 +135,7 @@ impl Behavior for Collision {
             }
         }
 
-        // Handle Collision state hooks
+        // Handle Collision hooks
         match self.state {
             CollisionState::None => {}
             CollisionState::Attacking => {
@@ -144,15 +145,24 @@ impl Behavior for Collision {
                 self.set_delayed_mutation(delayed_mutation);
             }
             CollisionState::TakingDamage(damage) => {
-                if damage > 0.0 {
-                    mutation = Some(collision_handler.on_hit(damage));
-
-                    let delayed_mutation = collision_handler.on_after_hit();
-                    self.set_delayed_mutation(delayed_mutation);
+                if damage <= 0.0 {
+                    return None;
                 }
+
+                if sprite.attack_state.life - damage <= 0.0 {
+                    let on_die_mutation = Some(collision_handler.on_die(damage));
+                    self.stop(_now);
+                    return on_die_mutation;
+                }
+
+                mutation = Some(collision_handler.on_hit(damage));
+
+                let delayed_mutation = collision_handler.on_after_hit();
+                self.set_delayed_mutation(delayed_mutation);
             }
         }
 
+        // Persisting current state
         self.prev_state = self.state.clone();
 
         mutation

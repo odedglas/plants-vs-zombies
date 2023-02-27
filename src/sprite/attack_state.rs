@@ -25,7 +25,7 @@ impl AttackState {
         self.life -= damage;
     }
 
-    pub fn is_dead(&mut self) -> bool {
+    pub fn is_dead(&self) -> bool {
         self.life <= 0.0
     }
 
