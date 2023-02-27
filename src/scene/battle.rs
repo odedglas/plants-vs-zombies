@@ -1,3 +1,6 @@
+use std::collections::HashMap;
+use js_sys::Math;
+
 use crate::game::Game;
 use crate::location_builder::LocationBuilder;
 use crate::model::BehaviorType::Walk;

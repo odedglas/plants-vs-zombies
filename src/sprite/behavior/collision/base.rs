@@ -165,7 +165,6 @@ impl CollisionHandler for ZombieCollisionHandler {
             && self.attack_timer.running
         {
             self.attack_timer.stop(None);
-            log!("Zombie Stop Attack.");
             return Some(
                 SpriteMutation::new()
                     .mute(false)
@@ -175,11 +174,6 @@ impl CollisionHandler for ZombieCollisionHandler {
 
         // Internal Zombie state changes.
         if prev_zombie_state != self.zombie_state {
-            log!(
-                "Zombie Internal state change {:?} / {:?} ",
-                self.zombie_state,
-                prev_zombie_state
-            );
             return Some(SpriteMutation::new().swap(self.get_swap_index()));
         }
 

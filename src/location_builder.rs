@@ -41,7 +41,7 @@ impl LocationBuilder {
 
         let board_position = Board::get_board_placement(zombie_cell, start_row, start_col);
 
-        let x_offset = Self::random_offset(0, 30);
+        let x_offset = Self::random_offset(0, 40);
 
         Position::new(board_position.top, board_position.left + x_offset)
     }
