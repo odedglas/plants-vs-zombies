@@ -2,9 +2,7 @@ use itertools::Itertools;
 
 use crate::game::Game;
 use crate::model::{BehaviorType, CollisionMargin, SpriteType};
-use crate::sprite::{
-    BehaviorManager, Collision, CollisionState, DrawingState, Sprite,
-};
+use crate::sprite::{BehaviorManager, Collision, CollisionState, DrawingState, Sprite};
 
 struct CollisionMutation {
     attacking_id: String,

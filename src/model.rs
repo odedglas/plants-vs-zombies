@@ -67,6 +67,7 @@ pub enum Callback {
     ShovelDragEnd,
     Shoot,
     GenerateSunFlowSun,
+    CreateZombieHead,
 }
 
 impl Default for Callback {

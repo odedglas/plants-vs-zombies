@@ -1,8 +1,6 @@
-use std::collections::HashMap;
-use js_sys::Math;
-
 use crate::game::Game;
 use crate::location_builder::LocationBuilder;
+use crate::log;
 use crate::model::BehaviorType::Walk;
 use crate::model::Callback::PlantCardClick;
 use crate::model::{BehaviorData, BehaviorType, Callback, Plant, Position, SelectedSeed, SpriteType};
@@ -64,6 +62,28 @@ impl BattleScene {
         });
 
         game.add_sprites(zombies.as_mut());
+    }
+
+    pub fn build_zombie_head(game: &mut Game, zombie_id: &String) {
+        let zombie_adjustment_position = Position::new(-60.0, 65.0);
+        let zombie_position = game.get_sprite_by_id(zombie_id).position.clone();
+        let now = game.game_time.time;
+
+        let mut sprites = Sprite::create_sprite("ZombieHead", &ResourceKind::Zombie, &game.resources);
+
+        sprites.iter_mut().for_each(|zombie| {
+            zombie.update_position(Position::new(
+                zombie_position.top + zombie_adjustment_position.top,
+                zombie_position.left + zombie_adjustment_position.left,
+            ));
+
+            zombie.sprite_type = SpriteType::Interface; // Avoid detected as Zombie
+        });
+
+        BehaviorManager::toggle_behaviors(&sprites, &[BehaviorType::Animate, Walk], true, now);
+
+        log!("Build head sfor Zombie {}", zombie_id);
+        game.add_sprites(sprites.as_mut());
     }
 
     pub fn prepare(game: &mut Game) {

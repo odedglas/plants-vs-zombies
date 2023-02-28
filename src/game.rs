@@ -173,6 +173,7 @@ impl Game {
             Callback::ShovelDragEnd => self.on_shovel_drag_end(),
             Callback::Shoot => self.on_plant_shoot(sprite_id),
             Callback::GenerateSunFlowSun => log!("Trigger SunFlow Sun Generation"), // TODO - Call SunManager with sprite
+            Callback::CreateZombieHead => self.show_zombie_head(sprite_id),
         }
     }
 
@@ -329,6 +330,10 @@ impl Game {
         self.state.sun_state.add_score(50);
 
         self.remove_sprite_by_id(sprite_id);
+    }
+
+    pub fn show_zombie_head(&mut self, zombie_id: &String) {
+        BattleScene::build_zombie_head(self, zombie_id)
     }
 
     fn sprites_garbage_collector(&mut self) {

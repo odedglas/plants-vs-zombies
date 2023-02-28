@@ -1,4 +1,4 @@
-use crate::log;
+use crate::model::Callback;
 use crate::sprite::{CollisionState, Sprite, SpriteMutation};
 use crate::timers::Timer;
 use crate::web_utils::window_time;
@@ -38,6 +38,10 @@ pub trait CollisionHandler {
     ) -> Option<SpriteMutation> {
         None
     }
+
+    fn get_interaction_callback(&mut self) -> Option<Callback> {
+        None
+    }
 }
 
 pub struct BulletCollisionHandler;
@@ -75,6 +79,7 @@ impl ZombieState {
 pub struct ZombieCollisionHandler {
     attack_timer: Timer,
     zombie_state: ZombieState,
+    lost_head: bool,
 }
 
 impl ZombieCollisionHandler {
@@ -82,6 +87,7 @@ impl ZombieCollisionHandler {
         ZombieCollisionHandler {
             attack_timer: Timer::new(2000.0),
             zombie_state: ZombieState::ArmoredWalk,
+            lost_head: false,
         }
     }
 
@@ -147,6 +153,17 @@ impl CollisionHandler for ZombieCollisionHandler {
             .mute(true)
             .swap(self.get_swap_index())
             .stop_animate()
+
+        // TODO - Build head animation? ( No game access here solely the id of it
+    }
+
+    fn get_interaction_callback(&mut self) -> Option<Callback> {
+        if self.zombie_state == ZombieState::Die && !self.lost_head {
+            self.lost_head = true;
+            return Some(Callback::CreateZombieHead);
+        }
+
+        None
     }
 
     fn on_collision_state_change(
