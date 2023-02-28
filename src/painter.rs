@@ -89,7 +89,7 @@ impl Painter {
         }
 
         let position = &text_overlay.position.unwrap();
-        let offset = &text_overlay.offset.unwrap_or(Position::default());
+        let offset = &text_overlay.offset.unwrap_or_default();
 
         self.context
             .fill_text(
@@ -124,7 +124,7 @@ impl Painter {
 
         measure_painter.set_text_styles(size);
 
-        let text_metrics: TextMetrics = measure_painter.context.measure_text(&text).unwrap();
+        let text_metrics: TextMetrics = measure_painter.context.measure_text(text).unwrap();
         let text_size: Size = text_metrics.into();
 
         text_size

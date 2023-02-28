@@ -1,7 +1,7 @@
 use itertools::Itertools;
 
 use crate::game::Game;
-use crate::model::{BehaviorType, CollisionMargin, SpriteType};
+use crate::model::{BehaviorType, SpriteType};
 use crate::sprite::{BehaviorManager, Collision, CollisionState, DrawingState, Sprite};
 
 struct CollisionMutation {
@@ -48,7 +48,7 @@ impl BattleManager {
                     .downcast_mut::<Collision>()
                     .unwrap();
 
-                if mutations.len() > 0 {
+                if !mutations.is_empty() {
                     mutations.iter().for_each(|mutation| {
                         if mutation.attacking_id == sprite_id {
                             collision.state = CollisionState::Attacking;
@@ -107,10 +107,9 @@ impl BattleManager {
             .behaviors
             .borrow()
             .iter()
-            .find(|behavior| {
-                behavior.name() == BehaviorType::Collision && behavior.is_running() == true
+            .any(|behavior| {
+                behavior.name() == BehaviorType::Collision && behavior.is_running()
             })
-            .is_some()
     }
 
     fn can_collide(sprite: &Sprite, other: &Sprite) -> bool {
@@ -123,11 +122,11 @@ impl BattleManager {
             _ => SpriteType::Meta,
         };
 
-        &target_type == &other.sprite_type
+        target_type == other.sprite_type
     }
 
     fn has_collision(sprite: &Sprite, target: &Sprite) -> bool {
-        let collision = sprite.get_collision().unwrap_or(CollisionMargin::default());
+        let collision = sprite.get_collision().unwrap_or_default();
 
         let collision_left = sprite.position.left + collision.left as f64;
 

@@ -72,7 +72,7 @@ impl Outline {
             .unwrap();
 
         // Apply MarchingSquares upon image data as blob, to leave only it's outline
-        MarchingSquares::new(offset.clone()).data_outlines(
+        MarchingSquares::new(*offset).data_outlines(
             &image_data.data(),
             width as i32,
             height as i32,

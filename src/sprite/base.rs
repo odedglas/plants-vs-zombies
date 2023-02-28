@@ -58,7 +58,7 @@ impl Sprite {
         let sprite_behaviors = RefCell::new(
             behaviors
                 .iter()
-                .map(|behavior_data| BehaviorManager::create(&behavior_data, id.clone()))
+                .map(|behavior_data| BehaviorManager::create(behavior_data, id.clone()))
                 .collect(),
         );
 
@@ -79,10 +79,7 @@ impl Sprite {
             visible: true,
         };
 
-        sprite.text_overlay = match text_overlay_data {
-            Some(data) => Some(TextOverlay::new(data, &sprite)),
-            None => None,
-        };
+        sprite.text_overlay = text_overlay_data.as_ref().map(|data| TextOverlay::new(data, &sprite));
 
         sprite.update_board_location();
         sprite.update_outlines(exact_outlines);
@@ -91,14 +88,14 @@ impl Sprite {
     }
 
     pub fn dimensions(&self) -> Dimensions {
-        let active_cell = DrawingState::get_active_cell(&self);
+        let active_cell = DrawingState::get_active_cell(self);
 
-        return SpriteCell {
+        SpriteCell {
             left: self.position.left,
             top: self.position.top,
             width: active_cell.width,
             height: active_cell.height,
-        };
+        }
     }
 
     pub fn update_position(&mut self, position: Position) {
@@ -109,7 +106,7 @@ impl Sprite {
     }
 
     pub fn update_outlines(&mut self, exact_outlines: bool) {
-        self.outlines = Outline::get_outlines(&self, exact_outlines);
+        self.outlines = Outline::get_outlines(self, exact_outlines);
     }
 
     pub fn update_board_location(&mut self) {
@@ -135,7 +132,7 @@ impl Sprite {
         // After swap, We need to re-place the sprite over the cell
         let new_cell = DrawingState::get_active_cell(self);
         let swapped_position =
-            LocationBuilder::align_sprite_after_cells_swap(&self, new_cell, &current_cell);
+            LocationBuilder::align_sprite_after_cells_swap(self, new_cell, &current_cell);
 
         self.update_position(swapped_position);
     }
@@ -196,7 +193,7 @@ impl Sprite {
                     &behaviors,
                     exact_outlines,
                     &text_overlay,
-                    kind.clone(),
+                    *kind,
                     life,
                     damage,
                 )
@@ -210,7 +207,7 @@ impl Sprite {
                 self.drawing_state.hover(hovered);
             }
 
-            if let Some(_) = mutation.cycle_cells {
+            if mutation.cycle_cells.is_some() {
                 self.drawing_state.cycle_cells();
             }
 
@@ -247,7 +244,7 @@ impl Sprite {
                 self.toggle_walking(!mute);
             }
 
-            if let Some(_) = mutation.stop_animate {
+            if mutation.stop_animate.is_some() {
                 let animate = BehaviorManager::get_sprite_behavior(self, BehaviorType::Animate)
                     .as_any()
                     .downcast_mut::<Animate>()
@@ -269,16 +266,11 @@ impl Sprite {
             .iter_mut()
             .find(|behavior| behavior.name() == BehaviorType::Collision);
 
-        match collision {
-            None => None,
-            Some(collision) => Some(
-                collision
+        collision.map(|collision| collision
                     .as_any()
                     .downcast_mut::<Collision>()
                     .unwrap()
-                    .margin,
-            ),
-        }
+                    .margin)
     }
 
     pub fn toggle_walking(&mut self, walking: bool) {

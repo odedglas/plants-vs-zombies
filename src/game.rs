@@ -198,6 +198,8 @@ impl Game {
 
         self.state.current_level = Some(self.resources.get_level_data("1-1"));
 
+        GameFeatures::enable_board_lines(true);
+
         BattleScene::prepare(self);
     }
 
@@ -251,7 +253,7 @@ impl Game {
                 .selected_seeds
                 .retain(|(_seed_id, card_id)| card_id != clicked_sprite_id);
 
-            BattleScene::deselect_seed(self, &selected);
+            BattleScene::deselect_seed(self, selected);
         } else {
             let card_id = BattleScene::select_seed(self, clicked_sprite_id);
 
@@ -291,7 +293,7 @@ impl Game {
     }
 
     pub fn plant_on_board(&mut self, sprite_id: &String) {
-        let mouse = self.mouse_position.clone();
+        let mouse = self.mouse_position;
 
         // Check if current position is "active" board cell
         if !Board::is_active_board_location(&mouse) {
@@ -408,17 +410,15 @@ impl Game {
         self.sprites
             .iter_mut()
             .find(|sprite| name == sprite.name && &sprite.sprite_type == sprite_type)
-            .expect(&format!("[Game Controller] Cannot find Sprite {}", &name))
+            .unwrap_or_else(|| panic!("[Game Controller] Cannot find Sprite {}", &name))
     }
 
     pub fn get_sprite_by_id(&mut self, sprite_id: &String) -> &mut Sprite {
         self.sprites
             .iter_mut()
             .find(|sprite| sprite_id == &sprite.id)
-            .expect(&format!(
-                "[Game Controller] Cannot find Sprite {}",
-                &sprite_id
-            ))
+            .unwrap_or_else(|| panic!("[Game Controller] Cannot find Sprite {}",
+                &sprite_id))
     }
 
     pub fn get_sprite_by_location(&mut self, location: &BoardLocation) -> Option<&Sprite> {
@@ -434,7 +434,7 @@ impl Game {
     }
 
     pub fn is_free_board_location(&mut self, sprite_id: &String, location: &BoardLocation) -> bool {
-        let found = self.get_sprite_by_location(&location);
+        let found = self.get_sprite_by_location(location);
 
         match found {
             None => true,

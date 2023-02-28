@@ -66,7 +66,7 @@ impl BattleScene {
 
     pub fn build_zombie_head(game: &mut Game, zombie_id: &String) {
         let zombie_adjustment_position = Position::new(-60.0, 65.0);
-        let zombie_position = game.get_sprite_by_id(zombie_id).position.clone();
+        let zombie_position = game.get_sprite_by_id(zombie_id).position;
         let now = game.game_time.time;
 
         let mut sprites = Sprite::create_sprite("ZombieHead", &ResourceKind::Zombie, &game.resources);
@@ -162,10 +162,10 @@ impl BattleScene {
     }
 
     pub fn create_draggable_plant(game: &mut Game, sprite_id: &String) {
-        let mouse = game.mouse_position.clone();
+        let mouse = game.mouse_position;
         let card_sprite = game.get_sprite_by_id(sprite_id);
 
-        let original_position = card_sprite.position.clone();
+        let original_position = card_sprite.position;
         let plant_name = card_sprite.name.clone();
 
         let mut plant =
@@ -197,16 +197,16 @@ impl BattleScene {
 
     pub fn create_plant(game: &mut Game, sprite_id: &String) {
         let now = game.game_time.time;
-        let mouse = game.mouse_position.clone();
+        let mouse = game.mouse_position;
         let sprite = game.get_sprite_by_id(sprite_id);
-        let plant_cell = DrawingState::get_active_cell(&sprite);
+        let plant_cell = DrawingState::get_active_cell(sprite);
 
         // Clamp Plant sprite into closest cell bottom position.
         let plant_position = LocationBuilder::plant_location(plant_cell, &mouse);
         sprite.update_position(plant_position);
 
         BehaviorManager::toggle_sprite_behaviors(
-            &sprite,
+            sprite,
             &[
                 BehaviorType::Animate,
                 BehaviorType::Interval,
@@ -223,7 +223,7 @@ impl BattleScene {
     pub fn create_bullet(game: &mut Game, sprite_id: &String) {
         let now = game.game_time.time;
         let shooting_plant = game.get_sprite_by_id(sprite_id);
-        let position = shooting_plant.position.clone();
+        let position = shooting_plant.position;
 
         let plant_name = &Plant::from_name(&shooting_plant.name.clone());
         let bullet_type = Plant::bullet_type(plant_name);
@@ -267,7 +267,7 @@ impl BattleScene {
         });
     }
 
-    fn add_plant_card(game: &mut Game, seed_name: &String) -> String {
+    fn add_plant_card(game: &mut Game, seed_name: &str) -> String {
         let current_cards = game.state.selected_seeds.len();
 
         let mut plant =

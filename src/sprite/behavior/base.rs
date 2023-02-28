@@ -27,7 +27,7 @@ pub trait Behavior: BehaviorState {
     fn on_start(&mut self, _now: f64) {}
 
     fn get_interaction(&self) -> Option<GameInteraction> {
-        return None;
+        None
     }
 
     fn animation_rate(&mut self, now: f64, last_frame: f64) -> f64 {

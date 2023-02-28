@@ -78,9 +78,9 @@ impl Behavior for Scroll {
 
         let current_offset = &sprite.drawing_state.offset;
 
-        return Some(SpriteMutation::new().offset(Position::new(
+        Some(SpriteMutation::new().offset(Position::new(
             current_offset.top,
             current_offset.left + addition,
-        )));
+        )))
     }
 }

@@ -8,7 +8,7 @@ pub use scroll::Scroll;
 pub use walk::Walk;
 use web_sys::CanvasRenderingContext2d;
 
-use crate::model::{BehaviorData, BehaviorType, CollisionMargin, GameInteraction, Position};
+use crate::model::{BehaviorData, BehaviorType, GameInteraction, Position};
 use crate::sprite::behavior::drag::Drag;
 use crate::sprite::{Sprite, SpriteMutation};
 use crate::timers::GameTime;
@@ -43,11 +43,11 @@ impl BehaviorManager {
                 data.rate,
                 data.callback.unwrap(),
             )),
-            BehaviorType::Walk => Box::new(Walk::new(data.distance, data.velocity.unwrap().clone())),
+            BehaviorType::Walk => Box::new(Walk::new(data.distance, data.velocity.unwrap())),
             BehaviorType::Drag => Box::new(Drag::new(data.callback.unwrap())),
             BehaviorType::Interval => Box::new(Interval::new(data.interval.unwrap(), data.callback)),
             BehaviorType::Collision => Box::new(Collision::new(
-                data.collision_margin.unwrap_or(CollisionMargin::default()),
+                data.collision_margin.unwrap_or_default(),
             )),
         };
 
@@ -66,10 +66,9 @@ impl BehaviorManager {
             .mutable_behaviors()
             .iter_mut()
             .filter(|behavior| behavior.is_running())
-            .map(|behavior| {
+            .filter_map(|behavior| {
                 behavior.execute(sprite, time.time, time.last_timestamp, position, context)
             })
-            .filter_map(|mutation| mutation)
             .collect()
     }
 
@@ -103,10 +102,8 @@ impl BehaviorManager {
         behavior: BehaviorType,
     ) -> &mut Box<dyn Behavior> {
         let sprite_id = sprite.id.clone();
-        Self::find_sprite_behavior(sprite, behavior).expect(&format!(
-            "[BehaviorManager] Cannot GET Sprite behavior: {:?} / {}",
-            behavior, sprite_id
-        ))
+        Self::find_sprite_behavior(sprite, behavior).unwrap_or_else(|| panic!("[BehaviorManager] Cannot GET Sprite behavior: {:?} / {}",
+            behavior, sprite_id))
     }
 
     pub fn find_sprite_behavior(
@@ -124,8 +121,7 @@ impl BehaviorManager {
         let interactions = sprite
             .mutable_behaviors()
             .iter_mut()
-            .map(|behavior| behavior.get_interaction())
-            .filter_map(|interaction| interaction)
+            .filter_map(|behavior| behavior.get_interaction())
             .collect();
 
         sprite.mutable_behaviors().iter_mut().for_each(|behavior| {
