@@ -3,3 +3,5 @@ node_modules
 target/
 pkg/
 dist/
+# Local Netlify folder
+.netlify
