@@ -1,5 +1,6 @@
 import * as path from 'path';
 import webpack from 'webpack';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import WasmPackPlugin from '@wasm-tool/wasm-pack-plugin';
 
@@ -14,6 +15,11 @@ const config: webpack.Configuration = {
   plugins: [
     new HtmlWebpackPlugin({
       template: 'public/index.html',
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: path.resolve(__dirname, "assets"), to: path.resolve(__dirname, "dist", "assets")}
+      ]
     }),
     new WasmPackPlugin({
       crateDirectory: path.resolve(__dirname, '.'), // Rust main entrypoint.
