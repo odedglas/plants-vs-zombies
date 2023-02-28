@@ -3,7 +3,6 @@ use web_sys::CanvasRenderingContext2d;
 
 use super::base::Behavior;
 use crate::board::Board;
-use crate::log;
 use crate::model::{BehaviorType, Position, Velocity};
 use crate::sprite::{Sprite, SpriteMutation};
 
@@ -54,7 +53,6 @@ impl Behavior for Walk {
         let finished = self.max_distance > 0.0 && self.walked_distance.abs() >= self.max_distance;
 
         if finished {
-            log!("Walk finished!");
             self.stop(now);
             return None;
         }
