@@ -53,7 +53,7 @@ impl Resources {
             key: resource_key,
             cell: cell.clone(),
             data: data.clone(),
-            image: image.map(|image| Rc::downgrade(image)),
+            image: image.map(Rc::downgrade),
         }
     }
 
@@ -87,7 +87,7 @@ impl ResourceLoader {
                     ResourceKind::Zombie,
                     ResourceKind::Interface,
                 ],
-                ResourceDataType::CELL,
+                ResourceDataType::Cell,
             )
             .await;
 
@@ -99,12 +99,12 @@ impl ResourceLoader {
                     ResourceKind::Zombie,
                     ResourceKind::Interface,
                 ],
-                ResourceDataType::DATA,
+                ResourceDataType::Data,
             )
             .await;
 
         let level_data = self
-            .load_json_resources::<LevelData>(vec![ResourceKind::Level], ResourceDataType::DATA)
+            .load_json_resources::<LevelData>(vec![ResourceKind::Level], ResourceDataType::Data)
             .await;
 
         let images = self

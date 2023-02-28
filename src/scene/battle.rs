@@ -267,7 +267,7 @@ impl BattleScene {
         });
     }
 
-    fn add_plant_card(game: &mut Game, seed_name: &String) -> String {
+    fn add_plant_card(game: &mut Game, seed_name: &str) -> String {
         let current_cards = game.state.selected_seeds.len();
 
         let mut plant =

@@ -20,17 +20,17 @@ impl ResourceKind {
 }
 
 pub enum ResourceDataType {
-    CELL,
-    DATA,
-    IMAGE,
+    Cell,
+    Data,
+    Image,
 }
 
 impl ResourceDataType {
     pub fn value(&self) -> &str {
         match *self {
-            ResourceDataType::CELL => "cell",
-            ResourceDataType::DATA => "data",
-            ResourceDataType::IMAGE => "image",
+            ResourceDataType::Cell => "cell",
+            ResourceDataType::Data => "data",
+            ResourceDataType::Image => "image",
         }
     }
 }

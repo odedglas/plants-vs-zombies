@@ -8,7 +8,7 @@ pub use scroll::Scroll;
 pub use walk::Walk;
 use web_sys::CanvasRenderingContext2d;
 
-use crate::model::{BehaviorData, BehaviorType, CollisionMargin, GameInteraction, Position};
+use crate::model::{BehaviorData, BehaviorType, GameInteraction, Position};
 use crate::sprite::behavior::drag::Drag;
 use crate::sprite::{Sprite, SpriteMutation};
 use crate::timers::GameTime;
@@ -66,10 +66,9 @@ impl BehaviorManager {
             .mutable_behaviors()
             .iter_mut()
             .filter(|behavior| behavior.is_running())
-            .map(|behavior| {
+            .filter_map(|behavior| {
                 behavior.execute(sprite, time.time, time.last_timestamp, position, context)
             })
-            .flatten()
             .collect()
     }
 
@@ -122,8 +121,7 @@ impl BehaviorManager {
         let interactions = sprite
             .mutable_behaviors()
             .iter_mut()
-            .map(|behavior| behavior.get_interaction())
-            .flatten()
+            .filter_map(|behavior| behavior.get_interaction())
             .collect();
 
         sprite.mutable_behaviors().iter_mut().for_each(|behavior| {

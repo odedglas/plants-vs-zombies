@@ -73,14 +73,11 @@ impl Collision {
     fn set_delayed_mutation(&mut self, delayed_mutation: DelayedMutation) {
         let (mutation, delay) = delayed_mutation;
         if self.delayed_mutation.is_none() {
-            match mutation {
-                Some(mutation) => {
-                    self.delayed_mutation_timer.set_elapsed(delay);
-                    self.delayed_mutation_timer.start();
+            if let Some(mutation) = mutation {
+                self.delayed_mutation_timer.set_elapsed(delay);
+                self.delayed_mutation_timer.start();
 
-                    self.delayed_mutation = Some(mutation);
-                }
-                None => {}
+                self.delayed_mutation = Some(mutation);
             }
         }
     }
