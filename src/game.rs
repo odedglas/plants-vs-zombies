@@ -198,6 +198,8 @@ impl Game {
 
         self.state.current_level = Some(self.resources.get_level_data("1-1"));
 
+        GameFeatures::enable_board_lines(true);
+
         BattleScene::prepare(self);
     }
 
