@@ -41,12 +41,10 @@ impl DrawingState {
 
         let cells = drawing_state.get_cells();
 
-        let cell = cells.get(drawing_state.active_cell).expect(&format!(
-            "[Sprite] Cannot get drawing state cell of {} / {} / {:?}",
-            sprite.name, drawing_state.active_cell, drawing_state.swap_index
-        ));
+        let cell = cells.get(drawing_state.active_cell).unwrap_or_else(|| panic!("[Sprite] Cannot get drawing state cell of {} / {} / {:?}",
+            sprite.name, drawing_state.active_cell, drawing_state.swap_index));
 
-        return cell;
+        cell
     }
 
     pub fn swap(&mut self, swap_index: usize) {

@@ -103,7 +103,7 @@ impl ZombieCollisionHandler {
             },
             CollisionState::TakingDamage(_) => match life <= 0.0 {
                 true => ZombieState::Die,
-                false => self.zombie_state.clone(),
+                false => self.zombie_state,
             },
         }
     }
@@ -173,7 +173,7 @@ impl CollisionHandler for ZombieCollisionHandler {
         prev_state: &CollisionState,
     ) -> Option<SpriteMutation> {
         let life = sprite.attack_state.life;
-        let prev_zombie_state = self.zombie_state.clone();
+        let prev_zombie_state = self.zombie_state;
         self.zombie_state = self.get_zombie_state(state, life);
 
         // Once Zombie Stop attacking.

@@ -43,11 +43,11 @@ impl BehaviorManager {
                 data.rate,
                 data.callback.unwrap(),
             )),
-            BehaviorType::Walk => Box::new(Walk::new(data.distance, data.velocity.unwrap().clone())),
+            BehaviorType::Walk => Box::new(Walk::new(data.distance, data.velocity.unwrap())),
             BehaviorType::Drag => Box::new(Drag::new(data.callback.unwrap())),
             BehaviorType::Interval => Box::new(Interval::new(data.interval.unwrap(), data.callback)),
             BehaviorType::Collision => Box::new(Collision::new(
-                data.collision_margin.unwrap_or(CollisionMargin::default()),
+                data.collision_margin.unwrap_or_default(),
             )),
         };
 
@@ -69,7 +69,7 @@ impl BehaviorManager {
             .map(|behavior| {
                 behavior.execute(sprite, time.time, time.last_timestamp, position, context)
             })
-            .filter_map(|mutation| mutation)
+            .flatten()
             .collect()
     }
 
@@ -103,10 +103,8 @@ impl BehaviorManager {
         behavior: BehaviorType,
     ) -> &mut Box<dyn Behavior> {
         let sprite_id = sprite.id.clone();
-        Self::find_sprite_behavior(sprite, behavior).expect(&format!(
-            "[BehaviorManager] Cannot GET Sprite behavior: {:?} / {}",
-            behavior, sprite_id
-        ))
+        Self::find_sprite_behavior(sprite, behavior).unwrap_or_else(|| panic!("[BehaviorManager] Cannot GET Sprite behavior: {:?} / {}",
+            behavior, sprite_id))
     }
 
     pub fn find_sprite_behavior(
@@ -125,7 +123,7 @@ impl BehaviorManager {
             .mutable_behaviors()
             .iter_mut()
             .map(|behavior| behavior.get_interaction())
-            .filter_map(|interaction| interaction)
+            .flatten()
             .collect();
 
         sprite.mutable_behaviors().iter_mut().for_each(|behavior| {

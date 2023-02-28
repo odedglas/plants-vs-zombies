@@ -46,14 +46,14 @@ impl Behavior for Animate {
     }
 
     fn get_interaction(&self) -> Option<GameInteraction> {
-        if !self.interaction_active || !self.callback.is_some() {
+        if !self.interaction_active || self.callback.is_none() {
             return None;
         }
 
-        return Some(GameInteraction::AnimationCallback(
+        Some(GameInteraction::AnimationCallback(
             self.callback.unwrap(),
             self.sprite_id.clone(),
-        ));
+        ))
     }
 
     fn execute(

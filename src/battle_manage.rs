@@ -48,7 +48,7 @@ impl BattleManager {
                     .downcast_mut::<Collision>()
                     .unwrap();
 
-                if mutations.len() > 0 {
+                if !mutations.is_empty() {
                     mutations.iter().for_each(|mutation| {
                         if mutation.attacking_id == sprite_id {
                             collision.state = CollisionState::Attacking;
@@ -108,7 +108,7 @@ impl BattleManager {
             .borrow()
             .iter()
             .find(|behavior| {
-                behavior.name() == BehaviorType::Collision && behavior.is_running() == true
+                behavior.name() == BehaviorType::Collision && behavior.is_running()
             })
             .is_some()
     }
@@ -127,7 +127,7 @@ impl BattleManager {
     }
 
     fn has_collision(sprite: &Sprite, target: &Sprite) -> bool {
-        let collision = sprite.get_collision().unwrap_or(CollisionMargin::default());
+        let collision = sprite.get_collision().unwrap_or_default();
 
         let collision_left = sprite.position.left + collision.left as f64;
 

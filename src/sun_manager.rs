@@ -65,7 +65,7 @@ impl SunManager {
                         location_type: Default::default(),
                         color: Some(String::from("black")),
                     },
-                    &sun_score,
+                    sun_score,
                 ));
             }
         }

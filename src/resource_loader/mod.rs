@@ -53,10 +53,7 @@ impl Resources {
             key: resource_key,
             cell: cell.clone(),
             data: data.clone(),
-            image: match image {
-                Some(image) => Some(Rc::downgrade(image)),
-                None => None,
-            },
+            image: image.map(|image| Rc::downgrade(image)),
         }
     }
 
@@ -73,10 +70,8 @@ impl Resources {
     pub fn get_level_data(&self, level_id: &str) -> LevelData {
         let resource_key = format!("{}/{}", ResourceKind::Level.value(), level_id);
 
-        let level_data = self.level_data.get(&resource_key).expect(&format!(
-            "Level data is expected to be preset {}",
-            resource_key
-        ));
+        let level_data = self.level_data.get(&resource_key).unwrap_or_else(|| panic!("Level data is expected to be preset {}",
+            resource_key));
 
         level_data.clone()
     }
