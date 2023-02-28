@@ -11,6 +11,8 @@ pub struct SpriteMutation {
     pub mute: Option<bool>,
     pub damage: Option<f64>,
     pub alpha: Option<f64>,
+    pub walking: Option<bool>,
+    pub stop_animate: Option<bool>,
 }
 
 impl SpriteMutation {
@@ -25,6 +27,8 @@ impl SpriteMutation {
             swap: None,
             mute: None,
             alpha: None,
+            walking: None,
+            stop_animate: None,
         }
     }
 
@@ -70,14 +74,20 @@ impl SpriteMutation {
         self
     }
 
-    pub fn mute(mut self) -> Self {
-        self.mute = Some(true);
+    pub fn mute(mut self, muted: bool) -> Self {
+        self.mute = Some(muted);
 
         self
     }
 
     pub fn alpha(mut self, alpha: f64) -> Self {
         self.alpha = Some(alpha);
+
+        self
+    }
+
+    pub fn stop_animate(mut self) -> Self {
+        self.stop_animate = Some(true);
 
         self
     }

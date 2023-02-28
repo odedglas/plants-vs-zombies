@@ -10,7 +10,7 @@
   "FlagMeterParts1": [{ "left": 291, "top": 1789, "width": 22, "height": 23 }],
   "FlagMeterParts2": [{ "left": 86, "top": 1881, "width": 20, "height": 18 }],
   "LawnCleaner": [{ "left": 1700, "top": 1520, "width": 70, "height": 57 }],
-  "PrepareGrowPlants": [
+  "BattleCallout": [
     { "left": 1618, "top": 1712, "width": 255, "height": 108 },
     { "left": 1623, "top": 1017, "width": 255, "height": 108 },
     { "left": 1623, "top": 909, "width": 255, "height": 108 }

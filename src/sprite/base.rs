@@ -5,13 +5,14 @@ use js_sys::Math;
 use web_sys::HtmlImageElement;
 
 use crate::board::{Board, BoardLocation};
+use crate::location_builder::LocationBuilder;
 use crate::model::{
     BehaviorData, BehaviorType, CollisionMargin, Dimensions, Position, SpriteCell, SpriteData,
     SpriteType, TextOverlayData,
 };
 use crate::resource_loader::{Resource, ResourceKind, Resources};
 use crate::sprite::attack_state::AttackState;
-use crate::sprite::behavior::{Behavior, BehaviorManager, Collision};
+use crate::sprite::behavior::{Animate, Behavior, BehaviorManager, Collision};
 use crate::sprite::drawing_state::DrawingState;
 use crate::sprite::text_overlay::TextOverlay;
 use crate::sprite::{Outline, SpriteMutation};
@@ -122,6 +123,23 @@ impl Sprite {
         self.board_location = Board::get_board_location(&sprite_center);
     }
 
+    pub fn update_swap_cell(&mut self, swap_index: i32) {
+        let current_cell = DrawingState::get_active_cell(self).clone();
+
+        if swap_index >= 0 {
+            self.drawing_state.swap(swap_index as usize);
+        } else {
+            self.drawing_state.reset_swap();
+        }
+
+        // After swap, We need to re-place the sprite over the cell
+        let new_cell = DrawingState::get_active_cell(self);
+        let swapped_position =
+            LocationBuilder::align_sprite_after_cells_swap(&self, new_cell, &current_cell);
+
+        self.update_position(swapped_position);
+    }
+
     pub fn create_sprites(
         sprite_names: Vec<&str>,
         kind: &ResourceKind,
@@ -214,25 +232,28 @@ impl Sprite {
 
             if let Some(damage) = mutation.damage {
                 self.attack_state.take_damage(damage);
-                self.visible = !self.attack_state.is_dead();
             }
 
             if let Some(swap_index) = mutation.swap {
-                if swap_index >= 0 {
-                    self.drawing_state.swap(swap_index as usize);
-                } else {
-                    self.drawing_state.reset_swap();
-                }
+                self.update_swap_cell(swap_index);
             }
 
-            if let Some(_) = mutation.mute {
-                self.attack_state.mute();
-                BehaviorManager::toggle_sprite_behaviors(
-                    self,
-                    &[BehaviorType::Walk],
-                    false,
-                    window_time(),
-                )
+            if let Some(walking) = mutation.walking {
+                self.toggle_walking(walking);
+            }
+
+            if let Some(mute) = mutation.mute {
+                self.attack_state.mute(!mute);
+                self.toggle_walking(!mute);
+            }
+
+            if let Some(_) = mutation.stop_animate {
+                let animate = BehaviorManager::get_sprite_behavior(self, BehaviorType::Animate)
+                    .as_any()
+                    .downcast_mut::<Animate>()
+                    .unwrap();
+
+                animate.set_max_cycles(1);
             }
         });
     }
@@ -258,6 +279,10 @@ impl Sprite {
                     .margin,
             ),
         }
+    }
+
+    pub fn toggle_walking(&mut self, walking: bool) {
+        BehaviorManager::toggle_sprite_behaviors(self, &[BehaviorType::Walk], walking, window_time())
     }
 }
 

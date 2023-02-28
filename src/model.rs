@@ -56,6 +56,7 @@ pub enum Callback {
     ShowPlantsChooser,
     ResetPlantsChoose,
     EnterBattleAnimation,
+    StartBattleCallout,
     StartBattle,
     ChooserSeedSelect,
     PlantCardClick,
@@ -66,6 +67,7 @@ pub enum Callback {
     ShovelDragEnd,
     Shoot,
     GenerateSunFlowSun,
+    CreateZombieHead,
 }
 
 impl Default for Callback {

@@ -2,70 +2,80 @@
   "Conehead": {
     "constructor": "Zombie",
     "position": [{ "left": 0, "top": 0 }],
+    "swap_cells": ["ConeheadWalk", "ConeheadAttack", "ZombieWalk1", "ZombieAttack", "ZombieDie"],
     "behaviors": [
-      { "name": "Animate", "rate": 160, "max_cycles": 0 },
+      { "name": "Animate", "rate": 130, "max_cycles": 0 },
       { "name": "Walk", "velocity": { "x": -10, "y": 0 } },
       { "name": "Collision", "collision_margin": { "left": 30, "top": 5, "right": 10, "bottom": 5 }}
     ],
-    "life": 200
+    "life": 200,
+    "damage": 15.0
   },
   "Buckethead": {
     "constructor": "Zombie",
     "position": [{ "left": 0, "top": 0 }],
+    "swap_cells": ["BucketheadWalk", "BucketheadAttack", "ZombieWalk1", "ZombieAttack", "ZombieDie"],
     "behaviors": [
-      { "name": "Animate", "rate": 160, "max_cycles": 0 },
-      { "name": "Walk", "velocity": { "x": -9, "y": 0 } },
+      { "name": "Animate", "rate": 130, "max_cycles": 0 },
+      { "name": "Walk", "velocity": { "x": -15, "y": 0 } },
       { "name": "Collision", "collision_margin": { "left": 30, "top": 5, "right": 10, "bottom": 5 }}
     ],
-    "life": 200
+    "life": 250,
+    "damage": 15.0
   },
   "Flag": {
     "constructor": "Zombie",
     "position": [{ "left": 0, "top": 0 }],
+    "swap_cells": ["FlagWalk", "FlagAttack", "FlagWalk", "FlagAttack", "ZombieDie"],
     "behaviors": [
-      { "name": "Animate", "rate": 160, "max_cycles": 0 },
+      { "name": "Animate", "rate": 130, "max_cycles": 0 },
       { "name": "Walk", "velocity": { "x": -8, "y": 0 } },
       { "name": "Collision", "collision_margin": { "left": 40, "top": 5, "right": 10, "bottom": 5 }}
-    ]
+    ],
+    "life": 150,
+    "damage": 10.0
   },
   "ScreenDoor": {
     "constructor": "Zombie",
     "position": [{ "left": 0, "top": 0 }],
+    "swap_cells": ["ScreenDoorWalk", "ScreenDoorAttack", "ZombieWalk1", "ZombieAttack", "ZombieDie"],
     "behaviors": [
-      { "name": "Animate", "rate": 160, "max_cycles": 0 },
+      { "name": "Animate", "rate": 130, "max_cycles": 0 },
       { "name": "Walk", "velocity": { "x": -12, "y": 0 } },
       { "name": "Collision" }
     ],
-    "life": 200
+    "life": 225,
+    "damage": 12.5
   },
   "Zombie1": {
     "constructor": "Zombie",
     "position": [{ "left": 0, "top": 0 }],
+    "swap_cells": ["ZombieWalk1", "ZombieAttack", "ZombieWalk1", "ZombieAttack", "ZombieDie"],
     "behaviors": [
-      { "name": "Animate", "rate": 160, "max_cycles": 0 },
+      { "name": "Animate", "rate": 130, "max_cycles": 0 },
       { "name": "Walk", "velocity": { "x": -5, "y": 0 } },
       { "name": "Collision" }
-    ]
+    ],
+    "life": 100,
+    "damage": 10.0
   },
   "ZombieHead": {
     "constructor": "Zombie",
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
-      { "name": "Animate", "rate": 100, "max_cycles": 0 },
+      { "name": "Animate", "rate": 100, "max_cycles": 1 },
       {
         "name": "Walk",
-        "velocit": { "x": 20, "y": -45 },
+        "velocity": { "x": 20, "y": -45 },
         "distance": 45
-      },
-      { "name": "Collision" }
-    ],
-    "life": 0.0
+      }
+    ]
   },
   "ZombieDie": {
     "constructor": "Zombie",
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
-      { "name": "Animate", "rate": 160, "max_cycles": 0 },
+      { "name": "Animate", "rate": 130, "max_cycles": 0 },
       { "name": "Collision" }
     ],
     "life": 0.0

@@ -93,9 +93,9 @@ impl Board {
     pub fn is_out_of_board(sprite: &Sprite, position: &Position) -> bool {
         let cell = DrawingState::get_active_cell(sprite);
 
-        position.top < 0.0
-            || position.left < 0.0
-            || position.left + cell.width > CANVAS_WIDTH_F64
-            || position.top + cell.height > CANVAS_HEIGHT_F64
+        position.top + cell.height < 0.0
+            || position.left + cell.width < 0.0
+            || position.left > CANVAS_WIDTH_F64
+            || position.top > CANVAS_HEIGHT_F64
     }
 }

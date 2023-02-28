@@ -29,13 +29,17 @@ impl DrawingState {
         }
     }
 
+    pub fn get_cells(&self) -> &Vec<SpriteCell> {
+        match self.swap_index {
+            None => &self.cells,
+            Some(index) => &self.swap_cells[index],
+        }
+    }
+
     pub fn get_active_cell(sprite: &Sprite) -> &SpriteCell {
         let drawing_state = &sprite.drawing_state;
 
-        let cells = match drawing_state.swap_index {
-            None => &drawing_state.cells,
-            Some(index) => &drawing_state.swap_cells[index],
-        };
+        let cells = drawing_state.get_cells();
 
         let cell = cells.get(drawing_state.active_cell).expect(&format!(
             "[Sprite] Cannot get drawing state cell of {} / {} / {:?}",
@@ -46,13 +50,17 @@ impl DrawingState {
     }
 
     pub fn swap(&mut self, swap_index: usize) {
-        self.active_cell = 0;
-        self.swap_index = Some(swap_index);
+        if self.swap_index != Some(swap_index) {
+            self.active_cell = 0;
+            self.swap_index = Some(swap_index);
+        }
     }
 
     pub fn reset_swap(&mut self) {
-        self.active_cell = 0;
-        self.swap_index = None;
+        if self.swap_index.is_some() {
+            self.active_cell = 0;
+            self.swap_index = None;
+        }
     }
 
     pub fn hover(&mut self, hover: bool) {
@@ -66,7 +74,7 @@ impl DrawingState {
 
     pub fn cycle_cells(&mut self) {
         let current = self.active_cell;
-        let max = self.cells.len();
+        let max = self.get_cells().len();
 
         let next_index = match current < max - 1 {
             true => current + 1,
@@ -77,7 +85,7 @@ impl DrawingState {
     }
 
     pub fn in_last_cell(&self) -> bool {
-        self.active_cell == self.cells.len() - 1
+        self.active_cell == self.get_cells().len() - 1
     }
 
     fn set_cell(&mut self, index: usize) {

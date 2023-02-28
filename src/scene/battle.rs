@@ -1,5 +1,7 @@
 use crate::game::Game;
 use crate::location_builder::LocationBuilder;
+use crate::log;
+use crate::model::BehaviorType::Walk;
 use crate::model::Callback::PlantCardClick;
 use crate::model::{BehaviorData, BehaviorType, Callback, Plant, Position, SelectedSeed, SpriteType};
 use crate::resource_loader::ResourceKind;
@@ -62,6 +64,28 @@ impl BattleScene {
         game.add_sprites(zombies.as_mut());
     }
 
+    pub fn build_zombie_head(game: &mut Game, zombie_id: &String) {
+        let zombie_adjustment_position = Position::new(-60.0, 65.0);
+        let zombie_position = game.get_sprite_by_id(zombie_id).position.clone();
+        let now = game.game_time.time;
+
+        let mut sprites = Sprite::create_sprite("ZombieHead", &ResourceKind::Zombie, &game.resources);
+
+        sprites.iter_mut().for_each(|zombie| {
+            zombie.update_position(Position::new(
+                zombie_position.top + zombie_adjustment_position.top,
+                zombie_position.left + zombie_adjustment_position.left,
+            ));
+
+            zombie.sprite_type = SpriteType::Interface; // Avoid detected as Zombie
+        });
+
+        BehaviorManager::toggle_behaviors(&sprites, &[BehaviorType::Animate, Walk], true, now);
+
+        log!("Build head sfor Zombie {}", zombie_id);
+        game.add_sprites(sprites.as_mut());
+    }
+
     pub fn prepare(game: &mut Game) {
         Self::build_background(game);
 
@@ -81,7 +105,10 @@ impl BattleScene {
             .as_any()
             .downcast_mut::<Scroll>()
             .unwrap()
-            .reverse(now, Callback::StartBattle);
+            .reverse(now, Callback::StartBattleCallout);
+
+        // Make plants active to drag behavior
+        Self::swap_plant_cards_action(game);
     }
 
     pub fn select_seed(game: &mut Game, seed_id: &String) -> String {
@@ -102,18 +129,36 @@ impl BattleScene {
         Self::update_selected_cards_layout(game);
     }
 
-    pub fn start(game: &mut Game) {
+    pub fn battle_callout(game: &mut Game) {
         let mut scene_sprites = Sprite::create_sprites(
             vec!["SunScore", "Shovel", "ShovelBack"],
             &ResourceKind::Interface,
             &game.resources,
         );
 
-        Self::swap_plant_cards_action(game);
+        let mut battle_callout =
+            Sprite::create_sprite("BattleCallout", &ResourceKind::Interface, &game.resources);
 
-        game.toggle_game_behavior(true, &[BehaviorType::Collision]);
+        // Activates zombie hand animation Cycle.
+        BehaviorManager::toggle_behaviors(
+            &battle_callout,
+            &[BehaviorType::Animate],
+            true,
+            game.game_time.time,
+        );
 
+        game.add_sprites(battle_callout.as_mut());
         game.add_sprites(scene_sprites.as_mut());
+    }
+
+    pub fn start(game: &mut Game) {
+        game.get_sprites_by_type(&SpriteType::Zombie)
+            .iter_mut()
+            .for_each(|zombie| {
+                zombie.update_swap_cell(0);
+            });
+
+        game.toggle_game_behavior(true, &[BehaviorType::Collision, Walk]);
     }
 
     pub fn create_draggable_plant(game: &mut Game, sprite_id: &String) {
@@ -145,7 +190,7 @@ impl BattleScene {
             original_position.top,
             original_position.left + drag_adjustment,
         ));
-        plant.order = 10; // TODO, Drag order based on behavior?
+        plant.order = 10; // TODO, Drag order based on behavior
 
         game.add_sprite(plant);
     }

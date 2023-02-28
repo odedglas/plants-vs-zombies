@@ -25,7 +25,6 @@ pub struct Game {
     fps: Fps,
 
     last_gc: f64,
-    internal_once: bool,
 }
 
 impl Game {
@@ -39,7 +38,6 @@ impl Game {
             mouse_position: Position::new(0.0, 0.0),
             sprites: vec![],
             last_gc: 0.0,
-            internal_once: false,
         }
     }
 
@@ -164,6 +162,7 @@ impl Game {
             Callback::ShowPlantsChooser => self.show_plants_chooser(),
             Callback::ResetPlantsChoose => self.reset_plants_choose(),
             Callback::EnterBattleAnimation => self.enter_battle_animation(),
+            Callback::StartBattleCallout => self.start_battle_callout(),
             Callback::StartBattle => self.start_battle(),
             Callback::ChooserSeedSelect => self.on_chooser_seed_click(sprite_id),
             Callback::PlantCardClick => self.on_plant_card_click(sprite_id),
@@ -174,6 +173,7 @@ impl Game {
             Callback::ShovelDragEnd => self.on_shovel_drag_end(),
             Callback::Shoot => self.on_plant_shoot(sprite_id),
             Callback::GenerateSunFlowSun => log!("Trigger SunFlow Sun Generation"), // TODO - Call SunManager with sprite
+            Callback::CreateZombieHead => self.show_zombie_head(sprite_id),
         }
     }
 
@@ -219,6 +219,10 @@ impl Game {
 
     pub fn enter_battle_animation(&mut self) {
         BattleScene::enter(self)
+    }
+
+    pub fn start_battle_callout(&mut self) {
+        BattleScene::battle_callout(self);
     }
 
     pub fn start_battle(&mut self) {
@@ -307,15 +311,13 @@ impl Game {
     }
 
     pub fn on_plant_shoot(&mut self, sprite_id: &String) {
-        if self.internal_once {
-            return;
-        }
-
         let shooting_plant_location = &self.get_sprite_by_id(sprite_id).board_location.clone();
 
         // Check if row contains an enemy
         let has_enemy_in_row = self.sprites.iter_mut().find(|sprite| {
-            sprite.sprite_type == SpriteType::Zombie
+            sprite.visible
+                && !sprite.attack_state.is_dead()
+                && sprite.sprite_type == SpriteType::Zombie
                 && sprite.board_location.row == shooting_plant_location.row
         });
 
@@ -328,6 +330,10 @@ impl Game {
         self.state.sun_state.add_score(50);
 
         self.remove_sprite_by_id(sprite_id);
+    }
+
+    pub fn show_zombie_head(&mut self, zombie_id: &String) {
+        BattleScene::build_zombie_head(self, zombie_id)
     }
 
     fn sprites_garbage_collector(&mut self) {

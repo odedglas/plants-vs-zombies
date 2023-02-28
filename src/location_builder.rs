@@ -41,9 +41,27 @@ impl LocationBuilder {
 
         let board_position = Board::get_board_placement(zombie_cell, start_row, start_col);
 
-        let x_offset = Self::random_offset(0, 30);
+        let x_offset = Self::random_offset(0, 40);
 
         Position::new(board_position.top, board_position.left + x_offset)
+    }
+
+    pub fn align_sprite_after_cells_swap(
+        sprite: &Sprite,
+        cell: &SpriteCell,
+        old_cell: &SpriteCell,
+    ) -> Position {
+        let current_position = &sprite.position;
+
+        let board_position =
+            Board::get_board_placement(cell, sprite.board_location.row, sprite.board_location.col);
+
+        let x_delta = match cell.width > old_cell.width {
+            true => cell.width - old_cell.width,
+            false => 0.0,
+        };
+
+        Position::new(board_position.top, current_position.left - x_delta)
     }
 
     fn rand_within_rand(min: f64, max: f64) -> f64 {

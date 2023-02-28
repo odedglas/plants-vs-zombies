@@ -35,25 +35,31 @@ impl BattleManager {
             .filter(|sprite| sprite.get_collision().is_some())
             .for_each(|sprite| {
                 let sprite_id = sprite.id.clone();
-                let mutation = mutations.iter().find(|mutation| {
-                    mutation.target_id == sprite.id || mutation.attacking_id == sprite.id
-                });
+
+                let mutations = mutations
+                    .iter()
+                    .filter(|mutation| {
+                        mutation.target_id == sprite.id || mutation.attacking_id == sprite.id
+                    })
+                    .collect::<Vec<&CollisionMutation>>();
 
                 let collision = BehaviorManager::get_sprite_behavior(sprite, BehaviorType::Collision)
                     .as_any()
                     .downcast_mut::<Collision>()
                     .unwrap();
 
-                match mutation {
-                    Some(mutation) if mutation.attacking_id == sprite_id => {
-                        collision.state = CollisionState::Attacking;
-                    }
-                    Some(mutation) if mutation.target_id == sprite_id => {
-                        collision.state = CollisionState::TakingDamage(mutation.damage);
-                    }
-                    _ => {
-                        collision.state = CollisionState::None;
-                    }
+                if mutations.len() > 0 {
+                    mutations.iter().for_each(|mutation| {
+                        if mutation.attacking_id == sprite_id {
+                            collision.state = CollisionState::Attacking;
+                        }
+
+                        if mutation.target_id == sprite_id {
+                            collision.state = CollisionState::TakingDamage(mutation.damage);
+                        }
+                    })
+                } else {
+                    collision.state = CollisionState::None;
                 }
             });
     }
@@ -87,7 +93,7 @@ impl BattleManager {
                         mutations.push(CollisionMutation::new(
                             &sprite.id,
                             &collided_sprite.id,
-                            sprite.attack_state.damage,
+                            sprite.attack_state.get_damage(),
                         ));
                     }
                 });
