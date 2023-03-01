@@ -1,8 +1,6 @@
 use crate::model::Callback;
 use crate::sprite::{CollisionState, Sprite, SpriteMutation};
 
-
-
 pub type DelayedMutation = (Option<SpriteMutation>, f64);
 
 pub trait CollisionHandler {
