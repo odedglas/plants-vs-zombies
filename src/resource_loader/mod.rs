@@ -45,7 +45,11 @@ impl Resources {
     pub fn get_resource(&self, name: &str, kind: &ResourceKind) -> Resource {
         let resource_key = format!("{}/{}", kind.value(), name);
 
-        let cell = self.cells.get(&resource_key).unwrap();
+        let cell = self
+            .cells
+            .get(&resource_key)
+            .unwrap_or_else(|| panic!("Cannot find Sprite cell - {} / {:?} ", name, kind));
+
         let data = self.data.get(&resource_key).unwrap();
         let image = self.images.get(kind.value());
 
@@ -70,8 +74,10 @@ impl Resources {
     pub fn get_level_data(&self, level_id: &str) -> LevelData {
         let resource_key = format!("{}/{}", ResourceKind::Level.value(), level_id);
 
-        let level_data = self.level_data.get(&resource_key).unwrap_or_else(|| panic!("Level data is expected to be preset {}",
-            resource_key));
+        let level_data = self
+            .level_data
+            .get(&resource_key)
+            .unwrap_or_else(|| panic!("Level data is expected to be preset {}", resource_key));
 
         level_data.clone()
     }

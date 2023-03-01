@@ -417,8 +417,7 @@ impl Game {
         self.sprites
             .iter_mut()
             .find(|sprite| sprite_id == &sprite.id)
-            .unwrap_or_else(|| panic!("[Game Controller] Cannot find Sprite {}",
-                &sprite_id))
+            .unwrap_or_else(|| panic!("[Game Controller] Cannot find Sprite {}", &sprite_id))
     }
 
     pub fn get_sprite_by_location(&mut self, location: &BoardLocation) -> Option<&Sprite> {

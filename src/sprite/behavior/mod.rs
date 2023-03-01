@@ -46,9 +46,9 @@ impl BehaviorManager {
             BehaviorType::Walk => Box::new(Walk::new(data.distance, data.velocity.unwrap())),
             BehaviorType::Drag => Box::new(Drag::new(data.callback.unwrap())),
             BehaviorType::Interval => Box::new(Interval::new(data.interval.unwrap(), data.callback)),
-            BehaviorType::Collision => Box::new(Collision::new(
-                data.collision_margin.unwrap_or_default(),
-            )),
+            BehaviorType::Collision => {
+                Box::new(Collision::new(data.collision_margin.unwrap_or_default()))
+            }
         };
 
         behavior.set_sprite_id(sprite_id);
@@ -102,8 +102,12 @@ impl BehaviorManager {
         behavior: BehaviorType,
     ) -> &mut Box<dyn Behavior> {
         let sprite_id = sprite.id.clone();
-        Self::find_sprite_behavior(sprite, behavior).unwrap_or_else(|| panic!("[BehaviorManager] Cannot GET Sprite behavior: {:?} / {}",
-            behavior, sprite_id))
+        Self::find_sprite_behavior(sprite, behavior).unwrap_or_else(|| {
+            panic!(
+                "[BehaviorManager] Cannot GET Sprite behavior: {:?} / {}",
+                behavior, sprite_id
+            )
+        })
     }
 
     pub fn find_sprite_behavior(

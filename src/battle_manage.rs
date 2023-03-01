@@ -107,9 +107,7 @@ impl BattleManager {
             .behaviors
             .borrow()
             .iter()
-            .any(|behavior| {
-                behavior.name() == BehaviorType::Collision && behavior.is_running()
-            })
+            .any(|behavior| behavior.name() == BehaviorType::Collision && behavior.is_running())
     }
 
     fn can_collide(sprite: &Sprite, other: &Sprite) -> bool {
@@ -118,6 +116,7 @@ impl BattleManager {
         let target_type = match source_type {
             SpriteType::Zombie => SpriteType::Plant,
             SpriteType::Bullet => SpriteType::Zombie,
+            SpriteType::Interface => SpriteType::Zombie,
             SpriteType::Plant => SpriteType::Bullet,
             _ => SpriteType::Meta,
         };

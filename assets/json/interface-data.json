@@ -127,11 +127,11 @@
       { "left": 65, "top": 508 }
     ],
     "behaviors": [
-      { "name": "Walk", "velocity": { "x": 1000, "y": 0 }, "duration": 1000 }
+      { "name": "Walk", "velocity": { "x": 1000, "y": 0 }},
+      { "name": "Collision", "collision_margin": { "left": 40, "top": 5, "right": 10, "bottom": 5 }}
     ],
-    "collision_margin": { "left": 0, "top": 0, "right": 0, "bottom": 0 },
     "order": 2,
-    "hurt": 99999
+    "damage": 99999
   },
   "BattleCallout": {
     "constructor": "Sprite",
