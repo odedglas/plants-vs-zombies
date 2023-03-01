@@ -1,14 +1,19 @@
 mod base;
+mod bullet;
+mod interface;
+mod plant;
+mod zombie;
 
 use derives::{derive_behavior_fields, BaseBehavior};
 use web_sys::CanvasRenderingContext2d;
 
 use super::base::Behavior;
 use crate::model::{BehaviorType, Callback, CollisionMargin, GameInteraction, Position, SpriteType};
-use crate::sprite::behavior::collision::base::{
-    BulletCollisionHandler, CollisionHandler, DelayedMutation, PlantCollisionHandler,
-    ZombieCollisionHandler,
-};
+use crate::sprite::behavior::collision::base::{CollisionHandler, DelayedMutation};
+use crate::sprite::behavior::collision::bullet::BulletCollisionHandler;
+use crate::sprite::behavior::collision::interface::InterfaceCollisionHandler;
+use crate::sprite::behavior::collision::plant::PlantCollisionHandler;
+use crate::sprite::behavior::collision::zombie::ZombieCollisionHandler;
 use crate::sprite::{Sprite, SpriteMutation};
 use crate::timers::Timer;
 
@@ -62,6 +67,7 @@ impl Collision {
             SpriteType::Zombie => Box::new(ZombieCollisionHandler::new()),
             SpriteType::Plant => Box::new(PlantCollisionHandler {}),
             SpriteType::Bullet => Box::new(BulletCollisionHandler {}),
+            SpriteType::Interface => Box::new(InterfaceCollisionHandler {}),
             _ => {
                 panic!("Cannot find Collision handler for {:?}", sprite_type)
             }

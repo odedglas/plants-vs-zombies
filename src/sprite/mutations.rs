@@ -86,6 +86,12 @@ impl SpriteMutation {
         self
     }
 
+    pub fn toggle_walking(mut self, walking: bool) -> Self {
+        self.walking = Some(walking);
+
+        self
+    }
+
     pub fn stop_animate(mut self) -> Self {
         self.stop_animate = Some(true);
 
