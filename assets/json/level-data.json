@@ -14,7 +14,11 @@
     "zombies": [
       "Buckethead",
       "Conehead",
-      "ScreenDoor"
+      "ScreenDoor",
+      "Conehead",
+      "Conehead",
+      "Zombie1",
+      "Flag"
     ]
   }
 }

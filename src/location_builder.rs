@@ -60,12 +60,10 @@ impl LocationBuilder {
             Board::get_board_placement(cell, sprite.board_location.row, sprite.board_location.col);
 
         let cells_delta = cell.width - old_cell.width;
-        let mut x_delta = match cells_delta > ALIGNMENT_DELTA_BUFFER {
+        let x_delta = match cells_delta > ALIGNMENT_DELTA_BUFFER {
             true => cells_delta,
             false => 0.0,
         };
-
-        log!("X Delate is {} ", x_delta);
 
         Position::new(board_position.top, current_position.left - x_delta)
     }
