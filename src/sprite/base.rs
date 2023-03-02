@@ -79,7 +79,9 @@ impl Sprite {
             visible: true,
         };
 
-        sprite.text_overlay = text_overlay_data.as_ref().map(|data| TextOverlay::new(data, &sprite));
+        sprite.text_overlay = text_overlay_data
+            .as_ref()
+            .map(|data| TextOverlay::new(data, &sprite));
 
         sprite.update_board_location();
         sprite.update_outlines(exact_outlines);
@@ -266,11 +268,13 @@ impl Sprite {
             .iter_mut()
             .find(|behavior| behavior.name() == BehaviorType::Collision);
 
-        collision.map(|collision| collision
-                    .as_any()
-                    .downcast_mut::<Collision>()
-                    .unwrap()
-                    .margin)
+        collision.map(|collision| {
+            collision
+                .as_any()
+                .downcast_mut::<Collision>()
+                .unwrap()
+                .margin
+        })
     }
 
     pub fn toggle_walking(&mut self, walking: bool) {

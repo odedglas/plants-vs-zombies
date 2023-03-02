@@ -107,9 +107,7 @@ impl BattleManager {
             .behaviors
             .borrow()
             .iter()
-            .any(|behavior| {
-                behavior.name() == BehaviorType::Collision && behavior.is_running()
-            })
+            .any(|behavior| behavior.name() == BehaviorType::Collision && behavior.is_running())
     }
 
     fn can_collide(sprite: &Sprite, other: &Sprite) -> bool {

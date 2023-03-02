@@ -1836,18 +1836,18 @@
     { "left": 4555, "top": 2201, "width": 85, "height": 122 }
   ],
   "ScreenDoorAttack": [
-    { "left": 4380, "top": 1149, "width": 88, "height": 138 },
-    { "left": 4380, "top": 1287, "width": 88, "height": 138 },
-    { "left": 4380, "top": 1425, "width": 88, "height": 138 },
-    { "left": 4380, "top": 1563, "width": 88, "height": 138 },
-    { "left": 4380, "top": 1701, "width": 88, "height": 138 },
-    { "left": 4380, "top": 1839, "width": 88, "height": 138 },
-    { "left": 4380, "top": 1977, "width": 88, "height": 138 },
-    { "left": 4293, "top": 3080, "width": 88, "height": 138 },
-    { "left": 4380, "top": 2391, "width": 88, "height": 138 },
-    { "left": 4380, "top": 2115, "width": 88, "height": 138 },
-    { "left": 4380, "top": 2253, "width": 88, "height": 138 },
-    { "left": 4381, "top": 2529, "width": 88, "height": 138 }
+    { "left": 4380, "top": 1149, "width": 88, "height": 130 },
+    { "left": 4380, "top": 1287, "width": 88, "height": 130 },
+    { "left": 4380, "top": 1425, "width": 88, "height": 130 },
+    { "left": 4380, "top": 1563, "width": 88, "height": 130 },
+    { "left": 4380, "top": 1701, "width": 88, "height": 130 },
+    { "left": 4380, "top": 1839, "width": 88, "height": 130 },
+    { "left": 4380, "top": 1977, "width": 88, "height": 130 },
+    { "left": 4293, "top": 3080, "width": 88, "height": 130 },
+    { "left": 4380, "top": 2391, "width": 88, "height": 130 },
+    { "left": 4380, "top": 2115, "width": 88, "height": 130 },
+    { "left": 4380, "top": 2253, "width": 88, "height": 130 },
+    { "left": 4381, "top": 2529, "width": 88, "height": 130 }
   ],
   "ScreenDoorLostHeadAttack1": [
     { "left": 4194, "top": 4823, "width": 89, "height": 111 },
