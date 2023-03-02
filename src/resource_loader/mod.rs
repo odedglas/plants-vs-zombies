@@ -45,7 +45,11 @@ impl Resources {
     pub fn get_resource(&self, name: &str, kind: &ResourceKind) -> Resource {
         let resource_key = format!("{}/{}", kind.value(), name);
 
-        let cell = self.cells.get(&resource_key).unwrap();
+        let cell = self
+            .cells
+            .get(&resource_key)
+            .unwrap_or_else(|| panic!("Cannot find Sprite cell - {} / {:?} ", name, kind));
+
         let data = self.data.get(&resource_key).unwrap();
         let image = self.images.get(kind.value());
 

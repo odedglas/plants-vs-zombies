@@ -1,6 +1,5 @@
 use crate::game::Game;
 use crate::location_builder::LocationBuilder;
-use crate::log;
 use crate::model::BehaviorType::Walk;
 use crate::model::Callback::PlantCardClick;
 use crate::model::{BehaviorData, BehaviorType, Callback, Plant, Position, SelectedSeed, SpriteType};
@@ -82,7 +81,6 @@ impl BattleScene {
 
         BehaviorManager::toggle_behaviors(&sprites, &[BehaviorType::Animate, Walk], true, now);
 
-        log!("Build head sfor Zombie {}", zombie_id);
         game.add_sprites(sprites.as_mut());
     }
 
@@ -131,7 +129,7 @@ impl BattleScene {
 
     pub fn battle_callout(game: &mut Game) {
         let mut scene_sprites = Sprite::create_sprites(
-            vec!["SunScore", "Shovel", "ShovelBack"],
+            vec!["SunScore", "Shovel", "ShovelBack", "LawnCleaner"],
             &ResourceKind::Interface,
             &game.resources,
         );
@@ -139,7 +137,6 @@ impl BattleScene {
         let mut battle_callout =
             Sprite::create_sprite("BattleCallout", &ResourceKind::Interface, &game.resources);
 
-        // Activates zombie hand animation Cycle.
         BehaviorManager::toggle_behaviors(
             &battle_callout,
             &[BehaviorType::Animate],
@@ -156,9 +153,10 @@ impl BattleScene {
             .iter_mut()
             .for_each(|zombie| {
                 zombie.update_swap_cell(0);
+                zombie.toggle_walking(true);
             });
 
-        game.toggle_game_behavior(true, &[BehaviorType::Collision, Walk]);
+        game.toggle_game_behavior(true, &[BehaviorType::Collision]);
     }
 
     pub fn create_draggable_plant(game: &mut Game, sprite_id: &String) {
