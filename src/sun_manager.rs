@@ -1,7 +1,7 @@
 use crate::features::GameFeatures;
 use crate::game::Game;
 use crate::location_builder::LocationBuilder;
-use crate::log;
+
 use crate::model::{BehaviorType, Position, TextOverlayData};
 use crate::resource_loader::ResourceKind;
 use crate::sprite::{Animate, BehaviorManager, Sprite, TextOverlay, Walk};
@@ -105,7 +105,7 @@ impl SunManager {
         let now = game.game_time.time;
         let sun = game.get_sprite_by_id(sprite_id);
 
-        BehaviorManager::toggle_sprite_behaviors(&sun, &[BehaviorType::Interval], false, now);
+        BehaviorManager::toggle_sprite_behaviors(sun, &[BehaviorType::Interval], false, now);
 
         let walk = BehaviorManager::get_sprite_behavior(sun, BehaviorType::Walk)
             .as_any()

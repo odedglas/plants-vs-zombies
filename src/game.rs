@@ -4,7 +4,7 @@ use crate::battle_manage::BattleManager;
 use crate::board::{Board, BoardLocation};
 use crate::features::GameFeatures;
 use crate::fps::Fps;
-use crate::log;
+
 use crate::model::{
     BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position, SpriteType,
 };
