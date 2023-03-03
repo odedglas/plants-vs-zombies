@@ -30,6 +30,7 @@ pub struct Sprite {
     pub image: Option<Weak<HtmlImageElement>>,
     pub drawing_state: DrawingState,
     pub attack_state: AttackState,
+    pub sun_cost: usize,
     pub text_overlay: Option<TextOverlay>,
     pub sprite_type: SpriteType,
     pub visible: bool,
@@ -51,6 +52,7 @@ impl Sprite {
         kind: ResourceKind,
         life: f64,
         damage: f64,
+        sun_cost: usize,
     ) -> Sprite {
         let id = uid(name);
         let sprite_type = SpriteType::from_kind(&kind);
@@ -76,6 +78,7 @@ impl Sprite {
             behaviors: sprite_behaviors,
             text_overlay: None,
             sprite_type,
+            sun_cost,
             visible: true,
         };
 
@@ -168,6 +171,7 @@ impl Sprite {
             text_overlay,
             life,
             damage,
+            sun_cost,
             swap_cells,
             ..
         } = data;
@@ -198,6 +202,7 @@ impl Sprite {
                     *kind,
                     life,
                     damage,
+                    sun_cost,
                 )
             })
             .collect()

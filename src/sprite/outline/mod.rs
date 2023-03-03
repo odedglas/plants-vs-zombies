@@ -64,6 +64,7 @@ impl Outline {
             cell,
             scale,
             1.0,
+            false,
         );
 
         let image_data = painter

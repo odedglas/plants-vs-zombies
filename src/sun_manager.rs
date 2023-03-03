@@ -1,7 +1,6 @@
 use crate::features::GameFeatures;
 use crate::game::Game;
 use crate::location_builder::LocationBuilder;
-
 use crate::model::{BehaviorType, Position, TextOverlayData};
 use crate::resource_loader::ResourceKind;
 use crate::sprite::{Animate, BehaviorManager, Sprite, TextOverlay, Walk};
@@ -16,13 +15,13 @@ pub struct SunState {
 impl SunState {
     pub fn new() -> Self {
         SunState {
-            score: 600,
+            score: 200,
             last_generated: 0.0,
-            sun_interval: 25.0 * 1000.0,
+            sun_interval: 17.5 * 1000.0,
         }
     }
 
-    pub fn add_score(&mut self, score: i32) {
+    pub fn change_score(&mut self, score: i32) {
         self.score += score;
     }
 }
@@ -95,7 +94,7 @@ impl SunManager {
             walk.velocity.x = 30.0;
         });
 
-        // Triggering Reverse interval
+        // Triggers Interval which will reverse the direction at the end of it's first tick
         BehaviorManager::toggle_behaviors(&sun, &[BehaviorType::Interval], true, game.game_time.time);
 
         game.add_sprites(sun.as_mut());
@@ -105,6 +104,8 @@ impl SunManager {
         let now = game.game_time.time;
         let sun = game.get_sprite_by_id(sprite_id);
 
+        // TODO - Refactor - First, we don't really need to toggle this behavior rather add "once" flag.
+        // TODO - General concept can be swapped with "gravitation" behavior, endless interval which ticks velocity
         BehaviorManager::toggle_sprite_behaviors(sun, &[BehaviorType::Interval], false, now);
 
         let walk = BehaviorManager::get_sprite_behavior(sun, BehaviorType::Walk)
@@ -114,6 +115,16 @@ impl SunManager {
 
         walk.velocity.y = 20.0;
         walk.velocity.x = 0.0;
+    }
+
+    pub fn collect_sun(game: &mut Game, sun_sprite_id: &String) {
+        Self::change_score(game, 25);
+
+        game.remove_sprite_by_id(sun_sprite_id);
+    }
+
+    pub fn change_score(game: &mut Game, addition: i32) {
+        game.state.sun_state.change_score(addition);
     }
 
     fn generate_random_sun(game: &mut Game) {

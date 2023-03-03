@@ -1,5 +1,6 @@
 use crate::game::Game;
 use crate::location_builder::LocationBuilder;
+use crate::log;
 use crate::model::BehaviorType::Walk;
 use crate::model::Callback::PlantCardClick;
 use crate::model::{BehaviorData, BehaviorType, Callback, Plant, Position, SelectedSeed, SpriteType};
@@ -163,6 +164,7 @@ impl BattleScene {
         let mouse = game.mouse_position;
         let card_sprite = game.get_sprite_by_id(sprite_id);
 
+        let card_sun_cost = card_sprite.sun_cost;
         let original_position = card_sprite.position;
         let plant_name = card_sprite.name.clone();
 
@@ -188,6 +190,7 @@ impl BattleScene {
             original_position.top,
             original_position.left + drag_adjustment,
         ));
+        plant.sun_cost = card_sun_cost;
         plant.order = 10; // TODO, Drag order based on behavior
 
         game.add_sprite(plant);
@@ -216,6 +219,8 @@ impl BattleScene {
 
         // Resets drag top drawing order
         sprite.order = 3; // TODO, Drag order based on behavior?
+
+        Self::toggle_cards_grayscale(game);
     }
 
     pub fn create_bullet(game: &mut Game, sprite_id: &String) {
@@ -263,6 +268,16 @@ impl BattleScene {
 
             click.as_any().downcast_mut::<Click>().unwrap().callback = PlantCardClick;
         });
+    }
+
+    pub fn toggle_cards_grayscale(game: &mut Game) {
+        let current_score = game.state.sun_state.score;
+        let mut cards = game.get_sprites_by_type(&SpriteType::Card);
+
+        cards.iter_mut().for_each(|card| {
+            let grayscale = current_score < (card.sun_cost as i32);
+            card.drawing_state.grayscale = grayscale;
+        })
     }
 
     fn add_plant_card(game: &mut Game, seed_name: &str) -> String {

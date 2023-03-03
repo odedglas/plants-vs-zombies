@@ -4,7 +4,7 @@ use crate::battle_manage::BattleManager;
 use crate::board::{Board, BoardLocation};
 use crate::features::GameFeatures;
 use crate::fps::Fps;
-
+use crate::log;
 use crate::model::{
     BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position, SpriteType,
 };
@@ -265,7 +265,11 @@ impl Game {
     }
 
     pub fn on_plant_card_click(&mut self, sprite_id: &String) {
-        BattleScene::create_draggable_plant(self, sprite_id);
+        let sun_cost = self.get_sprite_by_id(sprite_id).sun_cost;
+
+        if self.state.sun_state.score >= sun_cost as i32 {
+            BattleScene::create_draggable_plant(self, sprite_id);
+        }
     }
 
     pub fn allow_shovel_drag(&mut self) {
@@ -305,6 +309,9 @@ impl Game {
         let target_location = Board::get_board_location(&mouse);
 
         if self.is_free_board_location(sprite_id, &target_location) {
+            let cost = self.get_sprite_by_id(sprite_id).sun_cost;
+
+            SunManager::change_score(self, (cost as i32) * -1);
             BattleScene::create_plant(self, sprite_id);
         } else {
             self.remove_sprite_by_id(sprite_id)
@@ -330,9 +337,8 @@ impl Game {
     }
 
     pub fn collect_sun(&mut self, sprite_id: &String) {
-        self.state.sun_state.add_score(50);
-
-        self.remove_sprite_by_id(sprite_id);
+        SunManager::collect_sun(self, sprite_id);
+        BattleScene::toggle_cards_grayscale(self);
     }
 
     fn generate_sunflower_sun(&mut self, sprite_id: &String) {
