@@ -1,6 +1,5 @@
 use crate::game::Game;
 use crate::location_builder::LocationBuilder;
-
 use crate::model::BehaviorType::Walk;
 use crate::model::Callback::PlantCardClick;
 use crate::model::{BehaviorData, BehaviorType, Callback, Plant, Position, SelectedSeed, SpriteType};
@@ -107,7 +106,7 @@ impl BattleScene {
             .reverse(now, Callback::StartBattleCallout);
 
         // Make plants active to drag behavior
-        Self::swap_plant_cards_action(game);
+        Self::make_plant_cards_draggable(game);
     }
 
     pub fn select_seed(game: &mut Game, seed_id: &String) -> String {
@@ -261,7 +260,7 @@ impl BattleScene {
         drag.start(now);
     }
 
-    fn swap_plant_cards_action(game: &mut Game) {
+    fn make_plant_cards_draggable(game: &mut Game) {
         let mut plant_cards = game.get_sprites_by_type(&SpriteType::Card);
         plant_cards.iter_mut().for_each(|card| {
             let click = BehaviorManager::get_sprite_behavior(card, BehaviorType::Click);
