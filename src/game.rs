@@ -4,7 +4,7 @@ use crate::battle_manage::BattleManager;
 use crate::board::{Board, BoardLocation};
 use crate::features::GameFeatures;
 use crate::fps::Fps;
-use crate::log;
+
 use crate::model::{
     BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position, SpriteType,
 };
@@ -311,7 +311,7 @@ impl Game {
         if self.is_free_board_location(sprite_id, &target_location) {
             let cost = self.get_sprite_by_id(sprite_id).sun_cost;
 
-            SunManager::change_score(self, (cost as i32) * -1);
+            SunManager::change_score(self, -(cost as i32));
             BattleScene::create_plant(self, sprite_id);
         } else {
             self.remove_sprite_by_id(sprite_id)

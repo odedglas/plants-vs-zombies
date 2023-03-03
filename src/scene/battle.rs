@@ -1,6 +1,6 @@
 use crate::game::Game;
 use crate::location_builder::LocationBuilder;
-use crate::log;
+
 use crate::model::BehaviorType::Walk;
 use crate::model::Callback::PlantCardClick;
 use crate::model::{BehaviorData, BehaviorType, Callback, Plant, Position, SelectedSeed, SpriteType};
