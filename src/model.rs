@@ -62,11 +62,12 @@ pub enum Callback {
     PlantCardClick,
     RemoveSun,
     CollectSun,
+    ReverseSun,
     Plant,
     AllowShovelDrag,
     ShovelDragEnd,
     Shoot,
-    GenerateSunFlowSun,
+    GenerateSunFlowerSun,
     CreateZombieHead,
 }
 

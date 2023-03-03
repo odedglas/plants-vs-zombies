@@ -7,7 +7,9 @@ mod outline;
 mod text_overlay;
 
 pub use base::Sprite;
-pub use behavior::{BehaviorManager, Click, Collision, CollisionState, Hover, Scroll};
+pub use behavior::{
+    Animate, BehaviorManager, Click, Collision, CollisionState, Hover, Interval, Scroll, Walk,
+};
 pub use drawing_state::DrawingState;
 pub use mutations::SpriteMutation;
 pub use outline::Outline;

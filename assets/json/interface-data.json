@@ -82,6 +82,7 @@
         "callback": "RemoveSun",
         "callback_delay": 0
       },
+      { "name": "Interval", "interval": 520, "callback": "ReverseSun" },
       { "name": "Walk", "distance": 250 ,"velocity": {
         "x": 0,
         "y": 20

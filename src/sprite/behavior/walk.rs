@@ -10,7 +10,7 @@ use crate::sprite::{Sprite, SpriteMutation};
 #[derive(BaseBehavior, Default)]
 pub struct Walk {
     name: BehaviorType,
-    velocity: Velocity,
+    pub velocity: Velocity,
     max_distance: f64,
     walked_distance: f64,
 }

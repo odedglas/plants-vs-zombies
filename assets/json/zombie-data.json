@@ -42,7 +42,7 @@
     "behaviors": [
       { "name": "Animate", "rate": 130, "max_cycles": 0 },
       { "name": "Walk", "velocity": { "x": -12, "y": 0 } },
-      { "name": "Collision" }
+      { "name": "Collision", "collision_margin": { "left": 15, "top": 5, "right": 15, "bottom": 5 }}
     ],
     "life": 225,
     "damage": 12.5

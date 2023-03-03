@@ -168,11 +168,12 @@ impl Game {
             Callback::PlantCardClick => self.on_plant_card_click(sprite_id),
             Callback::CollectSun => self.collect_sun(sprite_id),
             Callback::RemoveSun => self.remove_sprite_by_id(sprite_id),
+            Callback::ReverseSun => self.reverse_sun(sprite_id),
             Callback::Plant => self.plant_on_board(sprite_id),
             Callback::AllowShovelDrag => self.allow_shovel_drag(),
             Callback::ShovelDragEnd => self.on_shovel_drag_end(),
             Callback::Shoot => self.on_plant_shoot(sprite_id),
-            Callback::GenerateSunFlowSun => log!("Trigger SunFlow Sun Generation"), // TODO - Call SunManager with sprite
+            Callback::GenerateSunFlowerSun => self.generate_sunflower_sun(sprite_id),
             Callback::CreateZombieHead => self.show_zombie_head(sprite_id),
         }
     }
@@ -332,6 +333,16 @@ impl Game {
         self.state.sun_state.add_score(50);
 
         self.remove_sprite_by_id(sprite_id);
+    }
+
+    fn generate_sunflower_sun(&mut self, sprite_id: &String) {
+        let sunflower_position = self.get_sprite_by_id(sprite_id).position;
+
+        SunManager::generate_sunflower_sun(self, sunflower_position);
+    }
+
+    fn reverse_sun(&mut self, sprite_id: &String) {
+        SunManager::reverse_sun(self, sprite_id);
     }
 
     pub fn show_zombie_head(&mut self, zombie_id: &String) {
