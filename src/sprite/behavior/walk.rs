@@ -3,7 +3,7 @@ use web_sys::CanvasRenderingContext2d;
 
 use super::base::Behavior;
 use crate::board::Board;
-use crate::log;
+
 use crate::model::{BehaviorType, Callback, GameInteraction, Position, Velocity};
 use crate::sprite::{Sprite, SpriteMutation};
 
