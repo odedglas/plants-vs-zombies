@@ -1,6 +1,6 @@
 mod base;
 mod bullet;
-mod interface;
+mod lawn_cleaner;
 mod plant;
 mod zombie;
 
@@ -11,7 +11,7 @@ use super::base::Behavior;
 use crate::model::{BehaviorType, Callback, CollisionMargin, GameInteraction, Position, SpriteType};
 use crate::sprite::behavior::collision::base::{CollisionHandler, DelayedMutation};
 use crate::sprite::behavior::collision::bullet::BulletCollisionHandler;
-use crate::sprite::behavior::collision::interface::InterfaceCollisionHandler;
+use crate::sprite::behavior::collision::lawn_cleaner::LawnCleanerCollisionHandler;
 use crate::sprite::behavior::collision::plant::PlantCollisionHandler;
 use crate::sprite::behavior::collision::zombie::ZombieCollisionHandler;
 use crate::sprite::{Sprite, SpriteMutation};
@@ -67,7 +67,7 @@ impl Collision {
             SpriteType::Zombie => Box::new(ZombieCollisionHandler::new()),
             SpriteType::Plant => Box::new(PlantCollisionHandler {}),
             SpriteType::Bullet => Box::new(BulletCollisionHandler {}),
-            SpriteType::Interface => Box::new(InterfaceCollisionHandler {}),
+            SpriteType::LawnCleaner => Box::new(LawnCleanerCollisionHandler {}),
             _ => {
                 panic!("Cannot find Collision handler for {:?}", sprite_type)
             }

@@ -116,7 +116,7 @@ impl BattleManager {
         let target_type = match source_type {
             SpriteType::Zombie => SpriteType::Plant,
             SpriteType::Bullet => SpriteType::Zombie,
-            SpriteType::Interface => SpriteType::Zombie,
+            SpriteType::LawnCleaner => SpriteType::Zombie,
             SpriteType::Plant => SpriteType::Bullet,
             _ => SpriteType::Meta,
         };

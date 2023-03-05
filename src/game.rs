@@ -324,12 +324,7 @@ impl Game {
         let shooting_plant_location = &self.get_sprite_by_id(sprite_id).board_location.clone();
 
         // Check if row contains an enemy
-        let has_enemy_in_row = self.sprites.iter_mut().find(|sprite| {
-            sprite.visible
-                && !sprite.attack_state.is_dead()
-                && sprite.sprite_type == SpriteType::Zombie
-                && sprite.board_location.row == shooting_plant_location.row
-        });
+        let has_enemy_in_row = self.has_enemy_in_row(shooting_plant_location);
 
         if has_enemy_in_row.is_some() {
             BattleScene::create_bullet(self, sprite_id)
@@ -352,14 +347,7 @@ impl Game {
     }
 
     pub fn on_zombie_death(&mut self, zombie_id: &String) {
-        let remaining_zombies = self
-            .get_sprites_by_type(&SpriteType::Zombie)
-            .iter()
-            .filter(|zombie| !zombie.attack_state.is_dead())
-            .collect::<Vec<&&mut Sprite>>()
-            .len();
-
-        if remaining_zombies == 0 {
+        if self.has_remaining_zombies() {
             self.game_over(true);
         }
 
@@ -469,6 +457,24 @@ impl Game {
             Some(sprite) if &sprite.id == sprite_id => true,
             Some(_) => false,
         }
+    }
+
+    fn has_remaining_zombies(&mut self) -> bool {
+        self.get_sprites_by_type(&SpriteType::Zombie)
+            .iter()
+            .filter(|zombie| !zombie.attack_state.is_dead())
+            .collect::<Vec<&&mut Sprite>>()
+            .len()
+            > 0
+    }
+
+    fn has_enemy_in_row(&mut self, shooting_plant_location: &BoardLocation) -> Option<&mut Sprite> {
+        self.sprites.iter_mut().find(|sprite| {
+            sprite.visible
+                && !sprite.attack_state.is_dead()
+                && sprite.sprite_type == SpriteType::Zombie
+                && sprite.board_location.row == shooting_plant_location.row
+        })
     }
 
     pub fn canvas(&self) -> &HtmlCanvasElement {

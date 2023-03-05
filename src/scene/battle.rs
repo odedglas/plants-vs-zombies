@@ -63,6 +63,17 @@ impl BattleScene {
         game.add_sprites(zombies.as_mut());
     }
 
+    fn build_lawn_cleaners(game: &mut Game) {
+        let mut lawn_cleaners =
+            Sprite::create_sprite("LawnCleaner", &ResourceKind::Interface, &game.resources);
+
+        lawn_cleaners
+            .iter_mut()
+            .for_each(|lawn_cleaner| lawn_cleaner.sprite_type = SpriteType::LawnCleaner);
+
+        game.add_sprites(lawn_cleaners.as_mut())
+    }
+
     pub fn build_zombie_head(game: &mut Game, zombie_id: &String) {
         let zombie_adjustment_position = Position::new(-60.0, 65.0);
         let zombie_position = game.get_sprite_by_id(zombie_id).position;
@@ -129,7 +140,7 @@ impl BattleScene {
 
     pub fn battle_callout(game: &mut Game) {
         let mut scene_sprites = Sprite::create_sprites(
-            vec!["SunScore", "Shovel", "ShovelBack", "LawnCleaner"],
+            vec!["SunScore", "Shovel", "ShovelBack"],
             &ResourceKind::Interface,
             &game.resources,
         );
@@ -143,6 +154,8 @@ impl BattleScene {
             true,
             game.game_time.time,
         );
+
+        Self::build_lawn_cleaners(game);
 
         game.add_sprites(battle_callout.as_mut());
         game.add_sprites(scene_sprites.as_mut());

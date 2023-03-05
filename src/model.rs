@@ -122,6 +122,7 @@ pub enum SpriteType {
     Card,
     Seed,
     Bullet,
+    LawnCleaner,
     Meta,
 }
 

@@ -1,17 +1,16 @@
 use crate::sprite::behavior::collision::base::CollisionHandler;
 use crate::sprite::{CollisionState, Sprite, SpriteMutation};
 
-pub struct InterfaceCollisionHandler;
+pub struct LawnCleanerCollisionHandler;
 
-impl CollisionHandler for InterfaceCollisionHandler {
+impl CollisionHandler for LawnCleanerCollisionHandler {
     fn on_collision_state_change(
         &mut self,
         _sprite: &Sprite,
         state: &CollisionState,
-        prev_state: &CollisionState,
+        _prev_state: &CollisionState,
     ) -> Option<SpriteMutation> {
-        // Explicit behavior for LawnCleaner. Maybe it sohuld be extracted to type?
-        if state != &CollisionState::None && prev_state == &CollisionState::None {
+        if state == &CollisionState::Attacking {
             return Some(SpriteMutation::new().toggle_walking(true));
         }
 
