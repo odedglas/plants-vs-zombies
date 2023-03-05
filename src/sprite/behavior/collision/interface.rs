@@ -10,6 +10,7 @@ impl CollisionHandler for InterfaceCollisionHandler {
         state: &CollisionState,
         prev_state: &CollisionState,
     ) -> Option<SpriteMutation> {
+        // Explicit behavior for LawnCleaner. Maybe it sohuld be extracted to type?
         if state != &CollisionState::None && prev_state == &CollisionState::None {
             return Some(SpriteMutation::new().toggle_walking(true));
         }

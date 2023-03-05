@@ -4,6 +4,7 @@ use crate::battle_manage::BattleManager;
 use crate::board::{Board, BoardLocation};
 use crate::features::GameFeatures;
 use crate::fps::Fps;
+use crate::log;
 use crate::model::{
     BehaviorType, Callback, GameInteraction, GameMouseEvent, GameState, Position, SpriteType,
 };
@@ -173,13 +174,13 @@ impl Game {
             Callback::ShovelDragEnd => self.on_shovel_drag_end(),
             Callback::Shoot => self.on_plant_shoot(sprite_id),
             Callback::GenerateSunFlowerSun => self.generate_sunflower_sun(sprite_id),
-            Callback::CreateZombieHead => self.show_zombie_head(sprite_id),
+            Callback::OnZombieDeath => self.on_zombie_death(sprite_id),
         }
     }
 
     // Scenes //
-    pub fn game_over(&mut self) {
-        self.painter.clear();
+    pub fn game_over(&mut self, won: bool) {
+        log!("Game over State check {}", won);
     }
 
     fn start_home_scene(&mut self) {
@@ -350,7 +351,19 @@ impl Game {
         SunManager::reverse_sun(self, sprite_id);
     }
 
-    pub fn show_zombie_head(&mut self, zombie_id: &String) {
+    pub fn on_zombie_death(&mut self, zombie_id: &String) {
+        let remaining_zombies = self
+            .get_sprites_by_type(&SpriteType::Zombie)
+            .iter()
+            .filter(|zombie| !zombie.attack_state.is_dead())
+            .collect::<Vec<&&mut Sprite>>()
+            .len();
+
+        if remaining_zombies == 0 {
+            self.game_over(true);
+        }
+
+        // Builds Zombie head animation
         BattleScene::build_zombie_head(self, zombie_id)
     }
 

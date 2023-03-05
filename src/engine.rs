@@ -68,7 +68,7 @@ impl Engine {
             let game_resources = ResourceLoader::load(&ResourceLoader).await;
 
             // Init game
-            engine.game.borrow_mut().init_debug_mode(game_resources);
+            engine.game.borrow_mut().init(game_resources);
 
             // Attach game listeners
             engine.register_events();

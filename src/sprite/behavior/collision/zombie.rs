@@ -97,8 +97,6 @@ impl CollisionHandler for ZombieCollisionHandler {
             .mute(true)
             .swap(self.get_swap_index())
             .stop_animate()
-
-        // TODO - Build head animation? ( No game access here solely the id of it
     }
 
     fn on_collision_state_change(
@@ -135,7 +133,7 @@ impl CollisionHandler for ZombieCollisionHandler {
     fn get_interaction_callback(&mut self) -> Option<Callback> {
         if self.zombie_state == ZombieState::Die && !self.lost_head {
             self.lost_head = true;
-            return Some(Callback::CreateZombieHead);
+            return Some(Callback::OnZombieDeath);
         }
 
         None
