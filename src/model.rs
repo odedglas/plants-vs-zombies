@@ -75,6 +75,7 @@ pub enum Callback {
     Shoot,
     GenerateSunFlowerSun,
     OnZombieDeath,
+    LawnCleanerLost,
 }
 
 impl Default for Callback {

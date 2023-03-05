@@ -3,7 +3,8 @@ use web_sys::CanvasRenderingContext2d;
 
 use super::base::Behavior;
 use crate::board::Board;
-use crate::model::{BehaviorType, Position, Velocity};
+use crate::log;
+use crate::model::{BehaviorType, Callback, GameInteraction, Position, Velocity};
 use crate::sprite::{Sprite, SpriteMutation};
 
 #[derive_behavior_fields("")]
@@ -13,13 +14,15 @@ pub struct Walk {
     pub velocity: Velocity,
     max_distance: f64,
     walked_distance: f64,
+    callback: Option<Callback>
 }
 
 impl Walk {
-    pub fn new(distance: f64, velocity: Velocity) -> Walk {
+    pub fn new(distance: f64, velocity: Velocity, callback: Option<Callback>) -> Walk {
         Walk {
             name: BehaviorType::Walk,
             velocity,
+            callback,
             max_distance: distance,
             ..Default::default()
         }
@@ -40,6 +43,17 @@ impl Walk {
 impl Behavior for Walk {
     fn name(&self) -> BehaviorType {
         BehaviorType::Walk
+    }
+
+    fn get_interaction(&self) -> Option<GameInteraction> {
+        if self.interaction_active && self.callback.is_some() {
+            return Some(GameInteraction::SpriteClick(
+                self.callback.unwrap(),
+                self.sprite_id.clone(),
+            ));
+        }
+
+        None
     }
 
     fn execute(
@@ -67,6 +81,7 @@ impl Behavior for Walk {
 
         if Board::is_out_of_board(sprite, &new_position) {
             self.stop(now);
+            self.interaction_active = true;
             return Some(SpriteMutation::new().hide(true));
         }
 

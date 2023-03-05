@@ -2,6 +2,7 @@ use web_sys::{HtmlCanvasElement, MouseEvent};
 
 use crate::battle_manage::BattleManager;
 use crate::board::{Board, BoardLocation};
+use crate::constants::MAX_LIFE;
 use crate::features::GameFeatures;
 use crate::fps::Fps;
 use crate::log;
@@ -175,12 +176,17 @@ impl Game {
             Callback::Shoot => self.on_plant_shoot(sprite_id),
             Callback::GenerateSunFlowerSun => self.generate_sunflower_sun(sprite_id),
             Callback::OnZombieDeath => self.on_zombie_death(sprite_id),
+            Callback::LawnCleanerLost => self.on_lawn_cleaner_lost(),
         }
     }
 
     // Scenes //
     pub fn game_over(&mut self, won: bool) {
-        log!("Game over State check {}", won);
+        if !won {
+            return BattleScene::zombies_won(self);
+        }
+
+        log!("Level WON!!!!");
     }
 
     fn start_home_scene(&mut self) {
@@ -347,12 +353,21 @@ impl Game {
     }
 
     pub fn on_zombie_death(&mut self, zombie_id: &String) {
-        if self.has_remaining_zombies() {
+        if !self.has_remaining_zombies() {
             self.game_over(true);
         }
 
         // Builds Zombie head animation
         BattleScene::build_zombie_head(self, zombie_id)
+    }
+
+    pub fn on_lawn_cleaner_lost(&mut self) {
+        self.state.lost_life += 1;
+
+        if self.state.lost_life == MAX_LIFE {
+            let has_enemies = self.has_remaining_zombies();
+            self.game_over(!has_enemies);
+        }
     }
 
     fn sprites_garbage_collector(&mut self) {

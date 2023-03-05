@@ -273,6 +273,13 @@ impl BattleScene {
         drag.start(now);
     }
 
+
+    pub fn zombies_won(game: &mut Game) {
+        let mut zombies_won = Sprite::create_sprite( "ZombiesWon", &ResourceKind::Interface, &game.resources);
+
+        game.add_sprites(zombies_won.as_mut());
+    }
+
     fn make_plant_cards_draggable(game: &mut Game) {
         let mut plant_cards = game.get_sprites_by_type(&SpriteType::Card);
         plant_cards.iter_mut().for_each(|card| {
