@@ -10,6 +10,7 @@ pub struct DrawingState {
     pub scale: f64,
     pub offset: Position,
     pub alpha: f64,
+    pub grayscale: bool,
 }
 
 impl DrawingState {

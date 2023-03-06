@@ -3,7 +3,7 @@ use crate::game::Game;
 use crate::location_builder::LocationBuilder;
 use crate::model::{BehaviorType, Position, TextOverlayData};
 use crate::resource_loader::ResourceKind;
-use crate::sprite::{BehaviorManager, Sprite, TextOverlay};
+use crate::sprite::{Animate, BehaviorManager, Sprite, TextOverlay, Walk};
 
 #[derive(Debug, Default)]
 pub struct SunState {
@@ -15,13 +15,13 @@ pub struct SunState {
 impl SunState {
     pub fn new() -> Self {
         SunState {
-            score: 600,
+            score: 200,
             last_generated: 0.0,
-            sun_interval: 15.0 * 1000.0,
+            sun_interval: 17.5 * 1000.0,
         }
     }
 
-    pub fn add_score(&mut self, score: i32) {
+    pub fn change_score(&mut self, score: i32) {
         self.score += score;
     }
 }
@@ -71,13 +71,75 @@ impl SunManager {
         }
     }
 
+    pub fn generate_sunflower_sun(game: &mut Game, source_position: Position) {
+        let mut sun = Self::create_sun(
+            game,
+            Position::new(source_position.top - 50.0, source_position.left + 30.0),
+        );
+
+        sun.iter_mut().for_each(|sun_sprite| {
+            let animate = BehaviorManager::get_sprite_behavior(sun_sprite, BehaviorType::Animate)
+                .as_any()
+                .downcast_mut::<Animate>()
+                .unwrap();
+
+            animate.set_max_cycles(12);
+
+            let walk = BehaviorManager::get_sprite_behavior(sun_sprite, BehaviorType::Walk)
+                .as_any()
+                .downcast_mut::<Walk>()
+                .unwrap();
+
+            walk.velocity.y = -75.0;
+            walk.velocity.x = 30.0;
+        });
+
+        // Triggers Interval which will reverse the direction at the end of it's first tick
+        BehaviorManager::toggle_behaviors(&sun, &[BehaviorType::Interval], true, game.game_time.time);
+
+        game.add_sprites(sun.as_mut());
+    }
+
+    pub fn reverse_sun(game: &mut Game, sprite_id: &String) {
+        let now = game.game_time.time;
+        let sun = game.get_sprite_by_id(sprite_id);
+
+        // TODO - Refactor - First, we don't really need to toggle this behavior rather add "once" flag.
+        // TODO - General concept can be swapped with "gravitation" behavior, endless interval which ticks velocity
+        BehaviorManager::toggle_sprite_behaviors(sun, &[BehaviorType::Interval], false, now);
+
+        let walk = BehaviorManager::get_sprite_behavior(sun, BehaviorType::Walk)
+            .as_any()
+            .downcast_mut::<Walk>()
+            .unwrap();
+
+        walk.velocity.y = 20.0;
+        walk.velocity.x = 0.0;
+    }
+
+    pub fn collect_sun(game: &mut Game, sun_sprite_id: &String) {
+        Self::change_score(game, 25);
+
+        game.remove_sprite_by_id(sun_sprite_id);
+    }
+
+    pub fn change_score(game: &mut Game, addition: i32) {
+        game.state.sun_state.change_score(addition);
+    }
+
     fn generate_random_sun(game: &mut Game) {
+        let mut sun = Self::create_sun(game, LocationBuilder::sun_location());
+
+        game.add_sprites(sun.as_mut());
+    }
+
+    fn create_sun(game: &mut Game, position: Position) -> Vec<Sprite> {
         let mut sun_sprite =
             Sprite::create_sprites(vec!["Sun"], &ResourceKind::Interface, &game.resources);
 
         sun_sprite
             .iter_mut()
-            .for_each(|sprite| sprite.update_position(LocationBuilder::sun_location()));
+            .for_each(|sprite| sprite.update_position(position));
 
         BehaviorManager::toggle_behaviors(
             &sun_sprite,
@@ -86,6 +148,6 @@ impl SunManager {
             game.game_time.time,
         );
 
-        game.add_sprites(sun_sprite.as_mut());
+        sun_sprite
     }
 }

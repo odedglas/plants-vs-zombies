@@ -6,7 +6,8 @@
       "callback": "ChooserSeedSelect"
     }],
     "scale": 0.725,
-    "order": 3
+    "order": 3,
+    "sun_cost": 50
   },
   "Peashooter": {
     "constructor": "Sprite",
@@ -15,41 +16,47 @@
       "callback": "ChooserSeedSelect"
     }],
     "scale": 0.725,
-    "order": 3
+    "order": 3,
+    "sun_cost": 75
   },
   "SnowPea": {
     "constructor": "Sprite",
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [{ "name": "Click", "callback": "ChooserSeedSelect" }],
     "scale": 0.725,
-    "order": 3
+    "order": 3,
+    "sun_cost": 75
   },
   "WallNut": {
     "constructor": "Sprite",
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [{ "name": "Click", "callback": "ChooserSeedSelect" }],
     "scale": 0.725,
-    "order": 3
+    "order": 3,
+    "sun_cost": 50
   },
   "Torchwood": {
     "constructor": "Sprite",
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [{ "name": "Click", "callback": "ChooserSeedSelect" }],
     "scale": 0.725,
-    "order": 3
+    "order": 3,
+    "sun_cost": 50
   },
   "PumpkinHead": {
     "constructor": "Sprite",
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [{ "name": "Click", "callback": "ChooserSeedSelect" }],
     "scale": 0.725,
-    "order": 3
+    "order": 3,
+    "sun_cost": 50
   },
   "TallNut": {
     "constructor": "Sprite",
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [{ "name": "Click", "callback": "ChooserSeedSelect" }],
     "scale": 0.725,
-    "order": 3
+    "order": 3,
+    "sun_cost": 75
   }
 }

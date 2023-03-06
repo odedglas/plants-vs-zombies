@@ -56,6 +56,10 @@ impl Behavior for Animate {
         ))
     }
 
+    fn on_start(&mut self, now: f64) {
+        self.last_tick = now;
+    }
+
     fn execute(
         &mut self,
         sprite: &Sprite,

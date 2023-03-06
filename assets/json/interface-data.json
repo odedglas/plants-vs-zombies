@@ -82,6 +82,7 @@
         "callback": "RemoveSun",
         "callback_delay": 0
       },
+      { "name": "Interval", "interval": 520, "callback": "ReverseSun" },
       { "name": "Walk", "distance": 250 ,"velocity": {
         "x": 0,
         "y": 20
@@ -127,7 +128,7 @@
       { "left": 65, "top": 508 }
     ],
     "behaviors": [
-      { "name": "Walk", "velocity": { "x": 1000, "y": 0 }},
+      { "name": "Walk", "velocity": { "x": 1000, "y": 0 }, "callback": "LawnCleanerLost" },
       { "name": "Collision", "collision_margin": { "left": 40, "top": 5, "right": 10, "bottom": 5 }}
     ],
     "order": 2,
@@ -136,7 +137,8 @@
   "BattleCallout": {
     "constructor": "Sprite",
     "position": [{ "left": 322.5, "top": 246 }],
-    "behaviors": [{ "name": "Animate", "rate": 1250, "callback": "StartBattle" }]
+    "behaviors": [{ "name": "Animate", "rate": 1250, "callback": "StartBattle" }],
+    "order": 5
   },
   "SeedChooserBackground": {
     "constructor": "Sprite",

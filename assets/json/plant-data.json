@@ -21,19 +21,21 @@
   "TallNut": {
     "constructor": "PlantSprite",
     "position": [{ "left": 0, "top": 0 }],
-    "behaviors": [{ "name": "Animate", "rate": 120, "max_cycles": 0 }, { "name": "Collision" }]
+    "behaviors": [{ "name": "Animate", "rate": 120, "max_cycles": 0 }, { "name": "Collision" }],
+    "life": 150
   },
   "PumpkinHead": {
     "constructor": "PlantSprite",
     "position": [{ "left": 0, "top": 0 }],
-    "behaviors": [{ "name": "Animate", "rate": 120, "max_cycles": 0 }, { "name": "Collision" }]
+    "behaviors": [{ "name": "Animate", "rate": 120, "max_cycles": 0 }, { "name": "Collision" }],
+    "life": 50
   },
   "SunFlower": {
     "constructor": "PlantSprite",
     "position": [{ "left": 0, "top": 0 }],
     "behaviors": [
       { "name": "Animate", "rate": 120, "max_cycles": 0 },
-      { "name": "Interval", "interval": 7200, "callback": "GenerateSunFlowSun" },
+      { "name": "Interval", "interval": 10500, "callback": "GenerateSunFlowerSun" },
       { "name": "Collision" }
     ]
   },

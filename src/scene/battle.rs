@@ -63,6 +63,17 @@ impl BattleScene {
         game.add_sprites(zombies.as_mut());
     }
 
+    fn build_lawn_cleaners(game: &mut Game) {
+        let mut lawn_cleaners =
+            Sprite::create_sprite("LawnCleaner", &ResourceKind::Interface, &game.resources);
+
+        lawn_cleaners
+            .iter_mut()
+            .for_each(|lawn_cleaner| lawn_cleaner.sprite_type = SpriteType::LawnCleaner);
+
+        game.add_sprites(lawn_cleaners.as_mut())
+    }
+
     pub fn build_zombie_head(game: &mut Game, zombie_id: &String) {
         let zombie_adjustment_position = Position::new(-60.0, 65.0);
         let zombie_position = game.get_sprite_by_id(zombie_id).position;
@@ -106,7 +117,7 @@ impl BattleScene {
             .reverse(now, Callback::StartBattleCallout);
 
         // Make plants active to drag behavior
-        Self::swap_plant_cards_action(game);
+        Self::make_plant_cards_draggable(game);
     }
 
     pub fn select_seed(game: &mut Game, seed_id: &String) -> String {
@@ -129,7 +140,7 @@ impl BattleScene {
 
     pub fn battle_callout(game: &mut Game) {
         let mut scene_sprites = Sprite::create_sprites(
-            vec!["SunScore", "Shovel", "ShovelBack", "LawnCleaner"],
+            vec!["SunScore", "Shovel", "ShovelBack"],
             &ResourceKind::Interface,
             &game.resources,
         );
@@ -143,6 +154,8 @@ impl BattleScene {
             true,
             game.game_time.time,
         );
+
+        Self::build_lawn_cleaners(game);
 
         game.add_sprites(battle_callout.as_mut());
         game.add_sprites(scene_sprites.as_mut());
@@ -163,6 +176,7 @@ impl BattleScene {
         let mouse = game.mouse_position;
         let card_sprite = game.get_sprite_by_id(sprite_id);
 
+        let card_sun_cost = card_sprite.sun_cost;
         let original_position = card_sprite.position;
         let plant_name = card_sprite.name.clone();
 
@@ -188,6 +202,7 @@ impl BattleScene {
             original_position.top,
             original_position.left + drag_adjustment,
         ));
+        plant.sun_cost = card_sun_cost;
         plant.order = 10; // TODO, Drag order based on behavior
 
         game.add_sprite(plant);
@@ -216,6 +231,8 @@ impl BattleScene {
 
         // Resets drag top drawing order
         sprite.order = 3; // TODO, Drag order based on behavior?
+
+        Self::toggle_cards_grayscale(game);
     }
 
     pub fn create_bullet(game: &mut Game, sprite_id: &String) {
@@ -256,13 +273,30 @@ impl BattleScene {
         drag.start(now);
     }
 
-    fn swap_plant_cards_action(game: &mut Game) {
+    pub fn zombies_won(game: &mut Game) {
+        let mut zombies_won =
+            Sprite::create_sprite("ZombiesWon", &ResourceKind::Interface, &game.resources);
+
+        game.add_sprites(zombies_won.as_mut());
+    }
+
+    fn make_plant_cards_draggable(game: &mut Game) {
         let mut plant_cards = game.get_sprites_by_type(&SpriteType::Card);
         plant_cards.iter_mut().for_each(|card| {
             let click = BehaviorManager::get_sprite_behavior(card, BehaviorType::Click);
 
             click.as_any().downcast_mut::<Click>().unwrap().callback = PlantCardClick;
         });
+    }
+
+    pub fn toggle_cards_grayscale(game: &mut Game) {
+        let current_score = game.state.sun_state.score;
+        let mut cards = game.get_sprites_by_type(&SpriteType::Card);
+
+        cards.iter_mut().for_each(|card| {
+            let grayscale = current_score < (card.sun_cost as i32);
+            card.drawing_state.grayscale = grayscale;
+        })
     }
 
     fn add_plant_card(game: &mut Game, seed_name: &str) -> String {

@@ -2,6 +2,7 @@ use web_sys::{HtmlCanvasElement, MouseEvent};
 
 use crate::battle_manage::BattleManager;
 use crate::board::{Board, BoardLocation};
+use crate::constants::MAX_LAWN_CLEANERS_LOST;
 use crate::features::GameFeatures;
 use crate::fps::Fps;
 use crate::log;
@@ -168,18 +169,29 @@ impl Game {
             Callback::PlantCardClick => self.on_plant_card_click(sprite_id),
             Callback::CollectSun => self.collect_sun(sprite_id),
             Callback::RemoveSun => self.remove_sprite_by_id(sprite_id),
+            Callback::ReverseSun => self.reverse_sun(sprite_id),
             Callback::Plant => self.plant_on_board(sprite_id),
             Callback::AllowShovelDrag => self.allow_shovel_drag(),
             Callback::ShovelDragEnd => self.on_shovel_drag_end(),
             Callback::Shoot => self.on_plant_shoot(sprite_id),
-            Callback::GenerateSunFlowSun => log!("Trigger SunFlow Sun Generation"), // TODO - Call SunManager with sprite
-            Callback::CreateZombieHead => self.show_zombie_head(sprite_id),
+            Callback::GenerateSunFlowerSun => self.generate_sunflower_sun(sprite_id),
+            Callback::OnZombieDeath => self.on_zombie_death(sprite_id),
+            Callback::LawnCleanerLost => self.on_lawn_cleaner_lost(),
         }
     }
 
     // Scenes //
-    pub fn game_over(&mut self) {
-        self.painter.clear();
+    pub fn game_over(&mut self, won: bool) {
+        GameFeatures::enable_generate_sun(false);
+        GameFeatures::enable_update_sun_score(false);
+
+        self.toggle_game_behavior(false, &[BehaviorType::Walk, BehaviorType::Animate]);
+
+        if !won {
+            return BattleScene::zombies_won(self);
+        }
+
+        // TODO Missing GameWon Scene
     }
 
     fn start_home_scene(&mut self) {
@@ -264,7 +276,11 @@ impl Game {
     }
 
     pub fn on_plant_card_click(&mut self, sprite_id: &String) {
-        BattleScene::create_draggable_plant(self, sprite_id);
+        let sun_cost = self.get_sprite_by_id(sprite_id).sun_cost;
+
+        if self.state.sun_state.score >= sun_cost as i32 {
+            BattleScene::create_draggable_plant(self, sprite_id);
+        }
     }
 
     pub fn allow_shovel_drag(&mut self) {
@@ -304,6 +320,9 @@ impl Game {
         let target_location = Board::get_board_location(&mouse);
 
         if self.is_free_board_location(sprite_id, &target_location) {
+            let cost = self.get_sprite_by_id(sprite_id).sun_cost;
+
+            SunManager::change_score(self, -(cost as i32));
             BattleScene::create_plant(self, sprite_id);
         } else {
             self.remove_sprite_by_id(sprite_id)
@@ -316,12 +335,7 @@ impl Game {
         let shooting_plant_location = &self.get_sprite_by_id(sprite_id).board_location.clone();
 
         // Check if row contains an enemy
-        let has_enemy_in_row = self.sprites.iter_mut().find(|sprite| {
-            sprite.visible
-                && !sprite.attack_state.is_dead()
-                && sprite.sprite_type == SpriteType::Zombie
-                && sprite.board_location.row == shooting_plant_location.row
-        });
+        let has_enemy_in_row = self.has_enemy_in_row(shooting_plant_location);
 
         if has_enemy_in_row.is_some() {
             BattleScene::create_bullet(self, sprite_id)
@@ -329,13 +343,36 @@ impl Game {
     }
 
     pub fn collect_sun(&mut self, sprite_id: &String) {
-        self.state.sun_state.add_score(50);
-
-        self.remove_sprite_by_id(sprite_id);
+        SunManager::collect_sun(self, sprite_id);
+        BattleScene::toggle_cards_grayscale(self);
     }
 
-    pub fn show_zombie_head(&mut self, zombie_id: &String) {
+    fn generate_sunflower_sun(&mut self, sprite_id: &String) {
+        let sunflower_position = self.get_sprite_by_id(sprite_id).position;
+
+        SunManager::generate_sunflower_sun(self, sunflower_position);
+    }
+
+    fn reverse_sun(&mut self, sprite_id: &String) {
+        SunManager::reverse_sun(self, sprite_id);
+    }
+
+    pub fn on_zombie_death(&mut self, zombie_id: &String) {
+        if !self.has_remaining_zombies() {
+            self.game_over(true);
+        }
+
+        // Builds Zombie head animation
         BattleScene::build_zombie_head(self, zombie_id)
+    }
+
+    pub fn on_lawn_cleaner_lost(&mut self) {
+        self.state.lost_lawn_cleaners += 1;
+
+        if self.state.lost_lawn_cleaners == MAX_LAWN_CLEANERS_LOST {
+            let has_enemies = self.has_remaining_zombies();
+            self.game_over(!has_enemies);
+        }
     }
 
     fn sprites_garbage_collector(&mut self) {
@@ -440,6 +477,24 @@ impl Game {
             Some(sprite) if &sprite.id == sprite_id => true,
             Some(_) => false,
         }
+    }
+
+    fn has_remaining_zombies(&mut self) -> bool {
+        !self
+            .get_sprites_by_type(&SpriteType::Zombie)
+            .iter()
+            .filter(|zombie| !zombie.attack_state.is_dead())
+            .collect::<Vec<&&mut Sprite>>()
+            .is_empty()
+    }
+
+    fn has_enemy_in_row(&mut self, shooting_plant_location: &BoardLocation) -> Option<&mut Sprite> {
+        self.sprites.iter_mut().find(|sprite| {
+            sprite.visible
+                && !sprite.attack_state.is_dead()
+                && sprite.sprite_type == SpriteType::Zombie
+                && sprite.board_location.row == shooting_plant_location.row
+        })
     }
 
     pub fn canvas(&self) -> &HtmlCanvasElement {

@@ -6,6 +6,8 @@ use crate::sprite::Sprite;
 
 pub struct LocationBuilder;
 
+const ALIGNMENT_DELTA_BUFFER: f64 = 20.0;
+
 impl LocationBuilder {
     pub fn text_overlay_location(
         sprite: &Sprite,
@@ -56,8 +58,9 @@ impl LocationBuilder {
         let board_position =
             Board::get_board_placement(cell, sprite.board_location.row, sprite.board_location.col);
 
-        let x_delta = match cell.width > old_cell.width {
-            true => cell.width - old_cell.width,
+        let cells_delta = cell.width - old_cell.width;
+        let x_delta = match cells_delta > ALIGNMENT_DELTA_BUFFER {
+            true => cells_delta,
             false => 0.0,
         };
 

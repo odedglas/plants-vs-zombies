@@ -14,6 +14,7 @@ pub struct GameState {
     pub sun_state: SunState,
     pub current_level: Option<LevelData>,
     pub selected_seeds: Vec<SelectedSeed>,
+    pub lost_lawn_cleaners: usize,
 }
 
 impl GameState {
@@ -22,6 +23,7 @@ impl GameState {
             sun_state: SunState::new(),
             current_level: None,
             selected_seeds: vec![],
+            lost_lawn_cleaners: 0,
         }
     }
 
@@ -62,12 +64,14 @@ pub enum Callback {
     PlantCardClick,
     RemoveSun,
     CollectSun,
+    ReverseSun,
     Plant,
     AllowShovelDrag,
     ShovelDragEnd,
     Shoot,
-    GenerateSunFlowSun,
-    CreateZombieHead,
+    GenerateSunFlowerSun,
+    OnZombieDeath,
+    LawnCleanerLost,
 }
 
 impl Default for Callback {
@@ -115,6 +119,7 @@ pub enum SpriteType {
     Card,
     Seed,
     Bullet,
+    LawnCleaner,
     Meta,
 }
 
@@ -149,6 +154,7 @@ pub struct SpriteData {
     pub exact_outlines: bool,
     pub life: f64,
     pub damage: f64,
+    pub sun_cost: usize,
     pub draw_offset: Position,
     pub swap_cells: Vec<String>,
     pub behaviors: Vec<BehaviorData>,
@@ -164,6 +170,7 @@ impl Default for SpriteData {
             scale: 1.0,
             life: 100.0,
             damage: 0.0,
+            sun_cost: 0,
             exact_outlines: false,
             behaviors: vec![],
             swap_cells: vec![],
