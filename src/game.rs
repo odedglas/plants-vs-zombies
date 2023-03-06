@@ -2,7 +2,7 @@ use web_sys::{HtmlCanvasElement, MouseEvent};
 
 use crate::battle_manage::BattleManager;
 use crate::board::{Board, BoardLocation};
-use crate::constants::MAX_LIFE;
+use crate::constants::MAX_LAWN_CLEANERS_LOST;
 use crate::features::GameFeatures;
 use crate::fps::Fps;
 use crate::log;
@@ -182,11 +182,16 @@ impl Game {
 
     // Scenes //
     pub fn game_over(&mut self, won: bool) {
+        GameFeatures::enable_generate_sun(false);
+        GameFeatures::enable_update_sun_score(false);
+
+        self.toggle_game_behavior(false, &[BehaviorType::Walk, BehaviorType::Animate]);
+
         if !won {
             return BattleScene::zombies_won(self);
         }
 
-        log!("Level WON!!!!");
+        // TODO Missing GameWon Scene
     }
 
     fn start_home_scene(&mut self) {
@@ -362,9 +367,9 @@ impl Game {
     }
 
     pub fn on_lawn_cleaner_lost(&mut self) {
-        self.state.lost_life += 1;
+        self.state.lost_lawn_cleaners += 1;
 
-        if self.state.lost_life == MAX_LIFE {
+        if self.state.lost_lawn_cleaners == MAX_LAWN_CLEANERS_LOST {
             let has_enemies = self.has_remaining_zombies();
             self.game_over(!has_enemies);
         }
@@ -475,10 +480,12 @@ impl Game {
     }
 
     fn has_remaining_zombies(&mut self) -> bool {
-        !self.get_sprites_by_type(&SpriteType::Zombie)
+        !self
+            .get_sprites_by_type(&SpriteType::Zombie)
             .iter()
             .filter(|zombie| !zombie.attack_state.is_dead())
-            .collect::<Vec<&&mut Sprite>>().is_empty()
+            .collect::<Vec<&&mut Sprite>>()
+            .is_empty()
     }
 
     fn has_enemy_in_row(&mut self, shooting_plant_location: &BoardLocation) -> Option<&mut Sprite> {

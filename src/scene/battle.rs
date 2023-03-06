@@ -273,9 +273,9 @@ impl BattleScene {
         drag.start(now);
     }
 
-
     pub fn zombies_won(game: &mut Game) {
-        let mut zombies_won = Sprite::create_sprite( "ZombiesWon", &ResourceKind::Interface, &game.resources);
+        let mut zombies_won =
+            Sprite::create_sprite("ZombiesWon", &ResourceKind::Interface, &game.resources);
 
         game.add_sprites(zombies_won.as_mut());
     }

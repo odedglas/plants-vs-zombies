@@ -14,7 +14,7 @@ pub struct GameState {
     pub sun_state: SunState,
     pub current_level: Option<LevelData>,
     pub selected_seeds: Vec<SelectedSeed>,
-    pub lost_life: usize,
+    pub lost_lawn_cleaners: usize,
 }
 
 impl GameState {
@@ -23,7 +23,7 @@ impl GameState {
             sun_state: SunState::new(),
             current_level: None,
             selected_seeds: vec![],
-            lost_life: 0,
+            lost_lawn_cleaners: 0,
         }
     }
 
@@ -32,10 +32,6 @@ impl GameState {
             Some(level) => level.clone(),
             None => LevelData::new(),
         }
-    }
-
-    pub fn lost(&self) -> bool {
-        self.lost_life >= 3
     }
 }
 

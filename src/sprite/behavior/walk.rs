@@ -3,7 +3,6 @@ use web_sys::CanvasRenderingContext2d;
 
 use super::base::Behavior;
 use crate::board::Board;
-
 use crate::model::{BehaviorType, Callback, GameInteraction, Position, Velocity};
 use crate::sprite::{Sprite, SpriteMutation};
 
@@ -14,7 +13,7 @@ pub struct Walk {
     pub velocity: Velocity,
     max_distance: f64,
     walked_distance: f64,
-    callback: Option<Callback>
+    callback: Option<Callback>,
 }
 
 impl Walk {
