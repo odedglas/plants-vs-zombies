@@ -67,7 +67,7 @@ impl Collision {
             SpriteType::Zombie => Box::new(ZombieCollisionHandler::new()),
             SpriteType::Plant => Box::new(PlantCollisionHandler {}),
             SpriteType::Bullet => Box::new(BulletCollisionHandler {}),
-            SpriteType::LawnCleaner => Box::new(LawnCleanerCollisionHandler {}),
+            SpriteType::LawnCleaner => Box::new(LawnCleanerCollisionHandler::new()),
             _ => {
                 panic!("Cannot find Collision handler for {:?}", sprite_type)
             }
