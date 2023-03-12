@@ -12,7 +12,7 @@ pub struct Walk {
     name: BehaviorType,
     pub velocity: Velocity,
     max_distance: f64,
-    walked_distance: f64
+    walked_distance: f64,
 }
 
 impl Walk {

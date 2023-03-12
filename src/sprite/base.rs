@@ -6,9 +6,10 @@ use web_sys::HtmlImageElement;
 
 use crate::board::{Board, BoardLocation};
 use crate::location_builder::LocationBuilder;
+use crate::log;
 use crate::model::{
-    BehaviorData, BehaviorType, CollisionMargin, Dimensions, Position, SpriteCell, SpriteData,
-    SpriteType, TextOverlayData,
+    AttackEffect, BehaviorData, BehaviorType, CollisionMargin, Dimensions, Position, SpriteCell,
+    SpriteData, SpriteType, TextOverlayData,
 };
 use crate::resource_loader::{Resource, ResourceKind, Resources};
 use crate::sprite::attack_state::AttackState;
@@ -52,6 +53,7 @@ impl Sprite {
         kind: ResourceKind,
         life: f64,
         damage: f64,
+        attack_effect: Option<AttackEffect>,
         sun_cost: usize,
     ) -> Sprite {
         let id = uid(name);
@@ -73,7 +75,7 @@ impl Sprite {
             board_location: BoardLocation::new(0, 0),
             image,
             drawing_state: DrawingState::new(cells, swap_cells, scale, draw_offset),
-            attack_state: AttackState::new(life, damage),
+            attack_state: AttackState::new(life, damage, attack_effect),
             outlines: vec![],
             behaviors: sprite_behaviors,
             text_overlay: None,
@@ -173,6 +175,7 @@ impl Sprite {
             damage,
             sun_cost,
             swap_cells,
+            attack_effect,
             ..
         } = data;
 
@@ -202,6 +205,7 @@ impl Sprite {
                     *kind,
                     life,
                     damage,
+                    attack_effect,
                     sun_cost,
                 )
             })
@@ -235,6 +239,10 @@ impl Sprite {
             }
 
             if let Some(damage) = mutation.damage {
+                self.attack_state.mutate_damage(damage);
+            }
+
+            if let Some(damage) = mutation.taken_damage {
                 self.attack_state.take_damage(damage);
             }
 

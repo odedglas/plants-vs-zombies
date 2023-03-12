@@ -8,7 +8,9 @@ use derives::{derive_behavior_fields, BaseBehavior};
 use web_sys::CanvasRenderingContext2d;
 
 use super::base::Behavior;
-use crate::model::{BehaviorType, Callback, CollisionMargin, GameInteraction, Position, SpriteType};
+use crate::model::{
+    AttackEffect, BehaviorType, Callback, CollisionMargin, GameInteraction, Position, SpriteType,
+};
 use crate::sprite::behavior::collision::base::{CollisionHandler, DelayedMutation};
 use crate::sprite::behavior::collision::bullet::BulletCollisionHandler;
 use crate::sprite::behavior::collision::lawn_cleaner::LawnCleanerCollisionHandler;
@@ -22,6 +24,7 @@ pub enum CollisionState {
     None,
     Attacking,
     TakingDamage(f64),
+    ApplyEffect(AttackEffect),
 }
 
 impl Default for CollisionState {
@@ -66,7 +69,7 @@ impl Collision {
         let handler: Box<dyn CollisionHandler> = match sprite_type {
             SpriteType::Zombie => Box::new(ZombieCollisionHandler::new()),
             SpriteType::Plant => Box::new(PlantCollisionHandler {}),
-            SpriteType::Bullet => Box::new(BulletCollisionHandler {}),
+            SpriteType::Bullet => Box::new(BulletCollisionHandler::new()),
             SpriteType::LawnCleaner => Box::new(LawnCleanerCollisionHandler::new()),
             _ => {
                 panic!("Cannot find Collision handler for {:?}", sprite_type)
@@ -170,6 +173,9 @@ impl Behavior for Collision {
 
                     delayed_mutation = collision_handler.on_after_hit();
                 }
+            }
+            CollisionState::ApplyEffect(effect) => {
+                mutation = Some(collision_handler.on_apply_effect(effect));
             }
         }
 

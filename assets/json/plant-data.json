@@ -11,7 +11,8 @@
   "Torchwood": {
     "constructor": "PlantSprite",
     "position": [{ "left": 0, "top": 0 }],
-    "behaviors": [{ "name": "Animate", "rate": 120, "max_cycles": 0 }, { "name": "Collision" }]
+    "behaviors": [{ "name": "Animate", "rate": 120, "max_cycles": 0 }, { "name": "Collision", "collision_margin": { "left": 30, "top": 2, "right": 2, "bottom": 0 } }],
+    "attack_effect": "TurnIntoFireBullet"
   },
   "WallNut": {
     "constructor": "PlantSprite",
@@ -51,7 +52,7 @@
   "SnowBullet": {
     "constructor": "PlantSprite",
     "position": [{ "left": 100, "top": 150 }],
-    "swap_cells": ["PeaBulletHit"],
+    "swap_cells": ["PeaBulletHit", "FireBullet"],
     "damage": 25.0,
     "order": 10,
     "behaviors": [
@@ -62,7 +63,7 @@
   },
   "NormalBullet": {
     "constructor": "PlantSprite",
-    "swap_cells": ["PeaBulletHit"],
+    "swap_cells": ["PeaBulletHit", "FireBullet"],
     "damage": 25.0,
     "order": 10,
     "position": [{ "left": 100, "top": 250 }],
@@ -79,7 +80,7 @@
     "position": [{ "left": 100, "top": 450 }],
     "behaviors": [
       { "name": "Animate", "rate": 120, "max_cycles": 0 },
-      { "name": "Walk", "velocity": { "x": -200, "y": 0 }},
+      { "name": "Walk", "velocity": { "x": 200, "y": 0 }},
       { "name": "Collision", "collision_margin": { "left": 30, "top": 2, "right": 2, "bottom": 5 }}
     ]
   },

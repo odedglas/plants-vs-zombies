@@ -5,7 +5,7 @@
     "swap_cells": ["ConeheadWalk", "ConeheadAttack", "ZombieWalk1", "ZombieAttack", "ZombieDie"],
     "behaviors": [
       { "name": "Animate", "rate": 130, "max_cycles": 0 },
-      { "name": "Walk", "velocity": { "x": -90, "y": 0 } },
+      { "name": "Walk", "velocity": { "x": -10, "y": 0 } },
       { "name": "Collision", "collision_margin": { "left": 30, "top": 5, "right": 10, "bottom": 5 }}
     ],
     "life": 200,
@@ -17,7 +17,7 @@
     "swap_cells": ["BucketheadWalk", "BucketheadAttack", "ZombieWalk1", "ZombieAttack", "ZombieDie"],
     "behaviors": [
       { "name": "Animate", "rate": 130, "max_cycles": 0 },
-      { "name": "Walk", "velocity": { "x": -125, "y": 0 } },
+      { "name": "Walk", "velocity": { "x": -15, "y": 0 } },
       { "name": "Collision", "collision_margin": { "left": 30, "top": 5, "right": 10, "bottom": 5 }}
     ],
     "life": 250,
@@ -41,7 +41,7 @@
     "swap_cells": ["ScreenDoorWalk", "ScreenDoorAttack", "ZombieWalk1", "ZombieAttack", "ZombieDie"],
     "behaviors": [
       { "name": "Animate", "rate": 130, "max_cycles": 0 },
-      { "name": "Walk", "velocity": { "x": -72, "y": 0 } },
+      { "name": "Walk", "velocity": { "x": -12, "y": 0 } },
       { "name": "Collision", "collision_margin": { "left": 15, "top": 5, "right": 15, "bottom": 5 }}
     ],
     "life": 225,

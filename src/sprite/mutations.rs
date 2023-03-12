@@ -10,6 +10,7 @@ pub struct SpriteMutation {
     pub visible: Option<bool>,
     pub mute: Option<bool>,
     pub damage: Option<f64>,
+    pub taken_damage: Option<f64>,
     pub alpha: Option<f64>,
     pub walking: Option<bool>,
     pub stop_animate: Option<bool>,
@@ -24,6 +25,7 @@ impl SpriteMutation {
             cycle_cells: None,
             visible: None,
             damage: None,
+            taken_damage: None,
             swap: None,
             mute: None,
             alpha: None,
@@ -62,7 +64,13 @@ impl SpriteMutation {
         self
     }
 
-    pub fn damage(mut self, damage: f64) -> Self {
+    pub fn take_damage(mut self, damage: f64) -> Self {
+        self.taken_damage = Some(damage);
+
+        self
+    }
+
+    pub fn increase_damage(mut self, damage: f64) -> Self {
         self.damage = Some(damage);
 
         self

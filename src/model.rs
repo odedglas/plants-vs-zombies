@@ -144,6 +144,11 @@ pub struct SpriteCell {
     pub height: f64,
 }
 
+#[derive(Debug, Copy, Clone, Deserialize, PartialEq)]
+pub enum AttackEffect {
+    TurnIntoFireBullet,
+}
+
 /// Sprite data represents the meta data of a given Sprite
 #[derive(Debug, Clone, Deserialize)]
 #[serde(default)]
@@ -154,6 +159,7 @@ pub struct SpriteData {
     pub exact_outlines: bool,
     pub life: f64,
     pub damage: f64,
+    pub attack_effect: Option<AttackEffect>,
     pub sun_cost: usize,
     pub draw_offset: Position,
     pub swap_cells: Vec<String>,
@@ -170,6 +176,7 @@ impl Default for SpriteData {
             scale: 1.0,
             life: 100.0,
             damage: 0.0,
+            attack_effect: None,
             sun_cost: 0,
             exact_outlines: false,
             behaviors: vec![],

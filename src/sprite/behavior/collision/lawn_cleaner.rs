@@ -3,7 +3,7 @@ use crate::sprite::behavior::collision::base::CollisionHandler;
 use crate::sprite::{CollisionState, Sprite, SpriteMutation};
 
 pub struct LawnCleanerCollisionHandler {
-    collided: bool
+    collided: bool,
 }
 
 impl LawnCleanerCollisionHandler {
