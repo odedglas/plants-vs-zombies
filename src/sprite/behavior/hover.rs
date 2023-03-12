@@ -9,13 +9,11 @@ use crate::sprite::{Sprite, SpriteMutation};
 #[derive_behavior_fields("")]
 #[derive(BaseBehavior, Default)]
 pub struct Hover {
-    name: BehaviorType,
 }
 
 impl Hover {
     pub fn new() -> Hover {
         Hover {
-            name: BehaviorType::Hover,
             ..Default::default()
         }
     }

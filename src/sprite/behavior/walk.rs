@@ -9,7 +9,6 @@ use crate::sprite::{Sprite, SpriteMutation};
 #[derive_behavior_fields("")]
 #[derive(BaseBehavior, Default)]
 pub struct Walk {
-    name: BehaviorType,
     pub velocity: Velocity,
     max_distance: f64,
     walked_distance: f64,
@@ -18,7 +17,6 @@ pub struct Walk {
 impl Walk {
     pub fn new(distance: f64, velocity: Velocity) -> Walk {
         Walk {
-            name: BehaviorType::Walk,
             velocity,
             max_distance: distance,
             ..Default::default()

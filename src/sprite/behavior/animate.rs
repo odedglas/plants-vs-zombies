@@ -8,7 +8,6 @@ use crate::sprite::{Sprite, SpriteMutation};
 #[derive_behavior_fields("")]
 #[derive(BaseBehavior, Default)]
 pub struct Animate {
-    name: BehaviorType,
     last_tick: f64,
     rate: f64,
     finished_cycles: usize,
@@ -25,7 +24,6 @@ impl Animate {
         max_cycles: Option<usize>,
     ) -> Animate {
         Animate {
-            name: BehaviorType::Animate,
             rate,
             callback,
             callback_delay: callback_delay.unwrap_or(1000.0),

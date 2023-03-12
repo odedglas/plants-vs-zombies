@@ -9,7 +9,6 @@ use crate::timers::Timer;
 #[derive_behavior_fields("")]
 #[derive(BaseBehavior, Default)]
 pub struct Interval {
-    pub name: BehaviorType,
     pub callback: Option<Callback>,
     pub interval: f64,
     timer: Timer,
@@ -21,7 +20,6 @@ impl Interval {
             callback,
             interval,
             timer: Timer::new(interval),
-            name: BehaviorType::Click,
             ..Default::default()
         }
     }
