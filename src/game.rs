@@ -486,8 +486,8 @@ impl Game {
             .get_sprites_by_type(&SpriteType::Zombie)
             .iter()
             .filter(|zombie| !zombie.attack_state.is_dead())
-            .collect::<Vec<&&mut Sprite>>()
-            .is_empty()
+            .next()
+            .is_none()
     }
 
     fn has_enemy_in_row(&mut self, shooting_plant_location: &BoardLocation) -> Option<&mut Sprite> {

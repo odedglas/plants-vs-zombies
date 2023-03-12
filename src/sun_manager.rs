@@ -15,7 +15,7 @@ pub struct SunState {
 impl SunState {
     pub fn new() -> Self {
         SunState {
-            score: 500,
+            score: 200,
             last_generated: 0.0,
             sun_interval: 17.5 * 1000.0,
         }
