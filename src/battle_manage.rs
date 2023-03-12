@@ -1,20 +1,27 @@
 use itertools::Itertools;
 
 use crate::game::Game;
-use crate::model::{BehaviorType, SpriteType};
+use crate::model::{AttackEffect, BehaviorType, SpriteType};
 use crate::sprite::{BehaviorManager, Collision, CollisionState, DrawingState, Sprite};
 
 struct CollisionMutation {
     attacking_id: String,
     target_id: String,
     damage: f64,
+    attack_effect: Option<AttackEffect>,
 }
 
 impl CollisionMutation {
-    pub fn new(attacking_id: &String, target_id: &String, damage: f64) -> Self {
+    pub fn new(
+        attacking_id: &String,
+        target_id: &String,
+        damage: f64,
+        attack_effect: Option<AttackEffect>,
+    ) -> Self {
         CollisionMutation {
             attacking_id: String::from(attacking_id),
             target_id: String::from(target_id),
+            attack_effect,
             damage,
         }
     }
@@ -55,7 +62,10 @@ impl BattleManager {
                         }
 
                         if mutation.target_id == sprite_id {
-                            collision.state = CollisionState::TakingDamage(mutation.damage);
+                            collision.state = match mutation.attack_effect {
+                                Some(effect) => CollisionState::ApplyEffect(effect),
+                                None => CollisionState::TakingDamage(mutation.damage),
+                            }
                         }
                     })
                 } else {
@@ -94,6 +104,7 @@ impl BattleManager {
                             &sprite.id,
                             &collided_sprite.id,
                             sprite.attack_state.get_damage(),
+                            sprite.attack_state.effect,
                         ));
                     }
                 });

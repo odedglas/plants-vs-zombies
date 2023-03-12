@@ -9,7 +9,6 @@ use crate::sprite::{Sprite, SpriteMutation};
 #[derive_behavior_fields("")]
 #[derive(BaseBehavior, Default)]
 pub struct Drag {
-    pub name: BehaviorType,
     anchor: Option<Position>,
     callback: Callback,
     dragging: bool,
@@ -18,7 +17,6 @@ pub struct Drag {
 impl Drag {
     pub fn new(callback: Callback) -> Drag {
         Drag {
-            name: BehaviorType::Drag,
             callback,
             ..Default::default()
         }

@@ -55,16 +55,18 @@ impl LocationBuilder {
     ) -> Position {
         let current_position = &sprite.position;
 
-        let board_position =
-            Board::get_board_placement(cell, sprite.board_location.row, sprite.board_location.col);
-
-        let cells_delta = cell.width - old_cell.width;
-        let x_delta = match cells_delta > ALIGNMENT_DELTA_BUFFER {
-            true => cells_delta,
+        let width_delta = cell.width - old_cell.width;
+        let x_delta = match width_delta > ALIGNMENT_DELTA_BUFFER {
+            true => width_delta,
             false => 0.0,
         };
 
-        Position::new(board_position.top, current_position.left - x_delta)
+        let height_delta = cell.height - old_cell.height;
+
+        Position::new(
+            current_position.top - height_delta,
+            current_position.left - x_delta,
+        )
     }
 
     fn rand_within_rand(min: f64, max: f64) -> f64 {

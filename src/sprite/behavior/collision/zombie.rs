@@ -4,7 +4,7 @@ use crate::sprite::{CollisionState, Sprite, SpriteMutation};
 use crate::timers::Timer;
 use crate::web_utils::window_time;
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq)]
 enum ZombieState {
     Stale = 0,
     ArmoredWalk,
@@ -37,7 +37,7 @@ impl ZombieCollisionHandler {
 
     fn get_zombie_state(&mut self, state: &CollisionState, life: f64) -> ZombieState {
         match state {
-            CollisionState::None => match life <= 100.0 {
+            CollisionState::None | CollisionState::ApplyEffect(_) => match life <= 100.0 {
                 true => ZombieState::Walk,
                 false => ZombieState::ArmoredWalk,
             },
@@ -79,7 +79,7 @@ impl CollisionHandler for ZombieCollisionHandler {
 
     fn on_hit(&mut self, damage: f64) -> SpriteMutation {
         SpriteMutation::new()
-            .damage(damage)
+            .take_damage(damage)
             .alpha(0.5)
             .swap(self.get_swap_index())
     }
@@ -92,7 +92,7 @@ impl CollisionHandler for ZombieCollisionHandler {
         self.zombie_state = ZombieState::Die;
 
         SpriteMutation::new()
-            .damage(damage)
+            .take_damage(damage)
             .alpha(0.9) // TODO - Can be replaced with fadeout effect
             .mute(true)
             .swap(self.get_swap_index())

@@ -185,13 +185,16 @@ impl Game {
         GameFeatures::enable_generate_sun(false);
         GameFeatures::enable_update_sun_score(false);
 
-        self.toggle_game_behavior(false, &[BehaviorType::Walk, BehaviorType::Animate]);
+        log!("Game over check -> {} ", won);
 
         if !won {
+            log!("Zombies WON -> {} ", won);
+            self.toggle_game_behavior(false, &[BehaviorType::Walk, BehaviorType::Animate]);
             return BattleScene::zombies_won(self);
         }
 
         // TODO Missing GameWon Scene
+        log!("Game won ! muhahahaha")
     }
 
     fn start_home_scene(&mut self) {
@@ -370,8 +373,7 @@ impl Game {
         self.state.lost_lawn_cleaners += 1;
 
         if self.state.lost_lawn_cleaners == MAX_LAWN_CLEANERS_LOST {
-            let has_enemies = self.has_remaining_zombies();
-            self.game_over(!has_enemies);
+            self.game_over(false);
         }
     }
 
@@ -484,8 +486,8 @@ impl Game {
             .get_sprites_by_type(&SpriteType::Zombie)
             .iter()
             .filter(|zombie| !zombie.attack_state.is_dead())
-            .collect::<Vec<&&mut Sprite>>()
-            .is_empty()
+            .next()
+            .is_none()
     }
 
     fn has_enemy_in_row(&mut self, shooting_plant_location: &BoardLocation) -> Option<&mut Sprite> {

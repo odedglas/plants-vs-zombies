@@ -1,4 +1,4 @@
-use crate::model::Callback;
+use crate::model::{AttackEffect, Callback};
 use crate::sprite::{CollisionState, Sprite, SpriteMutation};
 
 pub type DelayedMutation = (Option<SpriteMutation>, f64);
@@ -17,7 +17,7 @@ pub trait CollisionHandler {
     }
 
     fn on_hit(&mut self, damage: f64) -> SpriteMutation {
-        SpriteMutation::new().damage(damage)
+        SpriteMutation::new().take_damage(damage)
     }
 
     fn on_after_hit(&mut self) -> DelayedMutation {
@@ -26,6 +26,10 @@ pub trait CollisionHandler {
 
     fn on_die(&mut self, _damage: f64) -> SpriteMutation {
         SpriteMutation::new().hide(true)
+    }
+
+    fn on_apply_effect(&mut self, _effect: AttackEffect) -> SpriteMutation {
+        SpriteMutation::new()
     }
 
     fn on_collision_state_change(

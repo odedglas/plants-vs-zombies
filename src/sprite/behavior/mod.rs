@@ -43,11 +43,7 @@ impl BehaviorManager {
                 data.rate,
                 data.callback.unwrap(),
             )),
-            BehaviorType::Walk => Box::new(Walk::new(
-                data.distance,
-                data.velocity.unwrap(),
-                data.callback,
-            )),
+            BehaviorType::Walk => Box::new(Walk::new(data.distance, data.velocity.unwrap())),
             BehaviorType::Drag => Box::new(Drag::new(data.callback.unwrap())),
             BehaviorType::Interval => Box::new(Interval::new(data.interval.unwrap(), data.callback)),
             BehaviorType::Collision => {

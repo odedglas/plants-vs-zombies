@@ -8,7 +8,6 @@ use crate::sprite::{Sprite, SpriteMutation};
 #[derive_behavior_fields("")]
 #[derive(BaseBehavior, Default)]
 pub struct Scroll {
-    name: BehaviorType,
     callback: Callback,
     distance: f64,
     rate: f64,
@@ -23,7 +22,6 @@ impl Scroll {
             rate,
             distance,
             direction: 1,
-            name: BehaviorType::Click,
             ..Default::default()
         }
     }
