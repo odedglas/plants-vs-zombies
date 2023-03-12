@@ -6,7 +6,6 @@ use web_sys::HtmlImageElement;
 
 use crate::board::{Board, BoardLocation};
 use crate::location_builder::LocationBuilder;
-
 use crate::model::{
     AttackEffect, BehaviorData, BehaviorType, CollisionMargin, Dimensions, Position, SpriteCell,
     SpriteData, SpriteType, TextOverlayData,

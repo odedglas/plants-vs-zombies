@@ -4,7 +4,7 @@ use crate::sprite::{CollisionState, Sprite, SpriteMutation};
 use crate::timers::Timer;
 use crate::web_utils::window_time;
 
-#[derive(Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 enum ZombieState {
     Stale = 0,
     ArmoredWalk,

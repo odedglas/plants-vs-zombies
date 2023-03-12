@@ -8,8 +8,7 @@ use crate::sprite::{Sprite, SpriteMutation};
 
 #[derive_behavior_fields("")]
 #[derive(BaseBehavior, Default)]
-pub struct Hover {
-}
+pub struct Hover {}
 
 impl Hover {
     pub fn new() -> Hover {
