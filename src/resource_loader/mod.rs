@@ -8,7 +8,7 @@ use futures::future::join_all;
 use serde::Deserialize;
 use wasm_bindgen::{JsCast, JsValue};
 use wasm_bindgen_futures::JsFuture;
-use web_sys::{HtmlImageElement, Request, RequestInit, RequestMode, Response};
+use web_sys::{HtmlImageElement, Response};
 
 use crate::engine::EngineError;
 use crate::model::{LevelData, SpriteCell, SpriteData};
@@ -157,23 +157,14 @@ impl ResourceLoader {
     }
 
     async fn load_json(&self, path: &str, data_type: &str) -> Result<JsValue, EngineError> {
-        // https://rustwasm.github.io/wasm-bindgen/examples/fetch.html
         let qualified_path = format!("/assets/json/{}-{}.json", path, data_type);
-        let mut opts = RequestInit::new();
 
-        opts.method("GET");
-        opts.mode(RequestMode::Cors);
+        let resp = JsFuture::from(window().fetch_with_str(&qualified_path))
+            .await?
+            .dyn_into::<Response>()
+            .unwrap();
 
-        let request = Request::new_with_str_and_init(&qualified_path, &opts)?;
-
-        let window = window();
-        let resp_value = JsFuture::from(window.fetch_with_request(&request)).await?;
-
-        assert!(resp_value.is_instance_of::<Response>());
-        let resp: Response = resp_value.dyn_into().unwrap();
-
-        let json = JsFuture::from(resp.json()?).await?;
-        Ok(json)
+        Ok(JsFuture::from(resp.json()?).await?)
     }
 
     fn convert_json_hashmap<T>(&self, json: &JsValue) -> Result<HashMap<String, T>, EngineError>

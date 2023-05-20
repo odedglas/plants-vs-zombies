@@ -185,10 +185,7 @@ impl Game {
         GameFeatures::enable_generate_sun(false);
         GameFeatures::enable_update_sun_score(false);
 
-        log!("Game over check -> {} ", won);
-
         if !won {
-            log!("Zombies WON -> {} ", won);
             self.toggle_game_behavior(false, &[BehaviorType::Walk, BehaviorType::Animate]);
             return BattleScene::zombies_won(self);
         }
